@@ -12,8 +12,7 @@ namespace GameFramework.Download.Base
     
     public class DownloadAgent : MonoBehaviour,ITaskAgent<DownloadTask>
     {
-        private uint threadCount = 4;
-//        private int retryCount = 3;
+        private uint threadCount = 1;
         private ulong fileLength = 0;
         private DownloadTask task;
         private ulong alreadyDownloadLength = 0;
@@ -244,30 +243,9 @@ namespace GameFramework.Download.Base
 
         private void DownloadError(string error)
         {
-//            UnityEngine.Debug.LogError(error+" .........");
-//            retryCount--;
-//            if (retryCount > 0)
-//            {
-//                UnityEngine.Debug.LogError("DeleCacheFiles  .......");
-//                DeleCacheFiles();
-//                if (httpMultiThreadDownloads != null)
-//                {
-//                    foreach (var threadDownload in httpMultiThreadDownloads)
-//                    {
-//                        threadDownload.Reset();
-//                    }
-//                }
-//                retryCount = 3;
-//                fileLength = 0;
-//                alreadyDownloadLength = 0;
-//                OnStart(task);
-//            }
-//            else
-            {   
-                task.DownloadErrorAction?.Invoke(task, error);
-                task.DownloadState = enDownloadState.Error;
-                task.Done = true;
-            }
+            task.DownloadErrorAction?.Invoke(task, error);
+            task.DownloadState = enDownloadState.Error;
+            task.Done = true;
         }
 
         private void DownloadUpdate()
@@ -285,7 +263,6 @@ namespace GameFramework.Download.Base
                     threadDownload.Reset();
                 }
             }
-//            retryCount = 3;
             task?.Clear();
             task = null;
             fileLength = 0;

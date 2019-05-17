@@ -30,7 +30,7 @@ public class Launch:MonoBehaviour
         {
             Debug.LogError(Application.persistentDataPath); // 22 - 33
             downloadAgent.OnStart(new DownloadTask(Application.persistentDataPath + "/testdown.pdf",
-                "http://127.0.0.1/testdown.pdf", (a, b) => { }, (a, b, c) => { }, (a, b) => { }, 100, 50000));
+                "http://127.0.0.1/shuxue.pdf", (a, b) => { }, (a, b, c) => { }, (a, b) => { }, 100, 50000));
             Debug.LogError("kaishi   "+DateTime.Now);
         }
         if (Input.GetKeyDown(KeyCode.D))
