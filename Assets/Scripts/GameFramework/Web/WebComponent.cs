@@ -56,17 +56,17 @@ namespace GameFramework.Web
             webManager.OnUpdate(elapseSeconds,realElapseSeconds);
         }
 
-        public int AddGetWebRequest(string webUrl, float timeOut, Action<bool, byte[]> callAction)
+        public int AddGetWebRequest(string webUrl, float timeOut, Action<bool,string, byte[]> callAction)
         {
             return webManager.AddGetWebRequest(webUrl, timeOut, callAction);
         }
 
-        public int AddPostWebRequest(string webUrl, float timeOut, byte[] postData, Action<bool, byte[]> callAction)
+        public int AddPostWebRequest(string webUrl, float timeOut, byte[] postData, Action<bool,string, byte[]> callAction)
         {
             return webManager.AddPostWebRequest(webUrl, timeOut, postData, callAction);
         }
 
-        public int AddPostWebRequest(string webUrl, float timeOut, WWWForm wwwForm, Action<bool, byte[]> callAction)
+        public int AddPostWebRequest(string webUrl, float timeOut, WWWForm wwwForm, Action<bool,string, byte[]> callAction)
         {
             return webManager.AddPostWebRequest(webUrl, timeOut, wwwForm, callAction);
         }

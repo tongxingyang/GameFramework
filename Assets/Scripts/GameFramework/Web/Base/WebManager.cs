@@ -30,21 +30,21 @@ namespace GameFramework.Web.Base
             taskPool.ShotDown();
         }
         
-        public int AddGetWebRequest(string webUrl, float timeOut, Action<bool, byte[]> callAction)
+        public int AddGetWebRequest(string webUrl, float timeOut, Action<bool,string, byte[]> callAction)
         {
             WebTask webTask = new WebTask(webUrl,DefaultPriority,timeOut,callAction);
             taskPool.AddTask(webTask);
             return webTask.SerialId;
         }
 
-        public int AddPostWebRequest(string webUrl, float timeOut, byte[] postData, Action<bool, byte[]> callAction)
+        public int AddPostWebRequest(string webUrl, float timeOut, byte[] postData, Action<bool,string, byte[]> callAction)
         {
             WebTask webTask = new WebTask(webUrl,DefaultPriority,timeOut,postData,callAction);
             taskPool.AddTask(webTask);
             return webTask.SerialId;
         }
 
-        public int AddPostWebRequest(string webUrl, float timeOut, WWWForm wwwForm, Action<bool, byte[]> callAction)
+        public int AddPostWebRequest(string webUrl, float timeOut, WWWForm wwwForm, Action<bool,string, byte[]> callAction)
         {
             WebTask webTask = new WebTask(webUrl,DefaultPriority,timeOut,wwwForm,callAction);
             taskPool.AddTask(webTask);

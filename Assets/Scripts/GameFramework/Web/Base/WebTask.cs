@@ -17,7 +17,7 @@ namespace GameFramework.Web.Base
         private WWWForm wwwForm;
         private byte[] postBytes = null;
 
-        public Action<bool,byte[]> callBack;
+        public Action<bool,string,byte[]> callBack;
 
         public byte[] GetPostBytes()
         {
@@ -74,7 +74,7 @@ namespace GameFramework.Web.Base
             postBytes = null;
         }
         
-        public WebTask(string webUrl, int priority, float timeout,Action<bool,byte[]> callAction)
+        public WebTask(string webUrl, int priority, float timeout,Action<bool,string,byte[]> callAction)
         {
             serialid = Serial++;
             this.priority = priority;
@@ -87,7 +87,7 @@ namespace GameFramework.Web.Base
             callBack = callAction;
         }
         
-        public WebTask(string webUrl, int priority, float timeout,byte[] postdata,Action<bool,byte[]> callAction)
+        public WebTask(string webUrl, int priority, float timeout,byte[] postdata,Action<bool,string,byte[]> callAction)
         {
             serialid = Serial++;
             this.priority = priority;
@@ -100,7 +100,7 @@ namespace GameFramework.Web.Base
             callBack = callAction;
         }
         
-        public WebTask(string webUrl, int priority, float timeout,WWWForm wwwForm,Action<bool,byte[]> callAction)
+        public WebTask(string webUrl, int priority, float timeout,WWWForm wwwForm,Action<bool,string,byte[]> callAction)
         {
             serialid = Serial++;
             this.priority = priority;

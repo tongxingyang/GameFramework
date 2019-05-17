@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using GameFramework.Pool.TaskPool;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -38,7 +39,7 @@ namespace GameFramework.Web.Base
                 waitTime += realElapseSeconds;
                 if (waitTime >= webTask.TimeOut)
                 {
-                    RequestError();
+                    RequestError("timeout");
                 }
             }
             
@@ -47,14 +48,11 @@ namespace GameFramework.Web.Base
                 return;
             }
             bool isError = false;
-#if UNITY_2017_1_OR_NEWER
             isError = unityWebRequest.isNetworkError;
-#else
-            isError = m_UnityWebRequest.isError;
-#endif
+
             if (isError)
             {
-                RequestError();
+                RequestError(unityWebRequest.error);
             }
             else if (unityWebRequest.downloadHandler.isDone)
             {
@@ -93,31 +91,21 @@ namespace GameFramework.Web.Base
         public void GetRequest(string webUrl)
         {
             unityWebRequest = UnityEngine.Networking.UnityWebRequest.Get(webUrl);
-#if UNITY_2017_2_OR_NEWER
             unityWebRequest.SendWebRequest();
-#else
-            unityWebRequest.Send();
-#endif
+
         }
 
         public void PostRequest(string webUrl, byte[] postBytes)
         {
             unityWebRequest = UnityWebRequest.Post(webUrl, Encoding.UTF8.GetString(postBytes));
-#if UNITY_2017_2_OR_NEWER
             unityWebRequest.SendWebRequest();
-#else
-            unityWebRequest.Send();
-#endif
+
         }
 
         public void PostRequest(string webUrl, WWWForm wwwForm)
         {
             unityWebRequest = UnityWebRequest.Post(webUrl, wwwForm);
-#if UNITY_2017_2_OR_NEWER
             unityWebRequest.SendWebRequest();
-#else
-            unityWebRequest.Send();
-#endif
         }
         
         public void OnReset()
@@ -129,20 +117,18 @@ namespace GameFramework.Web.Base
             unityWebRequest = null;
         }
 
-        private void RequestError()
+        private void RequestError(string error)
         {
             webTask.State = enWebState.Error;
-            webTask.callBack?.Invoke(false, null);
+            webTask.callBack?.Invoke(false,error, null);
             webTask.Done = true;
-            OnReset();
         }
 
         private void RequestSuccese()
         {
             webTask.State = enWebState.Doing;
-            webTask.callBack?.Invoke(true, unityWebRequest.downloadHandler.data);
+            webTask.callBack?.Invoke(true,String.Empty, unityWebRequest.downloadHandler.data);
             webTask.Done = true;
-            OnReset();
         }
     }
 }

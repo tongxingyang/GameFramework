@@ -74,11 +74,21 @@ namespace GameFramework.Utility.File
             return result;
         }
 
+        public static FileStream OpenWrite(string fileName)
+        {
+            return System.IO.File.OpenWrite(fileName);
+        }
+        
         public static void CreateFile(string filePath)
         {
             System.IO.File.Create(filePath);
         }
 
+        public static void Move(string name1, string name2)
+        {
+            System.IO.File.Move(name1,name2);
+        }
+        
         public static void DeleteFile(string filePath)
         {
             if (IsFileExist(filePath))
