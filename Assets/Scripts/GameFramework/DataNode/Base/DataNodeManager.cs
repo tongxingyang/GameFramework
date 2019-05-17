@@ -6,7 +6,7 @@ namespace GameFramework.DataNode.Base
 {
     public class DataNodeManager : IDataNodeManager
     {
-        private const string RootName = "<RootNode>";
+        private const string RootName = "rootnode";
         private IDataNode root;
         public IDataNode Root => root;
 
@@ -108,7 +108,7 @@ namespace GameFramework.DataNode.Base
 
         private string[] GetSplitPath(string path)
         {
-            return path.Split(new string['/'], StringSplitOptions.RemoveEmptyEntries);
+            return path.Split(new char[]{'/'},StringSplitOptions.RemoveEmptyEntries);
         }
         
         public void Clear()

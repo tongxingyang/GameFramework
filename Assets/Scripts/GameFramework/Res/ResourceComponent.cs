@@ -15,8 +15,10 @@ namespace GameFramework.Res
         
         private IResourceManager resourceManager;
 
-        public ResourceComponent()
+        public override void OnAwake()
         {
+            base.OnAwake();
+            
             if (SingletonMono<GameFramework>.GetInstance().EditorResourceMode)
             {
                 resourceManager = new EditorResourceManager();
@@ -25,6 +27,11 @@ namespace GameFramework.Res
             {
                 resourceManager = new ResourceManager();
             }
+        }
+
+        public ResourceComponent()
+        {
+           
         }
 
         public IResourceManager GetResourceManager()

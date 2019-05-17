@@ -28,7 +28,7 @@ namespace GameFramework
         
         [Header("音效设置")]
         [SerializeField]
-        public SoundGroupInfo[] SoundGroupInfos = null;
+        public SoundGroupInfo[] SoundGroupInfos;
 
         
         public bool EditorResourceMode

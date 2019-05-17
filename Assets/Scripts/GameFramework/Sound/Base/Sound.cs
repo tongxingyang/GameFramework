@@ -231,11 +231,7 @@ namespace GameFramework.Sound.Base
 
         public void Reset()
         {
-            if (audioClip == null)
-            {
-                Debuger.LogError("error 。。。。");
-            }
-            else
+            if (audioClip != null)
             {
                 //释放音效文件 todo txy
                 audioClip = null;

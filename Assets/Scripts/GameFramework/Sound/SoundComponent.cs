@@ -30,11 +30,11 @@ namespace GameFramework.Sound
                 instanceRoot.localScale = Vector3.one;
                 instanceRoot.localPosition = Vector3.zero;
             }
-            for (int i = 0; i < Singleton<GameFramework>.GetInstance().SoundGroupInfos.Length; i++)
+            for (int i = 0; i < SingletonMono<GameFramework>.GetInstance().SoundGroupInfos.Length; i++)
             {
-                if (!AddSoundGroup(Singleton<GameFramework>.GetInstance().SoundGroupInfos[i].Name, Singleton<GameFramework>.GetInstance().SoundGroupInfos[i].AvoidBeingReplacedBySamePriority, Singleton<GameFramework>.GetInstance().SoundGroupInfos[i].Mute, Singleton<GameFramework>.GetInstance().SoundGroupInfos[i].Volume, Singleton<GameFramework>.GetInstance().SoundGroupInfos[i].SoundCount))
+                if (!AddSoundGroup(SingletonMono<GameFramework>.GetInstance().SoundGroupInfos[i].Name, SingletonMono<GameFramework>.GetInstance().SoundGroupInfos[i].AvoidBeingReplacedBySamePriority, SingletonMono<GameFramework>.GetInstance().SoundGroupInfos[i].Mute, SingletonMono<GameFramework>.GetInstance().SoundGroupInfos[i].Volume, SingletonMono<GameFramework>.GetInstance().SoundGroupInfos[i].SoundCount))
                 {
-                    Debuger.LogError("Add sound group '{0}' failure.",LogColor.Red, Singleton<GameFramework>.GetInstance().SoundGroupInfos[i].Name);
+                    Debuger.LogError("Add sound group '{0}' failure.",LogColor.Red, SingletonMono<GameFramework>.GetInstance().SoundGroupInfos[i].Name);
                     continue;
                 }
             }

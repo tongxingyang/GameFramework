@@ -1,14 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
+using GameFramework.DataNode;
+using GameFramework.DataTable;
 using GameFramework.Debug;
+using GameFramework.Download;
+using GameFramework.FSM;
 using GameFramework.Pool.ReferencePool;
+using GameFramework.Res;
+using GameFramework.Setting;
+using GameFramework.Sound;
+using GameFramework.Timer;
 using GameFramework.Utility.Singleton;
+using GameFramework.Web;
 using UnityEngine;
 
 namespace GameFramework.Base
 {
     public class GameEntry : Singleton<GameEntry>
     {
+        public DataNodeComponent DataNodeComponent;
+        public DataTableComponent DataTableComponent;
+        public DownloadComponent DownloadComponent;
+        public FSMComponent FsmComponent;
+        public ResourceComponent ResourceComponent;
+        public SettingComponent SettingComponent;
+        public SoundComponent SoundComponent;
+        public TimerComponent TimerComponent;
+        public WebComponent WebComponent;
+        
         private readonly LinkedList<GameFrameworkComponent> GameFrameworkComponents = new LinkedList<GameFrameworkComponent>();
 
         private Transform ComponentRoot = null;
@@ -16,7 +35,15 @@ namespace GameFramework.Base
         public void InitComponent(Transform componentRoot)
         {
             ComponentRoot = componentRoot;
-            // add component
+            DataNodeComponent = AddComponent<DataNodeComponent>();
+            DataTableComponent = AddComponent<DataTableComponent>();
+            DownloadComponent = AddComponent<DownloadComponent>();
+            FsmComponent = AddComponent<FSMComponent>();
+            ResourceComponent = AddComponent<ResourceComponent>();
+            SettingComponent = AddComponent<SettingComponent>();
+            SoundComponent = AddComponent<SoundComponent>();
+            TimerComponent = AddComponent<TimerComponent>();
+            WebComponent = AddComponent<WebComponent>();
         }
         
         public  T GetComponent<T>() where T : GameFrameworkComponent
@@ -83,12 +110,12 @@ namespace GameFramework.Base
                 if (current.Value.GetType() == type)
                 {
                     Debuger.LogError("Game Framework component type '{0}' is already exist.",LogColor.Red, type.FullName);
-                    return false;
+                    return true;
                 }
 
                 current = current.Next;
             }
-            return true;
+            return false;
         }
         
         private void RegisterComponent(GameFrameworkComponent gameFrameworkComponent)

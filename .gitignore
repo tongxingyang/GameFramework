@@ -4,6 +4,8 @@
 [Bb]uild/
 [Bb]uilds/
 [Ll]ogs/
+[Ll]og/
+[Ll]og.meta
 
 Assets/AssetStoreTools*
 
