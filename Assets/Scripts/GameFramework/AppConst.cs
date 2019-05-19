@@ -13,7 +13,7 @@ namespace GameFramework
         {
             public static readonly bool DebugerEnableLog = true;
             public static readonly bool DebugerEnableColor = true;
-            public static readonly bool DebugerEnableSave = true;
+            public static readonly bool DebugerEnableSave = false;
         }
     }
 }

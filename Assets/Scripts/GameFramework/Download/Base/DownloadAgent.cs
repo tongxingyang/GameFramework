@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Net;
 using System.Threading;
 using GameFramework.Pool.TaskPool;
@@ -14,6 +13,7 @@ namespace GameFramework.Download.Base
     {
         private uint threadCount = 1;
         private ulong fileLength = 0;
+        private int retryCount = 3;
         private DownloadTask task;
         private ulong alreadyDownloadLength = 0;
         private HttpMultiThreadDownload[] httpMultiThreadDownloads;
@@ -91,7 +91,7 @@ namespace GameFramework.Download.Base
                 }
                 httpMultiThreadDownloads[i].IsDone = false;
                 httpMultiThreadDownloads[i].TimeOut = task.TimeOut;
-                string downloafFile = Utility.StringUtility.Format("{0}.{1}.{2}", task.DownloadPath, extension,i);
+                string downloafFile = string.Format("{0}.{1}.{2}", task.DownloadPath, extension,i);
                 httpMultiThreadDownloads[i].FileName = downloafFile;
                 if (FileUtility.IsFileExist(downloafFile))
                 {
@@ -225,14 +225,6 @@ namespace GameFramework.Download.Base
             }
         
         }
-
-        private void DeleCacheFiles()
-        {
-            for (int i = 0; i < threadCount; i++)
-            {
-                FileUtility.DeleteFile(httpMultiThreadDownloads[i].FileName);
-            }
-        }
         
         private void DownloadDone()
         {
@@ -241,11 +233,40 @@ namespace GameFramework.Download.Base
             task.Done = true;
         }
 
+        private void DeleCacheFiles()
+        {
+            for (int i = 0; i < threadCount; i++)
+            {
+                httpMultiThreadDownloads[i]?.FileStream.Close();
+                httpMultiThreadDownloads[i]?.FileStream.Dispose();
+                FileUtility.DeleteFile(httpMultiThreadDownloads[i].FileName);
+            }
+        }
+        
         private void DownloadError(string error)
         {
-            task.DownloadErrorAction?.Invoke(task, error);
-            task.DownloadState = enDownloadState.Error;
-            task.Done = true;
+            UnityEngine.Debug.LogError("下載 出錯 錯誤信息  "+error);
+            retryCount--;
+            if (retryCount > 0)
+            {
+                DeleCacheFiles();
+                for (int i = 0; i < threadCount; i++)
+                {
+                    httpMultiThreadDownloads[i].Reset();
+                }
+                fileLength = 0;
+                alreadyDownloadLength = 0;
+                UnityEngine.Debug.LogError("重新下載文件。。。。");
+                OnStart(this.task);
+            }
+            else
+            {
+                UnityEngine.Debug.LogError("次數用光  刪除chahefile");
+                DeleCacheFiles();
+                task.DownloadErrorAction?.Invoke(task, error);
+                task.DownloadState = enDownloadState.Error;
+                task.Done = true;;
+            }
         }
 
         private void DownloadUpdate()

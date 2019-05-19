@@ -121,10 +121,10 @@ namespace GameFramework
 
         private void InitDebuger()
         {
-            Debuger.Init(AppConst.Path.DebugerLogFilePath);
-            Debuger.EnableLog = AppConst.GameConfig.DebugerEnableLog;
-            Debuger.EnableSave = AppConst.GameConfig.DebugerEnableSave;
-            Debuger.EnableColor = AppConst.GameConfig.DebugerEnableColor;
+//            Debuger.Init(AppConst.Path.DebugerLogFilePath);
+//            Debuger.EnableLog = AppConst.GameConfig.DebugerEnableLog;
+//            Debuger.EnableSave = AppConst.GameConfig.DebugerEnableSave;
+//            Debuger.EnableColor = AppConst.GameConfig.DebugerEnableColor;
         }
         
         private void OnLowMemory()

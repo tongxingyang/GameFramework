@@ -245,6 +245,8 @@ namespace GameFramework.Debug
 
         public static void LogError(object obj,LogColor logColor = LogColor.Red)
         {
+            UnityEngine.Debug.LogError(obj);
+            return;
             string message = GetLogText(GetLogCaller(), obj);
             Internal_LogError(Prefix + message,logColor);
 
