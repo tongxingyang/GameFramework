@@ -42,15 +42,15 @@ namespace GameFramework.Download.Base
             get { return downloadState; }
             set { downloadState = value; }
         }
-        public DownloadTask(string path, string url, Action<DownloadTask,ulong>  done, Action<DownloadTask,ulong,float> update,
-            Action<DownloadTask,string> error, int priority, int timeout,ulong filelength = 0)
+        public DownloadTask(string downloadPath, string downloadUrl, Action<DownloadTask,ulong>  doneCallback, Action<DownloadTask,ulong,float> updateCallback,
+            Action<DownloadTask,string> errorCallback, int priority, int timeout,ulong filelength = 0)
         {
             serialid = Serial++;
-            downloadPath = path;
-            downloadUrl = url;
-            downloadDoneAction = done;
-            downloadUpdateAction = update;
-            downloadErrorAction = error;
+            this.downloadPath = downloadPath;
+            this.downloadUrl = downloadUrl;
+            downloadDoneAction = doneCallback;
+            downloadUpdateAction = updateCallback;
+            downloadErrorAction = errorCallback;
             this.priority = priority;
             this.timeOut = timeout;
             this.fileLength = filelength;
