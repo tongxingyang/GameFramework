@@ -30,7 +30,7 @@ namespace GameFramework.DataTable.Base
         {
             foreach (KeyValuePair<string,IDataTable> dataTable in dataTables)
             {
-                dataTable.Value.Shotdown();
+                dataTable.Value.Shutdown();
             }
             dataTables.Clear();
         }
@@ -151,7 +151,7 @@ namespace GameFramework.DataTable.Base
             IDataTable dataTable = null;
             if (dataTables.TryGetValue(name, out dataTable))
             {
-                dataTable.Shotdown();
+                dataTable.Shutdown();
                 return dataTables.Remove(name);
             }
             return false;

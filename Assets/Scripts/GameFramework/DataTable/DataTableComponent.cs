@@ -13,10 +13,7 @@ namespace GameFramework.DataTable
         private DataTableManager dataTableManager;
         
         public int Count => dataTableManager?.Count ?? 0;
-        public override int Priority
-        {
-            get { return 50; }
-        }
+        public override int Priority => SingletonMono<GameFramework>.GetInstance().DataTablePriority;
 
         public override void OnAwake()
         {

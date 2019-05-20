@@ -1,4 +1,5 @@
 using GameFramework.Base;
+using GameFramework.Utility.Singleton;
 using UnityEngine;
 
 namespace GameFramework.Timer
@@ -6,10 +7,7 @@ namespace GameFramework.Timer
     [DisallowMultipleComponent]
     public class TimerComponent : GameFrameworkComponent
     {
-        public override int Priority
-        {
-            get { return 70; }
-        }
+        public override int Priority => SingletonMono<GameFramework>.GetInstance().TimerPriority;
         
         private TimerManager timerManager = null;
         public override void OnAwake()

@@ -8,7 +8,7 @@ namespace GameFramework.DataTable.Base
         string Name { get; }
         int Id { get; }
         int Count { get; }
-        void Shotdown();
+        void Shutdown();
         void LoadData(byte[] bytes);
         void LoadData(string str);
         Type Type { get; }

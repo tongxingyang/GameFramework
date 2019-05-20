@@ -25,11 +25,40 @@ namespace GameFramework
 
         [SerializeField]
         private bool neverSleep = true;
+
+        [Header("DataNode设置")] 
+        public int DataNodePriority = 50;
         
-        [Header("音效设置")]
-        [SerializeField]
+        [Header("DataTable设置")] 
+        public int DataTablePriority = 50;
+        
+        [Header("Download设置")] 
+        public int DownloadCount = 2;
+        public int DownloadPriority = 50;
+        
+        [Header("Event设置")] 
+        public int EventPriority = 50; 
+        
+        [Header("Fsm设置")] 
+        public int FsmPriority = 50;
+        
+        [Header("Res设置")] 
+        public int ResPriority = 50;
+        
+        [Header("Setting设置")] 
+        public int SettingPriority = 50;
+
+        [Header("Sound设置")] 
+        [SerializeField] public int SoundPriority = 50;
         public SoundGroupInfo[] SoundGroupInfos;
 
+        [Header("Timer设置")] 
+        public int TimerPriority = 50;
+        
+        [Header("WebRequest设置")] 
+        public int WebRequestCount = 2;
+        public int WebRequestPriority = 50;
+        
         
         public bool EditorResourceMode
         {

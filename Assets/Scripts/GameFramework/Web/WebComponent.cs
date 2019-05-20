@@ -1,5 +1,6 @@
 ﻿using System;
 using GameFramework.Base;
+using GameFramework.Utility.Singleton;
 using GameFramework.Web.Base;
 using UnityEngine;
 
@@ -9,12 +10,7 @@ namespace GameFramework.Web
     {
         private WebManager webManager;
         private Transform instanceRoot;
-        [SerializeField]
-        private int wedRequestCount = 2;
-        public override int Priority
-        {
-            get { return 50; }
-        }
+        public override int Priority => SingletonMono<GameFramework>.GetInstance().WebRequestPriority;
 
         public int TotalAgentCount => webManager.TotalAgentCount;
         public int FreeAgentCount => webManager.FreeAgentCount;
@@ -33,7 +29,7 @@ namespace GameFramework.Web
                 instanceRoot.localPosition = Vector3.zero;
             }
 
-            for (int i = 0; i < wedRequestCount; i++)
+            for (int i = 0; i < SingletonMono<GameFramework>.GetInstance().WebRequestCount; i++)
             {
                 WebAgent webAgent = new GameObject("Web Request "+(i+1)).AddComponent<WebAgent>();
                 webAgent.transform.SetParent(instanceRoot);
@@ -47,7 +43,7 @@ namespace GameFramework.Web
         public override void Shutdown()
         {
             base.Shutdown();
-            webManager.Shotdown();
+            webManager.Shutdown();
         }
 
         public override void OnUpdate(float elapseSeconds, float realElapseSeconds)

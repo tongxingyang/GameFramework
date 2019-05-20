@@ -8,10 +8,7 @@ namespace GameFramework.Res
     [DisallowMultipleComponent]
     public class ResourceComponent : GameFrameworkComponent
     {
-        public override int Priority
-        {
-            get { return 120; }
-        }
+        public override int Priority => SingletonMono<GameFramework>.GetInstance().ResPriority;
         
         private IResourceManager resourceManager;
 

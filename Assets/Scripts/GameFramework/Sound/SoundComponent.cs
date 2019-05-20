@@ -14,10 +14,7 @@ namespace GameFramework.Sound
         private SoundManager soundManager;
         private Transform instanceRoot;
         
-        public override int Priority
-        {
-            get { return 50; }
-        }
+        public override int Priority => SingletonMono<GameFramework>.GetInstance().SoundPriority;
         
         public override void OnAwake()
         {

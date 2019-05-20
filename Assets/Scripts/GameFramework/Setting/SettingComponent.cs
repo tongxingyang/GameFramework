@@ -2,6 +2,7 @@
 using GameFramework.Base;
 using GameFramework.Debug;
 using GameFramework.Utility.PlayerPrefs;
+using GameFramework.Utility.Singleton;
 using UnityEngine;
 
 namespace GameFramework.Setting
@@ -9,6 +10,8 @@ namespace GameFramework.Setting
     [DisallowMultipleComponent]
     public class SettingComponent:GameFrameworkComponent
     {
+        public override int Priority => SingletonMono<GameFramework>.GetInstance().SettingPriority;
+        
         public bool HasSetting(string settingName)
         {
             return PlayerPrefsUtility.HasKey(settingName);

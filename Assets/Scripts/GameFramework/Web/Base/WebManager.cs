@@ -25,7 +25,7 @@ namespace GameFramework.Web.Base
             taskPool.OnUpdate(elapseSeconds,realElapseSeconds);
         }
 
-        public void Shotdown()
+        public void Shutdown()
         {
             taskPool.ShotDown();
         }

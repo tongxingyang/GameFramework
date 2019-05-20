@@ -1,6 +1,7 @@
 ﻿using GameFramework.Base;
 using GameFramework.DataNode.Base;
 using GameFramework.DataTable.Base;
+using GameFramework.Utility.Singleton;
 using UnityEngine;
 
 namespace GameFramework.DataNode
@@ -9,10 +10,7 @@ namespace GameFramework.DataNode
     public class DataNodeComponent :GameFrameworkComponent
     {
         private DataNodeManager dataNodeManager;
-        public override int Priority
-        {
-            get { return 30; }
-        }
+        public override int Priority => SingletonMono<GameFramework>.GetInstance().DataNodePriority;
 
         public override void OnAwake()
         {

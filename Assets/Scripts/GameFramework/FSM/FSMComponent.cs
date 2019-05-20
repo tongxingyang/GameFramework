@@ -1,4 +1,5 @@
 using GameFramework.Base;
+using GameFramework.Utility.Singleton;
 using UnityEngine;
 
 namespace GameFramework.FSM
@@ -6,10 +7,7 @@ namespace GameFramework.FSM
     [DisallowMultipleComponent]
     public class FSMComponent : GameFrameworkComponent
     {
-        public override int Priority
-        {
-            get { return 60; }
-        }
+        public override int Priority => SingletonMono<GameFramework>.GetInstance().FsmPriority;
 
         public int FSMStateMachineCount => fsmManager.Count;
         

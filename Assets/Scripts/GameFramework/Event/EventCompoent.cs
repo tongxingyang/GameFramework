@@ -1,6 +1,7 @@
 using System;
 using GameFramework.Base;
 using GameFramework.Pool.EventPool;
+using GameFramework.Utility.Singleton;
 using UnityEngine;
 
 
@@ -9,10 +10,7 @@ namespace GameFramework.Event
     [DisallowMultipleComponent]
     public class EventCompoent : GameFrameworkComponent
     {
-        public override int Priority
-        {
-            get { return 100; }
-        }
+        public override int Priority => SingletonMono<GameFramework>.GetInstance().EventPriority;
         
         public int EventHandlerCount => eventPool.EventHandlerCount;
         public int EventCount => eventPool.EventCount;

@@ -1,59 +1,90 @@
 ﻿using System;
+using GameFramework.Pool.TaskPool;
 
 namespace GameFramework.Download.Base
 {
     public class DownloadManager : IDownloadManager
     {
-        public int TotalAgentCount { get; }
-        public int FreeAgentCount { get; }
-        public int WorkingAgentCount { get; }
-        public int WaitingTaskCount { get; }
-        public float Timeout { get; set; }
-        public float RetryCount { get; set; }
-        public float CurrentSpeed { get; }
+        
+        private TaskPool<DownloadTask> taskPool;
+        private int defaultTimeOut = 10000;
+        private int retryCount = 3;
+        private bool isOpenMultiThread = false;
+        private float currentSpeed = 0;
+        private int defaultPriority = 10;
+        public int TotalAgentCount => taskPool.TotalAgentsCount;
+        public int FreeAgentCount => taskPool.FreeAgentsCount;
+        public int WorkingAgentCount => taskPool.WorkingAgentsCount;
+        public int WaitingTaskCount => taskPool.WaitAgentsCount;
+        public float CurrentSpeed => currentSpeed;
+
+        public int DefaultTimeout
+        {
+            get { return defaultTimeOut; }
+            set { defaultTimeOut = value; }
+        }
+
+        public int RetryCount
+        {
+            get { return retryCount; }
+            set { retryCount = value; }
+        }
+
+        public bool IsOpenMultiThread
+        {
+            get { return isOpenMultiThread; }
+            set { isOpenMultiThread = value; }
+        }
+
+        public DownloadManager()
+        {
+            taskPool = new TaskPool<DownloadTask>();
+        }
+        
         public void OnUpdate(float elapseSeconds, float realElapseSeconds)
         {
-            
+            taskPool.OnUpdate(elapseSeconds,realElapseSeconds);
         }
 
         public void Shutdown()
         {
-            
+            taskPool.ShotDown();
         }
+        
         public void AddDownloadAgent(DownloadAgent downloadAgent)
         {
-            throw new NotImplementedException();
+            taskPool.AddAgent(downloadAgent);
         }
 
-        public int AddDownload(string downloadPath, string downloadUri)
+        public int AddDownload(string downloadPath, string downloadUri, Action<DownloadTask, ulong> doneCallback, Action<DownloadTask, ulong, float> updateCallback,
+            Action<DownloadTask, string> errorCallback)
         {
-            throw new NotImplementedException();
+            return AddDownload(downloadPath, downloadUri, doneCallback, updateCallback, errorCallback, defaultPriority, defaultTimeOut);
         }
 
-        public int AddDownload(string downloadPath, string downloadUri, int priority)
+        public int AddDownload(string downloadPath, string downloadUri,Action<DownloadTask, ulong> doneCallback, Action<DownloadTask, ulong, float> updateCallback,
+            Action<DownloadTask, string> errorCallback,  int priority)
         {
-            throw new NotImplementedException();
-        }
-
-        public int AddDownload(string downloadPath, string downloadUri, object userData)
-        {
-            throw new NotImplementedException();
+            return AddDownload(downloadPath, downloadUri, doneCallback, updateCallback, errorCallback, priority, defaultTimeOut);
         }
 
         public int AddDownload(string downloadPath, string downloadUrl, Action<DownloadTask, ulong> doneCallback, Action<DownloadTask, ulong, float> updateCallback,
             Action<DownloadTask, string> errorCallback, int priority, int timeout, ulong filelength = 0)
         {
-            throw new NotImplementedException();
+            DownloadTask downloadTask = new DownloadTask(downloadPath, downloadUrl, doneCallback, updateCallback,
+                errorCallback, priority, timeout, filelength);
+            taskPool.AddTask(downloadTask);
+            return downloadTask.SerialId;
         }
 
         public bool RemoveDownload(int serialId)
         {
-            throw new NotImplementedException();
+            return taskPool.RemoveTask(serialId) != null;
         }
 
         public void RemoveAllDownload()
         {
-            throw new NotImplementedException();
+            taskPool.RemoveAllTaks();
         }
     }
 }

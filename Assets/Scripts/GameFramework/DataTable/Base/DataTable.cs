@@ -183,7 +183,7 @@ namespace GameFramework.DataTable.Base
             return true;
         }
         
-        public void Shotdown()
+        public void Shutdown()
         {
             dataSet.Clear();
         }
