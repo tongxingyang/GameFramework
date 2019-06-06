@@ -30,11 +30,11 @@ namespace GameFramework.Base
         
         private readonly LinkedList<GameFrameworkComponent> GameFrameworkComponents = new LinkedList<GameFrameworkComponent>();
 
-        private Transform ComponentRoot = null;
+        private Transform componentRoot = null;
 
         public void InitComponent(Transform componentRoot)
         {
-            ComponentRoot = componentRoot;
+            this.componentRoot = componentRoot;
             DataNodeComponent = AddComponent<DataNodeComponent>();
             DataTableComponent = AddComponent<DataTableComponent>();
             DownloadComponent = AddComponent<DownloadComponent>();
@@ -69,7 +69,7 @@ namespace GameFramework.Base
                 Debuger.LogError(Utility.StringUtility.Format("can not add the component '{0}' .", type.FullName));
                 return null;
             }
-            newComponent.transform.parent = ComponentRoot;
+            newComponent.transform.parent = componentRoot;
             newComponent.transform.position = Vector3.zero;
             RegisterComponent(component);
             return (T)component;

@@ -4,13 +4,7 @@ namespace GameFramework.Base
 {
     public abstract class GameFrameworkComponent:MonoBehaviour
     {
-        public virtual int Priority
-        {
-            get
-            {
-                return 0;
-            }
-        }
+        public virtual int Priority => 0;
 
         public virtual void OnAwake()
         {
@@ -32,7 +26,7 @@ namespace GameFramework.Base
             
         }
         
-        public virtual void OnFixedUpdate(float elapseSeconds, float realElapseSeconds)
+        public virtual void OnFixedUpdate(float fixedElapseSeconds, float realFixedElapseSeconds)
         {
             
         }

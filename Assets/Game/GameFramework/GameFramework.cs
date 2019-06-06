@@ -26,6 +26,9 @@ namespace GameFramework
         [SerializeField]
         private bool neverSleep = true;
 
+        [SerializeField] 
+        private ThreadPriority threadPriority = ThreadPriority.High;
+        
         [Header("DataNode设置")] 
         public int DataNodePriority = 50;
         
@@ -90,6 +93,13 @@ namespace GameFramework
             set { neverSleep = value; }
         }
 
+        public ThreadPriority ThreadPriority
+        {
+            get { return threadPriority; }
+            set { threadPriority = value; }
+        }
+        
+        
         public bool IsGamePause => gameSpeed <= 0;
 
         #region Unity Function
@@ -98,7 +108,7 @@ namespace GameFramework
         {
             Application.lowMemory += OnLowMemory;
             InitDebuger();
-            Application.backgroundLoadingPriority = ThreadPriority.High;
+            Application.backgroundLoadingPriority = ThreadPriority;
             Application.runInBackground = RunInBackgroiund;
             Application.targetFrameRate = FrameRate;
             QualitySettings.skinWeights = SkinWeights.TwoBones;
@@ -133,15 +143,14 @@ namespace GameFramework
             Application.lowMemory -= OnLowMemory;
             Singleton<GameEntry>.GetInstance().Shutdown();
             Destroy(gameObject);
-            Application.Quit();
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-#endif
         }
 
         void OnDestroy()
         {
-            
+            Application.Quit();
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#endif
         }
 
         #endregion
