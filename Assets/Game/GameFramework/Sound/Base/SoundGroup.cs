@@ -64,12 +64,24 @@ namespace GameFramework.Sound.Base
         {
             foreach (Sound sound in sounds)
             {
-                if (sound.name == name)
+                if (sound.SoundName == name)
                 {
                     return true;
                 }
             }
             return false;
+        }
+
+        public Sound GetSound(string name)
+        {
+            foreach (Sound sound in sounds)
+            {
+                if (sound.SoundName == name)
+                {
+                    return sound;
+                }
+            }
+            return null;
         }
 
         public void AddSoundToGroup(Sound sound)
