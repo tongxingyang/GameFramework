@@ -12,8 +12,7 @@ namespace GameFramework.Sound.Base
         private Transform cacheTransform = null;
         private AudioSource audioSource = null;
         private bool isPause = false;
-        private AudioClip audioClip = null;
-        private DateTime setSoundAsseTime;
+        private string soundName;
         
         [SerializeField]
         private Transform followTransform = null;
@@ -28,16 +27,16 @@ namespace GameFramework.Sound.Base
         [SerializeField]
         private float volumeInGroup;
 
+     
         public bool IsPlaying => audioSource.isPlaying || isPause;
         public ISoundGroup SoundGroup => soundGroup;
         public float Length => audioSource.clip != null ? audioSource.clip.length : 0f;
-
-        public DateTime SetSoundAssetTime
+        
+        public string SoundName
         {
-            get => setSoundAsseTime;
-            set => setSoundAsseTime = value;
+            get => soundName;
+            set => soundName = value;
         }
-
         public int SerialId
         {
             get => serialId;
@@ -57,7 +56,7 @@ namespace GameFramework.Sound.Base
 
         public float VolumeInGroup
         {
-            get { return volumeInGroup; }
+            get => volumeInGroup;
             set
             {
                 if (value < 0) 
@@ -147,15 +146,6 @@ namespace GameFramework.Sound.Base
             audioSource.mute = soundGroup.Mute || muteInGroup;
         }
         
-        public void SetSoundGroup(SoundGroup soundGroup)
-        {
-            this.soundGroup = soundGroup;
-            this.serialId = 0;
-            audioClip = null;
-            this.isPause = false;
-            Reset();
-        }
-        
         public void Play()
         {
             Play(Constant.DefaultFadeInSeconds);
@@ -198,7 +188,7 @@ namespace GameFramework.Sound.Base
 
         public void Pause(float fadeOutTime)
         {
-            this.isPause = true;
+            isPause = true;
             StopAllCoroutines();
             pauseVolume = audioSource.volume;
             if (fadeOutTime > 0f)
@@ -218,7 +208,7 @@ namespace GameFramework.Sound.Base
 
         public void Resume(float fadeInTime)
         {
-            this.isPause = false;
+            isPause = false;
             StopAllCoroutines();
             audioSource.UnPause();
             if (fadeInTime > 0f)
@@ -233,13 +223,13 @@ namespace GameFramework.Sound.Base
 
         public void Reset()
         {
-            if (audioClip != null)
+            if (!(audioSource.clip == null))
             {
-                //释放音效文件 todo txy
-                audioClip = null;
+                //todo txy 释放audioSource.clip 资源
+                audioSource.clip = null;
+                
             }
             isPause = false;
-            SetSoundAssetTime = DateTime.MinValue;
             Time = Constant.DefaultTime;
             MuteInGroup = Constant.DefaultMute;
             Loop = Constant.DefaultLoop;
@@ -250,21 +240,28 @@ namespace GameFramework.Sound.Base
             SpatialBlend = Constant.DefaultSpatialBlend;
             MaxDistance = Constant.DefaultMaxDistance;
             DopplerLevel = Constant.DefaultDopplerLevel;
-            cacheTransform.localPosition = Vector3.zero;
-            pauseVolume = 0f;
             audioSource.clip = null;
             followTransform = null;
+            cacheTransform.localPosition = Vector3.zero;
+            pauseVolume = 0f;
+            serialId = 0;
         }
 
         public bool SetSoundAsset(AudioClip soundAsset)
         {
             if (soundAsset == null) return false;
             Reset();
-            audioClip = soundAsset;
             audioSource.clip = soundAsset;
             return true;
         }
 
+        public void SetSoundGroup(SoundGroup group)
+        {
+            if(soundGroup==null) return;
+            Reset();
+            soundGroup = group;
+        }
+        
         public void SetFollowObject(Transform followTransform)
         {
             this.followTransform = followTransform;

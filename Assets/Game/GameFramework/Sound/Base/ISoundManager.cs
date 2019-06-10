@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using GameFramework.Res.Base;
+using UnityEngine;
 
 namespace GameFramework.Sound.Base
 {
@@ -29,8 +30,10 @@ namespace GameFramework.Sound.Base
         bool ResumeSound(int serialId, float fadeOutTime);
         void ResumeAllSounds();
         void ResumeAllSounds(float fadeOutTime);
-        int PlayMusic(string assetPath);
+        int PlayMusic(ResourceLoadInfo resourceLoadInfo,string assetPath);
+        int PlayFollowSound(ResourceLoadInfo resourceLoadInfo, string assetPath, Transform followPos);
+        int PlayWorldSound(ResourceLoadInfo resourceLoadInfo, string assetPath, Vector3 worldPos);
         void StopMusic();
-        int PlayUISound(string assetPath);
+        int PlayUISound(ResourceLoadInfo resourceLoadInfo,string assetPath);
     }
 }

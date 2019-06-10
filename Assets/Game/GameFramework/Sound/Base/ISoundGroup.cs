@@ -6,10 +6,10 @@ namespace GameFramework.Sound.Base
     {
         string Name { get; }
         int SoundCount { get; }
-        bool AvoidReplaceBySamePriority { get; set; }
+        bool AddWhenDontHaveEnoughSound { get; set; }
         bool Mute { get; set; }
         float Volume { get; set; }
-        ISound PlaySound(int serialId, AudioClip soundAsset, PlaySoundParams playSoundParams);
+        ISound PlaySound( AudioClip soundAsset, PlaySoundParams playSoundParams);
         bool StopSound(int serialId);
         bool StopSound(int serialId, float fadeOutTime);
         bool PauseSound(int serialId);
@@ -22,5 +22,6 @@ namespace GameFramework.Sound.Base
         void ResumeAllSound(float fadeInTime);
         void StopAllSound();
         void StopAllSound(float fadeOutTime);
+        void ResetAllSound();
     }
 }

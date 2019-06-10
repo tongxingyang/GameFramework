@@ -14,12 +14,12 @@ namespace GameFramework.Sound.Base
         public static readonly float DefaultFadeInSeconds = 0f;
         public static readonly float DefaultFadeOutSeconds = 0f;
         public static readonly float DefaultPitch = 1f;
-        public static readonly  float DefaultPanStereo = 0f;
+        public static readonly float DefaultPanStereo = 0f;
         public static readonly float DefaultSpatialBlend = 0f;
         public static readonly float DefaultMaxDistance = 100f;
         public static readonly float DefaultDopplerLevel = 1f;
         public static readonly Transform DefaultFollowTransform = null;
-        public static readonly Vector3 DefaultWorldVector3 = default (Vector3);
+        public static readonly Vector3 DefaultWorldVector3 = default(Vector3);
     }
 
     public sealed class PlaySoundParams
@@ -30,7 +30,6 @@ namespace GameFramework.Sound.Base
         private int priority;
         private float volumeInSoundGroup;
         private float fadeInSeconds;
-        private float fadeOutSeconds;
         private float pitch;
         private float panStereo;
         private float spatialBlend;
@@ -53,7 +52,6 @@ namespace GameFramework.Sound.Base
             priority = Constant.DefaultPriority;
             volumeInSoundGroup = Constant.DefaultVolume;
             fadeInSeconds = Constant.DefaultFadeInSeconds;
-            fadeOutSeconds = Constant.DefaultFadeOutSeconds;
             pitch = Constant.DefaultPitch;
             panStereo = Constant.DefaultPanStereo;
             spatialBlend = Constant.DefaultSpatialBlend;
@@ -65,98 +63,98 @@ namespace GameFramework.Sound.Base
 
         public string SoundGroupName
         {
-            get { return groupName; }
-            set { groupName = value; }
+            get => groupName;
+            set => groupName = value;
         }
         
         public object UserData
         {
-            get { return userData; }
-            set { userData = value; }
+            get => userData;
+            set => userData = value;
         }
         
         public int SerialId
         {
-            get { return serialId; }
-            set { serialId = value; }
+            get => serialId;
+            set => serialId = value;
         }
         
         public float Time
         {
-            get { return time; }
-            set { time = value; }
+            get => time;
+            set => time = value;
         }
 
         public bool MuteInSoundGroup
         {
-            get { return muteInSoundGroup; }
-            set { muteInSoundGroup = value; }
+            get => muteInSoundGroup;
+            set => muteInSoundGroup = value;
         }
 
         public bool Loop
         {
-            get { return loop; }
-            set { loop = value; }
+            get => loop;
+            set => loop = value;
         }
 
         public int Priority
         {
-            get { return priority; }
-            set { priority = value; }
+            get => priority;
+            set => priority = value;
         }
 
         public float VolumeInSoundGroup
         {
-            get { return volumeInSoundGroup; }
-            set { volumeInSoundGroup = value; }
+            get => volumeInSoundGroup;
+            set => volumeInSoundGroup = value;
         }
 
         public float FadeInSeconds
         {
-            get { return fadeInSeconds; }
-            set { fadeInSeconds = value; }
+            get => fadeInSeconds;
+            set => fadeInSeconds = value;
         }
 
         public float Pitch
         {
-            get { return pitch; }
-            set { pitch = value; }
+            get => pitch;
+            set => pitch = value;
         }
 
         public float PanStereo
         {
-            get { return panStereo; }
-            set { panStereo = value; }
+            get => panStereo;
+            set => panStereo = value;
         }
 
         public float SpatialBlend
         {
-            get { return spatialBlend; }
-            set { spatialBlend = value; }
+            get => spatialBlend;
+            set => spatialBlend = value;
         }
 
         public float MaxDistance
         {
-            get { return maxDistance; }
-            set { maxDistance = value; }
+            get => maxDistance;
+            set => maxDistance = value;
         }
 
         public float DopplerLevel
         {
-            get { return dopplerLevel; }
-            set { dopplerLevel = value; }
+            get => dopplerLevel;
+            set => dopplerLevel = value;
         }
 
         public Transform FollowTransform
         {
-            get { return followTransform; }
-            set { followTransform = value; }
+            get => followTransform;
+            set => followTransform = value;
         }
 
         public Vector3 WorldVector3
         {
-            get { return worldVector3; }
-            set { worldVector3 = value; }
+            get => worldVector3;
+            set => worldVector3 = value;
         }
     }
 }

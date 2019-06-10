@@ -5,6 +5,7 @@ namespace GameFramework.Sound.Base
     public interface ISound
     {
         bool IsPlaying { get; }
+        string SoundName { get; set; }
         ISoundGroup SoundGroup { get; }
         int SerialId { get; set; }
         float Length { get; }

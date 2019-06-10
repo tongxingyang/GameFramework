@@ -2,6 +2,7 @@
 using GameFramework.Base;
 using GameFramework.Debug;
 using GameFramework.Res;
+using GameFramework.Res.Base;
 using GameFramework.Sound.Base;
 using GameFramework.Utility.Singleton;
 using UnityEngine;
@@ -29,7 +30,7 @@ namespace GameFramework.Sound
             }
             for (int i = 0; i < SingletonMono<GameFramework>.GetInstance().SoundGroupInfos.Length; i++)
             {
-                if (!AddSoundGroup(SingletonMono<GameFramework>.GetInstance().SoundGroupInfos[i].Name, SingletonMono<GameFramework>.GetInstance().SoundGroupInfos[i].AvoidBeingReplacedBySamePriority, SingletonMono<GameFramework>.GetInstance().SoundGroupInfos[i].Mute, SingletonMono<GameFramework>.GetInstance().SoundGroupInfos[i].Volume, SingletonMono<GameFramework>.GetInstance().SoundGroupInfos[i].SoundCount))
+                if (!AddSoundGroup(SingletonMono<GameFramework>.GetInstance().SoundGroupInfos[i]))
                 {
                     Debuger.LogError("Add sound group '{0}' failure.",LogColor.Red, SingletonMono<GameFramework>.GetInstance().SoundGroupInfos[i].Name);
                     continue;
@@ -37,20 +38,19 @@ namespace GameFramework.Sound
             }
         }
 
-        private bool AddSoundGroup(string name, bool avoidBeingReplacedBySamePriority, bool mute, float volume, int soundCount)
+        private bool AddSoundGroup(SoundGroupInfo info)
         {
-            if (HasSoundGroup(name)) 
-                return false;
+            if (HasSoundGroup(info.Name)) return false;
             SoundGroup soundGroup = (new GameObject(name)).AddComponent<SoundGroup>();
             soundGroup.Name = name;
-            soundGroup.AvoidReplaceBySamePriority = avoidBeingReplacedBySamePriority;
-            soundGroup.Mute = mute;
-            soundGroup.Volume = volume;
+            soundGroup.AddWhenDontHaveEnoughSound = info.AddWhenDontHaveEnoughSound;
+            soundGroup.Mute = info.Mute;
+            soundGroup.Volume = info.Volume;
             soundGroup.gameObject.transform.SetParent(instanceRoot);
             soundGroup.gameObject.transform.localPosition = Vector3.zero;
             soundGroup.gameObject.transform.localScale = Vector3.one;
             soundManager.AddSoundGroup(soundGroup);
-            for (int i = 0; i < soundCount; i++)
+            for (int i = 0; i < info.SoundCount; i++)
             {
                 AddSound(name + "_" + i, soundGroup);
             }
@@ -61,10 +61,12 @@ namespace GameFramework.Sound
         private void AddSound(string name,SoundGroup soundGroup)
         {
             Base.Sound sound = new GameObject(name).AddComponent<Base.Sound>();
+            sound.SoundName = name;
             sound.transform.SetParent(soundGroup.transform);
             sound.transform.localPosition = Vector3.zero;
             sound.transform.localScale = Vector3.one;
             sound.SetSoundGroup(soundGroup);
+            soundGroup.AddSoundToGroup(sound);
         }
         
         public bool HasSoundGroup(string name)
@@ -120,9 +122,9 @@ namespace GameFramework.Sound
             return soundManager.IsLoadingSound(serialId);
         }
 
-        public int PlaySound(string soundAssetName, int priority, PlaySoundParams playSoundParams)
+        public int PlaySound(ResourceLoadInfo resourceLoadInfo, PlaySoundParams playSoundParams)
         {
-            return soundManager.PlaySound(soundAssetName, priority, playSoundParams);
+            return soundManager.PlaySound(resourceLoadInfo, playSoundParams);
         }
 
         public bool StopSound(int serialId)
@@ -190,9 +192,9 @@ namespace GameFramework.Sound
             soundManager.ResumeAllSounds(fadeOutTime);
         }
 
-        public int PlayMusic(string assetPath)
+        public int PlayMusic(ResourceLoadInfo resourceLoadInfo,string assetPath)
         {
-            return soundManager.PlayMusic(assetPath);
+            return soundManager.PlayMusic(resourceLoadInfo,assetPath);
         }
 
         public void StopMusic()
@@ -200,9 +202,18 @@ namespace GameFramework.Sound
             soundManager.StopMusic();
         }
 
-        public int PlayUISound(string assetPath)
+        public int PlayUISound(ResourceLoadInfo resourceLoadInfo,string assetPath)
         {
-            return soundManager.PlayUISound(assetPath);
+            return soundManager.PlayUISound(resourceLoadInfo,assetPath);
+        }
+        public int PlayWorldSound(ResourceLoadInfo resourceLoadInfo,string assetPath,Vector3 worldPos)
+        {
+            return soundManager.PlayWorldSound(resourceLoadInfo, assetPath, worldPos);
+        }
+        
+        public int PlayFollowSound(ResourceLoadInfo resourceLoadInfo,string assetPath,Transform followPos)
+        {
+            return soundManager.PlayFollowSound(resourceLoadInfo, assetPath, followPos);
         }
         
     }

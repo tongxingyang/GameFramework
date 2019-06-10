@@ -4,35 +4,34 @@ using UnityEngine;
 
 namespace GameFramework.Sound.Base
 {
-    public sealed class SoundGroup : MonoBehaviour,ISoundGroup
+    public sealed class SoundGroup : MonoBehaviour, ISoundGroup
     {
         [SerializeField]
         private string soundGroupName;
         [SerializeField]
         private List<Sound> sounds;
         [SerializeField]
-        private bool avoidReplaceBySamePriority;
-        [SerializeField]
         private bool mute;
+        [SerializeField]
+        private bool addWhenDontHaveEnoughSound;
         [SerializeField]
         private float volume;
 
+        public bool AddWhenDontHaveEnoughSound
+        {
+            get => addWhenDontHaveEnoughSound;
+            set => addWhenDontHaveEnoughSound = value;
+        }
         public string Name
         {
-            get { return soundGroupName; }
-            set { soundGroupName = value; }
+            get => soundGroupName;
+            set => soundGroupName = value;
         }
         public int SoundCount => sounds.Count;
 
-        public bool AvoidReplaceBySamePriority
-        {
-            get { return avoidReplaceBySamePriority; }
-            set { avoidReplaceBySamePriority = value; }
-        }
-
         public bool Mute
         {
-            get { return mute; }
+            get => mute;
             set
             {
                 mute = value;
@@ -45,7 +44,7 @@ namespace GameFramework.Sound.Base
 
         public float Volume
         {
-            get { return volume; }
+            get => volume;
             set
             {
                 volume = value;
@@ -60,8 +59,26 @@ namespace GameFramework.Sound.Base
         {
             sounds = new List<Sound>();
         }
+
+        public bool HasSoundInGroup(string name)
+        {
+            foreach (Sound sound in sounds)
+            {
+                if (sound.name == name)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public void AddSoundToGroup(Sound sound)
+        {
+            if(HasSoundInGroup(sound.name)) return;
+            sounds.Add(sound);
+        }
         
-        public ISound PlaySound(int serialId, AudioClip soundAsset, PlaySoundParams playSoundParams)
+        public ISound PlaySound(AudioClip soundAsset, PlaySoundParams playSoundParams)
         {
             Sound currentSound = null;
             foreach (Sound sound in sounds)
@@ -77,21 +94,30 @@ namespace GameFramework.Sound.Base
                     {
                         currentSound = sound;
                     }
-                }else if (!avoidReplaceBySamePriority && sound.Priority == playSoundParams.Priority)
-                {
-                    if (currentSound == null || sound.SetSoundAssetTime < currentSound.SetSoundAssetTime)
-                    {
-                        currentSound = sound;
-                    }
                 }
             }
             if (currentSound == null)
             {
-                Debuger.LogError("play sound error dont have other sound ");
-                return null;
+                if (addWhenDontHaveEnoughSound)
+                {
+                    string str = Name + "_" + sounds.Count;
+                    currentSound = new GameObject(str).AddComponent<Sound>();
+                    currentSound.SoundName = str;
+                    currentSound.transform.SetParent(transform);
+                    currentSound.transform.localPosition = Vector3.zero;
+                    currentSound.transform.localScale = Vector3.one;
+                    currentSound.SetSoundGroup(this);
+                    AddSoundToGroup(currentSound);
+                }
+                else
+                {
+                    Debuger.LogError("play sound error dont have other sound ");
+                    return null;
+                }
+               
             }
             currentSound.SetSoundAsset(soundAsset);
-            currentSound.SeriaiId = serialId;
+            currentSound.SerialId = playSoundParams.SerialId;
             currentSound.Time = playSoundParams.Time;
             currentSound.MuteInGroup = playSoundParams.MuteInSoundGroup;
             currentSound.Loop = playSoundParams.Loop;
@@ -123,7 +149,7 @@ namespace GameFramework.Sound.Base
         {
             foreach (Sound sound in sounds)
             {
-                if (sound.SeriaiId == serialId)
+                if (sound.SerialId == serialId)
                 {
                     sound.Stop(fadeOutTime);
                     return true;
@@ -141,7 +167,7 @@ namespace GameFramework.Sound.Base
         {
             foreach (Sound sound in sounds)
             {
-                if (sound.SeriaiId == serialId)
+                if (sound.SerialId == serialId)
                 {
                     sound.Pause(fadeOutTime);
                     return true;
@@ -159,7 +185,7 @@ namespace GameFramework.Sound.Base
         {
             foreach (Sound sound in sounds)
             {
-                if (sound.SeriaiId == serialId)
+                if (sound.SerialId == serialId)
                 {
                     sound.Resume(fadeInTime);
                     return true;
@@ -206,5 +232,14 @@ namespace GameFramework.Sound.Base
                 sound.Stop(fadeOutTime);
             }
         }
+        
+        public void ResetAllSound()
+        {
+            foreach (Sound sound in sounds)
+            {
+                sound.Reset();
+            }
+        }
+        
     }
 }
