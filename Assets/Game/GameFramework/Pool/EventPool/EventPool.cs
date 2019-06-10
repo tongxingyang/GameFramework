@@ -10,8 +10,8 @@ namespace GameFramework.Pool.EventPool
         private readonly Queue<Event<T>> events;
         private readonly enEventPoolMode eventPoolMode;
         private EventHandler<T> defaultHandler;
-        public int EventHandlerCount => eventHandlers.Count;
-        public int EventCount => events.Count;
+        public int EventHandlerCount => eventHandlers?.Count ?? 0;
+        public int EventCount => events?.Count ?? 0;
         
         public EventPool(enEventPoolMode mode)
         {
@@ -39,8 +39,8 @@ namespace GameFramework.Pool.EventPool
             eventHandlers.Clear();
             defaultHandler = null;
         }
-        
-        public void Clear()
+
+        private void Clear()
         {
             lock (events)
             {
@@ -55,8 +55,7 @@ namespace GameFramework.Pool.EventPool
         
         public int Count(enEventID id)
         {
-            LinkedList<EventHandler<T>> handlers = null;
-            if (eventHandlers.TryGetValue(id, out handlers))
+            if (eventHandlers.TryGetValue(id, out var handlers))
             {
                 return handlers.Count;
             }
@@ -69,9 +68,7 @@ namespace GameFramework.Pool.EventPool
             {
                 Debuger.LogError("Event handler is invalid.");
             }
-
-            LinkedList<EventHandler<T>> handlers = null;
-            if (!eventHandlers.TryGetValue(id, out handlers))
+            if (!eventHandlers.TryGetValue(id, out var handlers))
             {
                 return false;
             }
@@ -80,8 +77,7 @@ namespace GameFramework.Pool.EventPool
         
         public void Subscribe(enEventID id, EventHandler<T> handler)
         {
-            LinkedList<EventHandler<T>> handlers = null;
-            if (!eventHandlers.TryGetValue(id, out handlers))
+            if (!eventHandlers.TryGetValue(id, out var handlers))
             {
                 handlers = new LinkedList<EventHandler<T>>();
                 handlers.AddLast(handler);
@@ -108,8 +104,7 @@ namespace GameFramework.Pool.EventPool
                 Debuger.LogError("Event handler is invalid.");
             }
 
-            LinkedList<EventHandler<T>> handlers = null;
-            if (!eventHandlers.TryGetValue(id, out handlers))
+            if (!eventHandlers.TryGetValue(id, out var handlers))
             {
                 Debuger.LogError(Utility.StringUtility.Format("Event '{0}' not exists any handler.", id.ToString()));
             }
@@ -143,8 +138,7 @@ namespace GameFramework.Pool.EventPool
         {
             enEventID eventId = e.EventID;
             bool noHandlerException = false;
-            LinkedList<EventHandler<T>> handlers = null;
-            if (eventHandlers.TryGetValue(eventId, out handlers) && handlers.Count > 0)
+            if (eventHandlers.TryGetValue(eventId, out var handlers) && handlers.Count > 0)
             {
                 LinkedListNode<EventHandler<T>> current = handlers.First;
                 while (current != null)

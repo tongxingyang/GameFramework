@@ -4,9 +4,9 @@
     {
         T Task { get; }
         void Initialize();
-        void OnUpdate(float elapseSeconds, float realElapseSeconds);
-        void ShotDown();
         void OnStart(T task);
+        void OnUpdate(float elapseSeconds, float realElapseSeconds);
         void OnReset();
+        void ShotDown();
     }
 }

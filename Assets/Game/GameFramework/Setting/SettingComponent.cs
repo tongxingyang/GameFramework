@@ -115,6 +115,10 @@ namespace GameFramework.Setting
         {
             PlayerPrefsUtility.SetObject(settingName, obj);
         }
-        
+
+        public void Save()
+        {
+            PlayerPrefsUtility.Save();
+        }
     }
 }

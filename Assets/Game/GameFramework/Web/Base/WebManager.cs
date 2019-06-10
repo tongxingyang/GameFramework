@@ -58,7 +58,7 @@ namespace GameFramework.Web.Base
 
         public void RemoveAllWebRequest()
         {
-            taskPool.RemoveAllTaks();
+            taskPool.RemoveAllTasks();
         }
 
         public void AddWebRequestAgent(WebAgent webAgent)

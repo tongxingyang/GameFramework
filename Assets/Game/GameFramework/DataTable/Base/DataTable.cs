@@ -1,43 +1,45 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using GameFramework.Utility;
 
 namespace GameFramework.DataTable.Base
 {
-    public class DataTable<T> : IDataTable where T :class ,new()
+
+    public class DataTable<TKeyType,TValue> : IEnumerable<TValue> ,IDataTable where TValue : class, IDataRow ,new() where TKeyType : IComparable<TKeyType>
     {
+        private Dictionary<TKeyType, TValue> dataSet = null;
+        public Type RowType => typeof(TValue);
+        public Type KeyType => typeof(TKeyType);
         private string name;
         public string Name => name;
-        public int Id { get; }
         public int Count => dataSet?.Count ?? 0;
-        public Type Type => typeof(T);
-        protected Dictionary<int, T> dataSet = null;
-        private int minIndex = -1;
-        private T minIdData;
-        public T MinIdData => minIdData;
-        private int maxIndex = -1;
-        private T maxIdData;
-        public T MaxIdData => maxIdData;
-
-        public T this[int id] => GetDataRow(id);
-        
+        private TKeyType minIndex = default(TKeyType);
+        private TValue minData = null;
+        public TValue MinData => minData;
+        private TKeyType maxIndex = default(TKeyType);
+        private TValue maxData = null;
+        public TValue MaxData => maxData;
+        public TValue this[TKeyType key] => GetDataRow(key);
+        private List<TValue> listCache = new List<TValue>();
         public DataTable(string name)
         {
             this.name = name;
-            minIdData = null;
-            maxIdData = null;
-            dataSet = new Dictionary<int, T>();
-            minIndex = -1;
-            maxIndex = -1;
+            minData = null;
+            maxData = null;
+            dataSet = new Dictionary<TKeyType, TValue>();
+            minIndex = default(TKeyType);
+            maxIndex = default(TKeyType);
         }
-
-        public bool HasDataRow(int id)
+        
+        public bool HasDataRow(TKeyType key)
         {
-            return dataSet.ContainsKey(id);
+            return dataSet.ContainsKey(key);
         }
-
-        public bool HasDataRow(Predicate<T> condition)
+        
+        public bool HasDataRow(Predicate<TValue> condition)
         {
-            foreach (KeyValuePair<int,T> valuePair in dataSet)
+            foreach (KeyValuePair<TKeyType,TValue> valuePair in dataSet)
             {
                 if (condition(valuePair.Value))
                 {
@@ -46,20 +48,20 @@ namespace GameFramework.DataTable.Base
             }
             return false;
         }
-        
-        public T GetDataRow(int id)
+
+        public TValue GetDataRow(TKeyType key)
         {
-            T dataRow = null;
-            if (dataSet.TryGetValue(id, out dataRow))
+            TValue dataRow = null;
+            if (dataSet.TryGetValue(key, out dataRow))
             {
                 return dataRow;
             }
             return null;
         }
-
-        public T GetDataRow(Predicate<T> condition)
+        
+        public TValue GetDataRow(Predicate<TValue> condition)
         {
-            foreach (KeyValuePair<int,T> valuePair in dataSet)
+            foreach (KeyValuePair<TKeyType,TValue> valuePair in dataSet)
             {
                 if (condition(valuePair.Value))
                 {
@@ -68,71 +70,71 @@ namespace GameFramework.DataTable.Base
             }
             return null;
         }
-
-        public T[] GetDataRows(Predicate<T> condition)
+        
+        public TValue[] GetDataRows(Predicate<TValue> condition)
         {
-            List<T> results = new List<T>();
-            foreach (KeyValuePair<int,T> valuePair in dataSet)
+            listCache.Clear();
+            foreach (KeyValuePair<TKeyType,TValue> valuePair in dataSet)
+            {
+                if (condition(valuePair.Value))
+                {
+                    listCache.Add(valuePair.Value);
+                }
+            }
+            return listCache.ToArray();
+        }
+        
+        public void GetDataRows(Predicate<TValue> condition, List<TValue> results)
+        {
+            results.Clear();
+            foreach (KeyValuePair<TKeyType,TValue> valuePair in dataSet)
             {
                 if (condition(valuePair.Value))
                 {
                     results.Add(valuePair.Value);
                 }
             }
-            return results.ToArray();
+        }
+        
+        public TValue[] GetDataRows(Comparison<TValue> comparison)
+        {
+            listCache.Clear();
+            foreach (KeyValuePair<TKeyType,TValue> valuePair in dataSet)
+            {
+                listCache.Add(valuePair.Value);
+            }
+            listCache.Sort(comparison);
+            return listCache.ToArray();
         }
 
-        public void GetDataRows(Predicate<T> condition, List<T> results)
+        public void GetDataRows(Comparison<TValue> comparison, List<TValue> results)
         {
             results.Clear();
-            foreach (KeyValuePair<int,T> valuePair in dataSet)
-            {
-                if (condition(valuePair.Value))
-                {
-                    results.Add(valuePair.Value);
-                }
-            }
-        }
-
-        public T[] GetDataRows(Comparison<T> comparison)
-        {
-            List<T> results = new List<T>();
-            foreach (KeyValuePair<int,T> valuePair in dataSet)
-            {
-                results.Add(valuePair.Value);
-            }
-            results.Sort(comparison);
-            return results.ToArray();
-        }
-
-        public void GetDataRows(Comparison<T> comparison, List<T> results)
-        {
-            results.Clear();
-            foreach (KeyValuePair<int,T> valuePair in dataSet)
+            foreach (KeyValuePair<TKeyType,TValue> valuePair in dataSet)
             {
                 results.Add(valuePair.Value);
             }
             results.Sort(comparison);
         }
         
-        public T[] GetDataRows(Predicate<T> condition, Comparison<T> comparison)
+        public TValue[] GetDataRows(Predicate<TValue> condition, Comparison<TValue> comparison)
         {
-            List<T> results = new List<T>();
-            foreach (KeyValuePair<int, T> dataRow in dataSet)
+            listCache.Clear();
+            foreach (KeyValuePair<TKeyType,TValue> dataRow in dataSet)
             {
                 if (condition(dataRow.Value))
                 {
-                    results.Add(dataRow.Value);
+                    listCache.Add(dataRow.Value);
                 }
             }
-            results.Sort(comparison);
-            return results.ToArray();
+            listCache.Sort(comparison);
+            return listCache.ToArray();
         }
 
-        public void GetDataRows(Predicate<T> condition, Comparison<T> comparison, List<T> results)
+        public void GetDataRows(Predicate<TValue> condition, Comparison<TValue> comparison, List<TValue> results)
         {
             results.Clear();
-            foreach (KeyValuePair<int, T> dataRow in dataSet)
+            foreach (KeyValuePair<TKeyType,TValue> dataRow in dataSet)
             {
                 if (condition(dataRow.Value))
                 {
@@ -142,55 +144,103 @@ namespace GameFramework.DataTable.Base
             results.Sort(comparison);
         }
 
-        public T[] GetAllDataRows()
+        public TValue[] GetAllDataRows()
         {
             int index = 0;
-            T[] results = new T[dataSet.Count];
-            foreach (KeyValuePair<int, T> dataRow in dataSet)
+            TValue[] results = new TValue[dataSet.Count];
+            foreach (KeyValuePair<TKeyType, TValue> dataRow in dataSet)
             {
                 results[index++] = dataRow.Value;
             }
-
             return results;
         }
 
-        public void GetAllDataRows(List<T> results)
+        public void GetAllDataRows(List<TValue> results)
         {
             results.Clear();
-            foreach (KeyValuePair<int, T> dataRow in dataSet)
+            foreach (KeyValuePair<TKeyType,TValue> dataRow in dataSet)
             {
                 results.Add(dataRow.Value);
             }
         }
 
-        protected bool AddDataRow(int id,T val)
+        private bool AddDataRow(TKeyType key,TValue val)
         {
-            if (HasDataRow(id))
+            if (HasDataRow(key))
             {
                 return false;
             }
-            dataSet.Add(id,val);
-            if (minIdData == null || minIndex > id)
+            dataSet.Add(key,val);
+            if (minData == null || minIndex.CompareTo(key) > 0)
             {
-                minIdData = val;
-                minIndex = id;
+                minData = val;
+                minIndex = key;
             }
-            if (maxIdData == null || maxIndex < id)
+            if (maxData == null || maxIndex.CompareTo(key) < 0)
             {
-                maxIdData = val;
-                maxIndex = id;
+                maxData = val;
+                maxIndex = key;
             }
             return true;
         }
         
         public void Shutdown()
         {
+            foreach (KeyValuePair<TKeyType,TValue> dataRow in dataSet)
+            {
+                dataRow.Value.Clear();
+            }
+            listCache.Clear();
             dataSet.Clear();
+            dataSet = null;
         }
 
-        public virtual void LoadData(byte[] bytes){}
+        public void LoadData(byte[] bytes)
+        {
+            if (bytes == null || bytes.Length <= 4)
+            {
+                return;
+            }
+            using (ByteBuffer buffer = new ByteBuffer())
+            {
+                int linesCount = buffer.ReadInt();
+                for (int i = 0; i < linesCount; i++)
+                {
+                    TValue value = new TValue();
+                    value.Parse(buffer);
+                    AddDataRow(value.GetKeyValue<TKeyType>(), value);
+                }
+            }
+        }
 
-        public virtual void LoadData(string str){}
+        public void LoadData(string str)
+        {
+            if (str == String.Empty)
+            {
+                return;
+            }
+            string content = str.Replace("\r", "");
+            string[] lines = content.Split('\n');
+            for (int i = 4; i < lines.Length; i++)
+            {
+                if (lines[i].StartsWith("#"))
+                {
+                    continue;
+                }
+                TValue value = new TValue();
+                value.Parse(lines[i]);
+                AddDataRow(value.GetKeyValue<TKeyType>(), value);
+            }
+        }
 
+        public IEnumerator<TValue> GetEnumerator()
+        {
+            return dataSet.Values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return dataSet.Values.GetEnumerator();
+        }
     }
 }

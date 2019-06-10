@@ -7,84 +7,24 @@ namespace GameFramework.FSM
     public class FSMManager : IFSMManager
     {
         public delegate void FsmEventHandler(IFSMManager fsm, object sender, object userData);
-        private List<string> destoryFSMList;
+        
         private readonly Dictionary<string, IFSMStateMachine> fsmStateMachines;
-        public int Count => fsmStateMachines.Count;
+        private List<string> destroyFSMList;
+        public int Count => fsmStateMachines?.Count ?? 0;
 
         public FSMManager()
         {
-            destoryFSMList = new List<string>();
+            destroyFSMList = new List<string>();
             fsmStateMachines = new Dictionary<string, IFSMStateMachine>();
         }
         
-        public bool HasFSMStateMachine<T>() where T : IFSMStateMachine
-        {
-            if (fsmStateMachines.ContainsKey(typeof(T).FullName))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public IFSMStateMachine GetFSMStateMachine<T>() where T : IFSMStateMachine
-        {
-            IFSMStateMachine stateMachine = null;
-            if (fsmStateMachines.TryGetValue(typeof(T).FullName, out stateMachine))
-            {
-                return stateMachine;
-            }
-            return null;
-        }
-
-        public IFSMStateMachine[] GetAllFSMStateMachines()
-        {
-            int index = 0;
-            IFSMStateMachine[] results = new IFSMStateMachine[fsmStateMachines.Count];
-            foreach (KeyValuePair<string, IFSMStateMachine> fsm in fsmStateMachines)
-            {
-                results[index++] = fsm.Value;
-            }
-            return results;
-        }
-
-        public IFSMStateMachine CreateFSMStateMachine<T>(IFSMState[] states) where T : IFSMStateMachine
-        {
-            if (HasFSMStateMachine<T>())
-            {
-                Debuger.LogError("already add fsmmachine name "+typeof(T).FullName);
-                return null;
-            }
-            IFSMStateMachine machine = new FSMStateMachine(typeof(T).FullName,states);
-            fsmStateMachines.Add(typeof(T).FullName,machine);
-            return machine;
-        }
-        
-        public IFSMStateMachine AddFSMStateMachine<T>(IFSMState state) where T : IFSMStateMachine
-        {
-            IFSMStateMachine machine = GetFSMStateMachine<T>();
-            if (machine != null)
-            {
-                machine.AddState(state);
-            }
-            return null;
-        }
-
-
-        public void DestroyFSMStateMachine<T>() where T : IFSMStateMachine
-        {
-            if (HasFSMStateMachine<T>())
-            {
-                destoryFSMList.Add(typeof(T).FullName);
-            }
-        }
-
         public void OnUpdate(float elapseSeconds, float realElapseSeconds)
         {
-            foreach (var destoryItem in destoryFSMList)
+            foreach (var destroyItem in destroyFSMList)
             {
-                fsmStateMachines.Remove(destoryItem);
+                fsmStateMachines.Remove(destroyItem);
             }
-            destoryFSMList.Clear();
+            destroyFSMList.Clear();
 
             foreach (var machine in fsmStateMachines)
             {
@@ -99,7 +39,96 @@ namespace GameFramework.FSM
                 machine.Value.Shutdown();
             }
             fsmStateMachines.Clear();
-            destoryFSMList.Clear();
+            destroyFSMList.Clear();
+            destroyFSMList = null;
+        }
+        
+        public bool HasFSMStateMachine<T>() where T : IFSMStateMachine
+        {
+            return HasFSMStateMachine<T>(string.Empty);
+        }
+
+        public bool HasFSMStateMachine<T>(string name) where T : IFSMStateMachine
+        {
+            if (fsmStateMachines.ContainsKey(Utility.StringUtility.GetFullName<T>(name)))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public IFSMStateMachine GetFSMStateMachine<T>() where T : IFSMStateMachine
+        {
+            return GetFSMStateMachine<T>(string.Empty);
+        }
+
+        public IFSMStateMachine GetFSMStateMachine<T>(string name) where T : IFSMStateMachine
+        {
+            if (fsmStateMachines.TryGetValue(Utility.StringUtility.GetFullName<T>(name), out var fsmStateMachine))
+            {
+                return fsmStateMachine;
+            }
+            return null;
+        }
+
+        public IFSMStateMachine CreateFSMStateMachine<T>(IFSMState[] states) where T : IFSMStateMachine
+        {
+            return CreateFSMStateMachine<T>(String.Empty, states);
+        }
+
+        public IFSMStateMachine CreateFSMStateMachine<T>(string name, IFSMState[] states) where T : IFSMStateMachine
+        {
+            if (HasFSMStateMachine<T>(name))
+            {
+                return null;
+            }
+            IFSMStateMachine machine = new FSMStateMachine(Utility.StringUtility.GetFullName<T>(name),states);
+            fsmStateMachines.Add(Utility.StringUtility.GetFullName<T>(name),machine);
+            return machine;
+        }
+
+        public void DestroyFSMStateMachine<T>() where T : IFSMStateMachine
+        {
+            DestroyFSMStateMachine<T>(String.Empty);
+        }
+
+        public void DestroyFSMStateMachine<T>(string name) where T : IFSMStateMachine
+        {
+            if (HasFSMStateMachine<T>(Utility.StringUtility.GetFullName<T>(name)))
+            {
+                destroyFSMList.Add(Utility.StringUtility.GetFullName<T>(name));
+            }
+        }
+
+        public IFSMStateMachine AddFSMStateMachine<T>(IFSMState state) where T : IFSMStateMachine
+        {
+            return AddFSMStateMachine<T>(String.Empty, state);
+        }
+
+        public IFSMStateMachine AddFSMStateMachine<T>(string name, IFSMState state) where T : IFSMStateMachine
+        {
+            if (HasFSMStateMachine<T>(Utility.StringUtility.GetFullName<T>(name)))
+            {
+                IFSMStateMachine machine = GetFSMStateMachine<T>(Utility.StringUtility.GetFullName<T>(name));
+                if (machine != null)
+                {
+                    machine.AddState(state);
+                    return machine;
+                }
+                return null;
+            }
+            return null;
+        }
+
+        public IFSMStateMachine[] GetAllFSMStateMachines()
+        {
+            int index = 0;
+            IFSMStateMachine[] results = new IFSMStateMachine[fsmStateMachines.Count];
+            foreach (KeyValuePair<string, IFSMStateMachine> fsm in fsmStateMachines)
+            {
+                results[index++] = fsm.Value;
+            }
+            return results;
         }
     }
-}
+} 

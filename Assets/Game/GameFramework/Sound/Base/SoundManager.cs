@@ -105,7 +105,7 @@ namespace GameFramework.Sound.Base
             return soundBeingLoaded.Contains(serialId);
         }
 
-        public int PlaySound(string soundAssetNam, int priority, PlaySoundParams playSoundParams)
+        public int PlaySound(string soundAssetName, int priority, PlaySoundParams playSoundParams)
         {
             if (playSoundParams == null)
             {

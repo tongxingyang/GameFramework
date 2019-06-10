@@ -1,3 +1,6 @@
+using System;
+using GameFramework.Pool.EventPool;
+
 namespace GameFramework.FSM
 {
     public interface IFSMState
@@ -7,8 +10,8 @@ namespace GameFramework.FSM
         void OnUpdate(IFSMStateMachine fsm, float elapseSeconds, float realElapseSeconds);
         void OnExit(IFSMStateMachine fsm,bool isShutdown);
         void OnDestroy(IFSMStateMachine fsm);
-        void SubscribeEvent(int eventId, FSMManager.FsmEventHandler eventHandler);
-        void UnsubscribeEvent(int eventId, FSMManager.FsmEventHandler eventHandler);
-        void OnEvent(IFSMStateMachine fsm, object sender, int eventId, object userData);
+        void SubscribeEvent(enEventID id, EventHandler<GameEventArgs> handler);
+        void UnsubscribeEvent(enEventID id, EventHandler<GameEventArgs> handler);
+        void OnEvent(object sender, GameEventArgs e);
     }
 }

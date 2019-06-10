@@ -6,7 +6,7 @@ namespace GameFramework.Sound.Base
     {
         bool IsPlaying { get; }
         ISoundGroup SoundGroup { get; }
-        int SeriaiId { get; set; }
+        int SerialId { get; set; }
         float Length { get; }
         float Time { get; set; }
         float VolumeInGroup { get; set; }

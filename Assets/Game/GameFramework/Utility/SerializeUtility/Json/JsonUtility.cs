@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace GameFramework.Utility.Json
 {
-    public class JsonUtility
+    public static class JsonUtility
     {
         public static string ToJson(object obj)
         {

@@ -9,17 +9,14 @@ namespace GameFramework.Pool.TaskPool
         private readonly LinkedList<ITaskAgent<T>> workingAgents = null;
         private readonly LinkedList<T> waitAgents = null;
 
-        public int FreeAgentsCount => freeAgents.Count;
-
-        public int WorkingAgentsCount => workingAgents.Count;
-
-        public int WaitAgentsCount => waitAgents.Count;
-
+        public int FreeAgentsCount => freeAgents?.Count ?? 0;
+        public int WorkingAgentsCount => workingAgents?.Count ?? 0;
+        public int WaitAgentsCount => waitAgents?.Count ?? 0;
         public int TotalAgentsCount => FreeAgentsCount + WorkingAgentsCount;
 
         public bool Pause
         {
-            get { return isPause; }
+            get => isPause;
             set
             {
                 if (isPause == value)
@@ -75,14 +72,22 @@ namespace GameFramework.Pool.TaskPool
         {
             while (FreeAgentsCount>0)
             {
-                freeAgents.Pop().OnReset();
+                freeAgents.Pop().ShotDown();
             }
+            freeAgents.Clear();
             foreach (ITaskAgent<T> workingAgent in workingAgents)
             {
                 workingAgent.ShotDown();
             }
             workingAgents.Clear();
+            LinkedListNode<T> current = waitAgents.First;
+            while (current != null)
+            {
+                current.Value.Clear();
+                current = current.Next;
+            }
             waitAgents.Clear();
+
         }
 
         public void AddAgent(ITaskAgent<T> agent)
@@ -118,6 +123,7 @@ namespace GameFramework.Pool.TaskPool
             {
                 if (waitAgent.SerialId == serialId)
                 {
+                    waitAgent.Clear();
                     waitAgents.Remove(waitAgent);
                     return waitAgent;
                 }
@@ -135,15 +141,22 @@ namespace GameFramework.Pool.TaskPool
             return default(T);
         }
 
-        public void RemoveAllTaks()
+        public void RemoveAllTasks()
         {
-            waitAgents.Clear();
             foreach (ITaskAgent<T> workingAgent in workingAgents)
             {
                 workingAgent.OnReset();
                 freeAgents.Push(workingAgent);
             }
             workingAgents.Clear();
+
+            LinkedListNode<T> current = waitAgents.First;
+            while (current != null)
+            {
+                current.Value.Clear();
+                current = current.Next;
+            }
+            waitAgents.Clear();
         }
     }
 }

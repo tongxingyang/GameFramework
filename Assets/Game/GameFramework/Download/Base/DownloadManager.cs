@@ -84,7 +84,7 @@ namespace GameFramework.Download.Base
 
         public void RemoveAllDownload()
         {
-            taskPool.RemoveAllTaks();
+            taskPool.RemoveAllTasks();
         }
     }
 }

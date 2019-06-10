@@ -4,14 +4,14 @@ namespace GameFramework.Pool.EventPool
     {
         private readonly object sender;
         private readonly T eventArgs;
-        public Event(object s, T e)
-        {
-            sender = s;
-            eventArgs = e;
-        }
-
+        
         public object Sender => sender;
-
         public T EventArgs => eventArgs;
+        
+        public Event(object sender, T eventArgs)
+        {
+            this.sender = sender;
+            this.eventArgs = eventArgs;
+        }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using GameFramework.Debug;
+using GameFramework.Pool.EventPool;
 
 namespace GameFramework.FSM
 {
@@ -15,27 +16,27 @@ namespace GameFramework.FSM
         public IFSMState CurrentState => currentState;
         private float currentStateTime;
         public float CurrentStateTime => currentStateTime;
-        public int FSMStateCount => States.Count;
-        private readonly Dictionary<string, IFSMState> States;
+        public int FSMStateCount => statesDic?.Count ?? 0;
+        private readonly Dictionary<string, IFSMState> statesDic;
 
         public FSMStateMachine(string strName, params IFSMState[] states)
         {
             name = strName ?? string.Empty;
-            States = new Dictionary<string, IFSMState>();
+            statesDic = new Dictionary<string, IFSMState>();
             foreach (var state in states)
             {
-                if (states == null)
+                if (state == null)
                 {
-                    Debuger.LogError("FSM states is invalid.");
+                    Debuger.LogError("FSM state is invalid.");
                 }
                 string strStateName = state.GetType().FullName;
-                if (States.ContainsKey(strStateName))
+                if (statesDic.ContainsKey(strStateName))
                 {
                     Debuger.LogError(Utility.StringUtility.Format("FSM '{0}' state '{1}' is already exist.", strName,
                         strStateName));
                 }
                 state.OnInit(this);
-                States.Add(strStateName, state);
+                statesDic.Add(strStateName, state);
             }
             currentStateTime = 0f;
             currentState = null;
@@ -49,38 +50,39 @@ namespace GameFramework.FSM
                 Debuger.LogError("error fsm is already running...");
             }
             IFSMState state = GetState<T>();
+            currentStateTime = 0f;
             if (state == null)
             {
                 Debuger.LogError("fsm is not content state name :" + typeof(T).FullName);
+                return;
             }
-            currentStateTime = 0f;
             currentState = state;
             currentState.OnEnter(this);
         }
 
         public bool HasState<T>() where T :class, IFSMState
         {
-            return States.ContainsKey(typeof(T).FullName);
+            return statesDic.ContainsKey(typeof(T).FullName);
         }
 
         public IFSMState[] GetAllStates()
         {
             int index = 0;
-            IFSMState[] results = new IFSMState[States.Count];
-            foreach (KeyValuePair<string, IFSMState> state in States)
+            IFSMState[] results = new IFSMState[statesDic.Count];
+            foreach (KeyValuePair<string, IFSMState> state in statesDic)
             {
                 results[index++] = state.Value;
             }
             return results;
         }
 
-        public void FireEvent(object sender, int eventId, object userData)
+        public void FireEvent(object sender, GameEventArgs e)
         {
             if (currentState == null)
             {
                 Debuger.LogError("Current state is invalid.");
             }
-            currentState.OnEvent(this, sender, eventId, userData);
+            currentState.OnEvent(sender,e);
         }
 
         public void OnUpdate(float elapseSeconds, float realElapseSeconds)
@@ -95,8 +97,7 @@ namespace GameFramework.FSM
 
         public T GetState<T>() where T :class, IFSMState
         {
-            IFSMState state = null;
-            if (States.TryGetValue(typeof(T).FullName, out state))
+            if (statesDic.TryGetValue(typeof(T).FullName, out var state))
             {
                 return (T) state;
             }
@@ -106,7 +107,7 @@ namespace GameFramework.FSM
         public void AddState(IFSMState state)
         {
             state.OnInit(this);
-            States.Add(state.GetType().FullName, state);
+            statesDic.Add(state.GetType().FullName, state);
         }
 
         public void ChangeState<T>() where T :class, IFSMState
@@ -114,11 +115,13 @@ namespace GameFramework.FSM
             if (currentState == null)
             {
                 Debuger.LogError("Current state is invalid.");
+                return;
             }
             IFSMState state = GetState<T>();
             if (state == null)
             {
                 Debuger.LogError(Utility.StringUtility.Format("FSM '{0}' can not change state to '{1}' which is not exist.", Utility.StringUtility.GetFullName<T>(Name), typeof(T).FullName));
+                return;
             }
             currentState.OnExit(this, false);
             previousState = currentState;
@@ -136,11 +139,11 @@ namespace GameFramework.FSM
                 previousState = null;
                 currentStateTime = 0f;
             }
-            foreach (KeyValuePair<string, IFSMState> state in States)
+            foreach (KeyValuePair<string, IFSMState> state in statesDic)
             {
                 state.Value.OnDestroy(this);
             }
-            States.Clear();
+            statesDic.Clear();
         }
     }
 }

@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using GameFramework.Debug;
 using GameFramework.Res.Base;
-using ICSharpCode.SharpZipLib.Core;
+using GameFramework.Utility;
+using UnityEngine;
 
 namespace GameFramework.DataTable.Base
 {
@@ -10,10 +11,9 @@ namespace GameFramework.DataTable.Base
     {
         private Dictionary<string, IDataTable> dataTables;
         private IResourceManager resourceManager;
-        private LoadAssetCallbacks loadAssetCallBacks;
-        
+        private readonly LoadAssetCallbacks loadAssetCallBacks;
         public int Count => dataTables?.Count ?? 0;
-
+        
         public DataTableManager()
         {
             dataTables = new Dictionary<string, IDataTable>();
@@ -33,6 +33,7 @@ namespace GameFramework.DataTable.Base
                 dataTable.Value.Shutdown();
             }
             dataTables.Clear();
+            dataTables = null;
         }
         
         public void SetResourceManager(IResourceManager resourceManager)
@@ -40,17 +41,17 @@ namespace GameFramework.DataTable.Base
             this.resourceManager = resourceManager;
         }
 
-        public void LoadDataTable(string dataTableAssetName,int priority, DataTableParams dataTableParams)
+        public void LoadDataTable(ResourceLoadInfo resourceLoadInfo,LoadDataTableInfo loadDataTableInfo)
         {
-            //resourceManager.LoadAsset(dataTableAssetName, priority, loadAssetCallBacks, dataTableParams); todo txy
+            resourceManager.LoadAsset<TextAsset>(resourceLoadInfo,loadAssetCallBacks,loadDataTableInfo);
         }
-
-        public bool HasDataTable<T>() where T : class, new()
+        
+        public bool HasDataTable<T>() where T : class, IDataRow, new()
         {
             return HasDataTable(Utility.StringUtility.GetFullName<T>(string.Empty));
         }
 
-        public bool HasDataTable<T>(string name) where T : class, new()
+        public bool HasDataTable<T>(string name) where T : class, IDataRow, new()
         {
             return HasDataTable(Utility.StringUtility.GetFullName<T>(name));
         }
@@ -59,27 +60,26 @@ namespace GameFramework.DataTable.Base
         {
             return dataTables.ContainsKey(name);
         }
-
-        public IDataTable GetDataTable<T>() where T : class, new()
+        
+        public IDataTable GetDataTable<T>() where T : class, IDataRow, new()
         {
             return GetDataTable(Utility.StringUtility.GetFullName<T>(string.Empty));
         }
 
-        public IDataTable GetDataTable<T>(string name) where T : class, new()
+        public IDataTable GetDataTable<T>(string name) where T : class, IDataRow, new()
         {
             return GetDataTable(Utility.StringUtility.GetFullName<T>(name));
         }
 
         private IDataTable GetDataTable(string name)
         {
-            IDataTable dataTable = null;
-            if (dataTables.TryGetValue(name, out dataTable))
+            if (dataTables.TryGetValue(name, out var dataTable))
             {
                 return dataTable;
             }
             return null;
         }
-
+        
         public IDataTable[] GetAllDataTables()
         {
             int index = 0;
@@ -100,53 +100,67 @@ namespace GameFramework.DataTable.Base
             }
         }
 
-        public IDataTable CreateDataTable<T>(string data) where T : class, new()
+        private IDataTable CreateDataTable(Type dataRowType,Type keyType, string data)
         {
-            return CreateDataTable<T>(String.Empty, data);
+            return CreateDataTable(dataRowType,keyType,String.Empty, data);
         }
 
-        public IDataTable CreateDataTable<T>(string name, string data) where T : class, new()
+        private IDataTable CreateDataTable(Type dataRowType,Type keyType, string name, string data)
         {
-            if (HasDataTable<T>(name))
+            if (!typeof(IDataRow).IsAssignableFrom(dataRowType))
             {
-                Debuger.LogError("DataTable is realdy add please check");
+                Debuger.LogError(StringUtility.Format("{0} is not is idatarow",dataRowType));
                 return null;
             }
-            DataTable<T> dataTable = new DataTable<T>(name);
+            string tableName = Utility.StringUtility.GetFullName(dataRowType, name);
+            if (HasDataTable(tableName))
+            {
+                Debuger.LogError(StringUtility.Format("DataTable is realdy , please check {0}:{1}",dataRowType,name));
+                return null;
+            }
+            Type dataTableType = typeof(DataTable<,>).MakeGenericType(dataRowType,keyType);
+            IDataTable dataTable = (IDataTable)Activator.CreateInstance(dataTableType, name);
             dataTable.LoadData(data);
-            dataTables.Add(Utility.StringUtility.GetFullName<T>(name),dataTable);
+            dataTables.Add(tableName,dataTable);
             return dataTable;
         }
 
-        public IDataTable CreateDataTable<T>(byte[] data) where T : class, new()
+        private IDataTable CreateDataTable(Type dataRowType,Type keyType, byte[] data)
         {
-            return CreateDataTable<T>(String.Empty, data);
+            return CreateDataTable(dataRowType,keyType,String.Empty, data);
         }
 
-        public IDataTable CreateDataTable<T>(string name, byte[] data) where T : class, new()
+        private IDataTable CreateDataTable(Type dataRowType,Type keyType, string name, byte[] data)
         {
-            if (HasDataTable<T>(name))
+            if (!typeof(IDataRow).IsAssignableFrom(dataRowType))
             {
-                Debuger.LogError("DataTable is realdy add please check");
+                Debuger.LogError(StringUtility.Format("{0} is not is idatarow",dataRowType));
                 return null;
             }
-            DataTable<T> dataTable = new DataTable<T>(name);
+            string tableName = Utility.StringUtility.GetFullName(dataRowType, name);
+            if (HasDataTable(tableName))
+            {
+                Debuger.LogError(StringUtility.Format("DataTable is realdy , please check {0}:{1}",dataRowType,name));
+                return null;
+            }
+            Type dataTableType = typeof(DataTable<,>).MakeGenericType(dataRowType,keyType);
+            IDataTable dataTable = (IDataTable)Activator.CreateInstance(dataTableType, name);
             dataTable.LoadData(data);
-            dataTables.Add(Utility.StringUtility.GetFullName<T>(name),dataTable);
+            dataTables.Add(tableName,dataTable);
             return dataTable;
         }
 
-        public bool DestoryDataTable<T>() where T : class, new()
+        public bool DestroyDataTable<T>() where T : class, IDataRow, new()
         {
-            return DestoryDataTable(Utility.StringUtility.GetFullName<T>(string.Empty));
+            return DestroyDataTable(Utility.StringUtility.GetFullName<T>(string.Empty));
         }
 
-        public bool DestoryDataTable<T>(string name) where T : class, new()
+        public bool DestroyDataTable<T>(string name) where T : class, IDataRow, new()
         {
-            return DestoryDataTable(Utility.StringUtility.GetFullName<T>(name));
+            return DestroyDataTable(Utility.StringUtility.GetFullName<T>(name));
         }
-
-        private bool DestoryDataTable(string name)
+        
+        private bool DestroyDataTable(string name)
         {
             IDataTable dataTable = null;
             if (dataTables.TryGetValue(name, out dataTable))
@@ -159,12 +173,10 @@ namespace GameFramework.DataTable.Base
         
         private void LoadDataTableSuccessCallback(string soundAssetName, object soundAsset, float duration, object userData)
         {
-            
            
         }
 
-        private void LoadDataTableFailureCallback(string soundAssetName, string errorMessage,
-            object userData)
+        private void LoadDataTableFailureCallback(string soundAssetName, string errorMessage,object userData)
         {
           
         }
@@ -174,8 +186,7 @@ namespace GameFramework.DataTable.Base
            
         }
 
-        private void LoadDataTableDependencyAssetCallback(string soundAssetName, string dependencyAssetName,
-            int loadedCount, int totalCount, object userData)
+        private void LoadDataTableDependencyAssetCallback(string soundAssetName, string dependencyAssetName,int loadedCount, int totalCount, object userData)
         {
           
         }

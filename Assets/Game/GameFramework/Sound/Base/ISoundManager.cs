@@ -15,7 +15,7 @@ namespace GameFramework.Sound.Base
         int[] GetAllSoundSerialIds();
         void GetAllSoundSerialIds(List<int> results);
         bool IsLoadingSound(int serialId);
-        int PlaySound(string soundAssetName, int priority, PlaySoundParams playSoundParams);
+        int PlaySound(ResourceLoadInfo resourceLoadInfo,PlaySoundParams playSoundParams);
         bool StopSound(int serialId);
         bool StopSound(int serialId, float fadeOutTime);
         void StopAllLoadingSounds();

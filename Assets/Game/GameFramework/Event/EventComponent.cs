@@ -4,19 +4,15 @@ using GameFramework.Pool.EventPool;
 using GameFramework.Utility.Singleton;
 using UnityEngine;
 
-
 namespace GameFramework.Event
 {
     [DisallowMultipleComponent]
-    public class EventCompoent : GameFrameworkComponent
+    public class EventComponent : GameFrameworkComponent
     {
         public override int Priority => SingletonMono<GameFramework>.GetInstance().EventPriority;
-        
         public int EventHandlerCount => eventPool.EventHandlerCount;
         public int EventCount => eventPool.EventCount;
-
         private EventPool<GameEventArgs> eventPool;
- 
 
         public override void OnAwake()
         {

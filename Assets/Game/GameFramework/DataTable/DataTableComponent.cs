@@ -2,6 +2,7 @@
 using GameFramework.Base;
 using GameFramework.DataTable.Base;
 using GameFramework.Res;
+using GameFramework.Res.Base;
 using GameFramework.Utility.Singleton;
 using UnityEngine;
 
@@ -39,69 +40,49 @@ namespace GameFramework.DataTable
             dataTableManager.Shutdown();
         }
 
-        public void LoadDataTable(string dataTableAssetName, int priority, DataTableParams dataTableParams)
+        public void LoadDataTable(ResourceLoadInfo resourceLoadInfo, LoadDataTableInfo loadDataTableInfo)
         {
-            dataTableManager.LoadDataTable(dataTableAssetName,priority,dataTableParams);
+            dataTableManager.LoadDataTable(resourceLoadInfo,loadDataTableInfo);
         }
 
-        public bool HasDataTable<T>() where T : class, new()
+        bool HasDataTable<T>() where T : class, IDataRow, new()
         {
             return dataTableManager.HasDataTable<T>();
         }
 
-        public bool HasDataTable<T>(string name) where T : class, new()
+        bool HasDataTable<T>(string name) where T : class, IDataRow, new()
         {
             return dataTableManager.HasDataTable<T>(name);
         }
 
-        public IDataTable GetDataTable<T>() where T : class, new()
+        IDataTable GetDataTable<T>() where T : class, IDataRow, new()
         {
             return dataTableManager.GetDataTable<T>();
         }
 
-        public IDataTable GetDataTable<T>(string name) where T : class, new()
+        IDataTable GetDataTable<T>(string name) where T : class, IDataRow, new()
         {
             return dataTableManager.GetDataTable<T>(name);
         }
 
-        public IDataTable[] GetAllDataTables()
+        IDataTable[] GetAllDataTables()
         {
             return dataTableManager.GetAllDataTables();
         }
 
-        public void GetAllDataTables(List<IDataTable> results)
+        void GetAllDataTables(List<IDataTable> results)
         {
             dataTableManager.GetAllDataTables(results);
         }
 
-        public IDataTable CreateDataTable<T>(string data) where T : class, new()
+        bool DestroyDataTable<T>() where T : class, IDataRow, new()
         {
-            return dataTableManager.CreateDataTable<T>(data);
+            return dataTableManager.DestroyDataTable<T>();
         }
 
-        public IDataTable CreateDataTable<T>(string name, string data) where T : class, new()
+        bool DestroyDataTable<T>(string name) where T : class, IDataRow, new()
         {
-            return dataTableManager.CreateDataTable<T>(name, data);
-        }
-
-        public IDataTable CreateDataTable<T>(byte[] data) where T : class, new()
-        {
-            return dataTableManager.CreateDataTable<T>(data);
-        }
-
-        public IDataTable CreateDataTable<T>(string name, byte[] data) where T : class, new()
-        {
-            return dataTableManager.CreateDataTable<T>(name, data);
-        }
-
-        public bool DestoryDataTable<T>() where T : class, new()
-        {
-            return dataTableManager.DestoryDataTable<T>();
-        }
-
-        public bool DestoryDataTable<T>(string name) where T : class, new()
-        {
-            return dataTableManager.DestoryDataTable<T>(name);
+            return dataTableManager.DestroyDataTable<T>(name);
         }
     }
 }

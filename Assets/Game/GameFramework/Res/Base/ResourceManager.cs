@@ -49,6 +49,10 @@
                 LoadAssetFromAssetBundleSync<T>(assetName, priority, method, loadAssetCallbacks, userData);
             }
         }
-        
+
+        public void LoadAsset<T>(ResourceLoadInfo resourceLoadInfo, LoadAssetCallbacks loadAssetCallbacks, object userData = null)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

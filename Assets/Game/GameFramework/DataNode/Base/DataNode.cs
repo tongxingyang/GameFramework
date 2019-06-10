@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using GameFramework.FSM;
 
 namespace GameFramework.DataNode.Base
@@ -61,7 +62,7 @@ namespace GameFramework.DataNode.Base
 
         public IDataNode[] GetAllChild()
         {
-            return childs == null ? null : childs.ToArray();
+            return childs?.ToArray();
         }
 
         public void GetAllChild(List<IDataNode> result)
@@ -80,7 +81,6 @@ namespace GameFramework.DataNode.Base
             if(dataNode==null) return;
             dataNode.Clear();
             childs.Remove(dataNode);
-
         }
 
         public void RemoveChild(string name)
@@ -101,6 +101,7 @@ namespace GameFramework.DataNode.Base
                     dataNode.Clear();
                 }
                 childs.Clear();
+                childs = null;
             }
         }
 

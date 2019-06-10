@@ -7,10 +7,14 @@ using UnityEngine;
 
 namespace GameFramework.Sound.Base
 {
-    public sealed class Sound : MonoBehaviour,ISound
+    public sealed class Sound : MonoBehaviour, ISound
     {
         private Transform cacheTransform = null;
         private AudioSource audioSource = null;
+        private bool isPause = false;
+        private AudioClip audioClip = null;
+        private DateTime setSoundAsseTime;
+        
         [SerializeField]
         private Transform followTransform = null;
         [SerializeField]
@@ -19,37 +23,30 @@ namespace GameFramework.Sound.Base
         private SoundGroup soundGroup;
         [SerializeField]
         private int serialId;
-        private AudioClip audioClip = null;
-        private DateTime setSoundAsseTime;
         [SerializeField]
         private bool muteInGroup;
         [SerializeField]
         private float volumeInGroup;
 
-        private bool isPause = false;
-        
         public bool IsPlaying => audioSource.isPlaying || isPause;
+        public ISoundGroup SoundGroup => soundGroup;
+        public float Length => audioSource.clip != null ? audioSource.clip.length : 0f;
 
         public DateTime SetSoundAssetTime
         {
-            get { return setSoundAsseTime; }
-            set { setSoundAsseTime = value; }
+            get => setSoundAsseTime;
+            set => setSoundAsseTime = value;
         }
-        public ISoundGroup SoundGroup => soundGroup;
 
-        public int SeriaiId
+        public int SerialId
         {
-            get { return serialId; }
-            set { serialId = value; }
+            get => serialId;
+            set => serialId = value;
         }
-        public float Length => audioSource.clip != null ? audioSource.clip.length : 0f;
 
         public float Time
         {
-            get
-            {
-                return audioSource.time;
-            }
+            get => audioSource.time;
             set
             {
                 if (value < 0) 
@@ -72,46 +69,51 @@ namespace GameFramework.Sound.Base
 
         public bool MuteInGroup
         {
-            get { return muteInGroup; }
+            get => muteInGroup;
             set { muteInGroup = value; RefreshMute(); }
         }
 
         public bool Loop
         {
-            get { return audioSource.loop; }
-            set { audioSource.loop = value; }
+            get => audioSource.loop;
+            set => audioSource.loop = value;
         }
 
         public int Priority
         {
-            get { return 128 - audioSource.priority; }
-            set { audioSource.priority = 128 - value; }
+            get => 128 - audioSource.priority;
+            set => audioSource.priority = 128 - value;
         }
 
         public float Pitch
         {
-            get { return audioSource.pitch; }
-            set { audioSource.pitch = value; }
+            get => audioSource.pitch;
+            set => audioSource.pitch = value;
         }
 
         public float PanStereo
         {
-            get { return audioSource.panStereo; }
-            set { audioSource.panStereo = value; }
+            get => audioSource.panStereo;
+            set => audioSource.panStereo = value; 
         }
 
         public float SpatialBlend
         {
-            get { return audioSource.spatialBlend; }
-            set { audioSource.spatialBlend = value; }
+            get => audioSource.spatialBlend;
+            set => audioSource.spatialBlend = value;
         }
 
         public float MaxDistance
         {
-            get { return audioSource.maxDistance; }
-            set { audioSource.maxDistance = value; }
+            get => audioSource.maxDistance;
+            set => audioSource.maxDistance = value;
         }
-        public float DopplerLevel { get; set; }
+
+        public float DopplerLevel
+        {
+            get => audioSource.dopplerLevel;
+            set => audioSource.dopplerLevel = value;
+        }
 
 
         void Awake()

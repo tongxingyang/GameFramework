@@ -12,25 +12,14 @@ namespace GameFramework.Pool.ReferencePool
         private int releaseReferenceCount;
         private int addReferenceCount;
         private int removeReferenceCount;
-        
-        public int UnusedReferenceCount
-        {
-            get
-            {
-                return references.Count;
-            }
-        }
 
+        public int UnusedReferenceCount => references?.Count ?? 0;
         public int UsingReferenceCount => usingReferenceCount;
-
         public int AcquireReferenceCount => acquireReferenceCount;
-
         public int ReleaseReferenceCount => releaseReferenceCount;
-       
         public int AddReferenceCount => addReferenceCount;
-
         public int RemoveReferenceCount => removeReferenceCount;
-
+        
         public ReferenceCollection()
         {
             references = new Queue<IReference>();
@@ -97,7 +86,7 @@ namespace GameFramework.Pool.ReferencePool
                 removeReferenceCount += count;
                 while (count-- > 0)
                 {
-                    references.Dequeue();
+                    references.Dequeue().Reset();
                 }
             }
         }
@@ -106,7 +95,12 @@ namespace GameFramework.Pool.ReferencePool
         {
             lock (references)
             {
-                removeReferenceCount += references.Count;
+                int count = references.Count;
+                removeReferenceCount += count;
+                while (count-- > 0)
+                {
+                    references.Dequeue().Reset();
+                }
                 references.Clear();
             }
         }

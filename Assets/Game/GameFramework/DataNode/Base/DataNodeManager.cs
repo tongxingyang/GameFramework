@@ -4,7 +4,7 @@ using UnityEditor.Experimental.GraphView;
 
 namespace GameFramework.DataNode.Base
 {
-    public class DataNodeManager : IDataNodeManager
+    public sealed class DataNodeManager : IDataNodeManager
     {
         private const string RootName = "rootnode";
         private IDataNode root;
@@ -28,7 +28,7 @@ namespace GameFramework.DataNode.Base
         
         public T GetData<T>(string path)
         {
-            return GetData<T>(path, null);
+            return GetData<T>(path, root);
         }
 
         public T GetData<T>(string path, IDataNode dataNode)
@@ -45,7 +45,7 @@ namespace GameFramework.DataNode.Base
 
         public void SetData<T>(string path, T t)
         {
-            SetData<T>(path,t,null);
+            SetData<T>(path,t,root);
         }
 
         public void SetData<T>(string path, T t, IDataNode dataNode)
@@ -56,12 +56,12 @@ namespace GameFramework.DataNode.Base
 
         public IDataNode GetNode(string path)
         {
-            return GetNode(path, null);
+            return GetNode(path, root);
         }
 
         public IDataNode GetNode(string path, IDataNode dataNode)
         {
-            IDataNode current = (dataNode ?? root);
+            IDataNode current = dataNode;
             string[] splitPath = GetSplitPath(path);
             foreach (string s in splitPath)
             {
@@ -73,12 +73,12 @@ namespace GameFramework.DataNode.Base
 
         public IDataNode GetOrAddNode(string path)
         {
-            return GetOrAddNode(path, null);
+            return GetOrAddNode(path, root);
         }
 
         public IDataNode GetOrAddNode(string path, IDataNode dataNode)
         {
-            IDataNode current = (dataNode ?? root);
+            IDataNode current = dataNode;
             string[] splitPath = GetSplitPath(path);
             foreach (string s in splitPath)
             {
@@ -89,12 +89,12 @@ namespace GameFramework.DataNode.Base
 
         public void RemoveNode(string path)
         {
-            RemoveNode(path,null);
+            RemoveNode(path,root);
         }
 
         public void RemoveNode(string path, IDataNode dataNode)
         {
-            IDataNode current = (dataNode ?? root);
+            IDataNode current = dataNode;
             IDataNode parent = current.Parent;
             string[] splitPath = GetSplitPath(path);
             foreach (string s in splitPath)

@@ -4,10 +4,9 @@ using UnityEngine;
 
 namespace GameFramework.Pool.ReferencePool
 {
-    public class ReferencePool
+    public static class ReferencePool
     {
         private static readonly Dictionary<string, ReferenceCollection> referenceCollections = new Dictionary<string, ReferenceCollection>();
-        
         public static int ReferencePoolCount => referenceCollections.Count;
 
         public static void ClearAllPools()
@@ -21,6 +20,7 @@ namespace GameFramework.Pool.ReferencePool
                 referenceCollections.Clear();
             }
         }
+        
         public static T Acquire<T>() where T:class,IReference,new()
         {
             return GetReferenceCollection(typeof(T)).Acquire<T>();
@@ -28,18 +28,24 @@ namespace GameFramework.Pool.ReferencePool
 
         public static void Release<T>(T reference) where T : class, IReference
         {
-            if(reference==null) return;
+            if(reference == null) return;
             GetReferenceCollection(typeof(T)).Release(reference);
         }
         
         public static void Add<T>(int count) where T : class, IReference, new()
         {
-            GetReferenceCollection(typeof(T)).Add<T>(count);
+            if (count > 0)
+            {
+                GetReferenceCollection(typeof(T)).Add<T>(count);
+            }
         }
         
         public static void Remove<T>(int count) where T : class, IReference
         {
-            GetReferenceCollection(typeof(T)).Remove(count);
+            if (count > 0)
+            {
+                GetReferenceCollection(typeof(T)).Remove(count);
+            }
         }
         
         public static void RemoveAll<T>() where T : class, IReference
@@ -48,17 +54,16 @@ namespace GameFramework.Pool.ReferencePool
         }
         private static ReferenceCollection GetReferenceCollection(Type type)
         {
-            string fullName = type.FullName;
-            ReferenceCollection referenceCollection = null;
             lock (referenceCollections)
             {
-                if (!referenceCollections.TryGetValue(fullName, out referenceCollection))
+                string fullName = type.FullName;
+                if (!referenceCollections.TryGetValue(fullName, out var referenceCollection))
                 {
                     referenceCollection = new ReferenceCollection();
                     referenceCollections.Add(fullName, referenceCollection);
                 }
+                return referenceCollection;
             }
-            return referenceCollection;
         }
     }
 }

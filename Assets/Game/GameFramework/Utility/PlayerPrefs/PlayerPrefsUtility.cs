@@ -62,9 +62,9 @@ namespace GameFramework.Utility.PlayerPrefs
             UnityEngine.PlayerPrefs.Save();
         }
 
-        public static string GetString(string key,string defaultval = "")
+        public static string GetString(string key,string defaultValue = "")
         {
-            return UnityEngine.PlayerPrefs.GetString(key,defaultval);
+            return UnityEngine.PlayerPrefs.GetString(key,defaultValue);
         }
 
         public static void SetString(string key,string value)
@@ -122,7 +122,7 @@ namespace GameFramework.Utility.PlayerPrefs
             return JsonUtility.ToObject(objectType, json);
         }
 
-        public static void SetObjet(string key, object obj)
+        public static void SetObject(string key, object obj)
         {
             string json = JsonUtility.ToJson(obj);
             if (json != null)
