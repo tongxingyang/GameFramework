@@ -30,10 +30,10 @@ namespace GameFramework.Sound.Base
         bool ResumeSound(int serialId, float fadeOutTime);
         void ResumeAllSounds();
         void ResumeAllSounds(float fadeOutTime);
-        int PlayMusic(ResourceLoadInfo resourceLoadInfo,string assetPath);
-        int PlayFollowSound(ResourceLoadInfo resourceLoadInfo, string assetPath, Transform followPos);
-        int PlayWorldSound(ResourceLoadInfo resourceLoadInfo, string assetPath, Vector3 worldPos);
+        int PlayMusic(ResourceLoadInfo resourceLoadInfo);
+        int PlayFollowSound(ResourceLoadInfo resourceLoadInfo, Transform followPos);
+        int PlayWorldSound(ResourceLoadInfo resourceLoadInfo, Vector3 worldPos);
         void StopMusic();
-        int PlayUISound(ResourceLoadInfo resourceLoadInfo,string assetPath);
+        int PlayUISound(ResourceLoadInfo resourceLoadInfo);
     }
 }

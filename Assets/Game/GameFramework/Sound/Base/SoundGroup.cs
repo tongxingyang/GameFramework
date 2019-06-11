@@ -92,6 +92,7 @@ namespace GameFramework.Sound.Base
         
         public ISound PlaySound(AudioClip soundAsset, PlaySoundParams playSoundParams)
         {
+            if (soundAsset == null || playSoundParams == null) return null;
             Sound currentSound = null;
             foreach (Sound sound in sounds)
             {

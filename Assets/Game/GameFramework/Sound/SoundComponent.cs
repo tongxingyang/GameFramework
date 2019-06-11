@@ -192,9 +192,9 @@ namespace GameFramework.Sound
             soundManager.ResumeAllSounds(fadeOutTime);
         }
 
-        public int PlayMusic(ResourceLoadInfo resourceLoadInfo,string assetPath)
+        public int PlayMusic(ResourceLoadInfo resourceLoadInfo)
         {
-            return soundManager.PlayMusic(resourceLoadInfo,assetPath);
+            return soundManager.PlayMusic(resourceLoadInfo);
         }
 
         public void StopMusic()
@@ -202,18 +202,18 @@ namespace GameFramework.Sound
             soundManager.StopMusic();
         }
 
-        public int PlayUISound(ResourceLoadInfo resourceLoadInfo,string assetPath)
+        public int PlayUISound(ResourceLoadInfo resourceLoadInfo)
         {
-            return soundManager.PlayUISound(resourceLoadInfo,assetPath);
+            return soundManager.PlayUISound(resourceLoadInfo);
         }
-        public int PlayWorldSound(ResourceLoadInfo resourceLoadInfo,string assetPath,Vector3 worldPos)
+        public int PlayWorldSound(ResourceLoadInfo resourceLoadInfo,Vector3 worldPos)
         {
-            return soundManager.PlayWorldSound(resourceLoadInfo, assetPath, worldPos);
+            return soundManager.PlayWorldSound(resourceLoadInfo, worldPos);
         }
         
-        public int PlayFollowSound(ResourceLoadInfo resourceLoadInfo,string assetPath,Transform followPos)
+        public int PlayFollowSound(ResourceLoadInfo resourceLoadInfo,Transform followPos)
         {
-            return soundManager.PlayFollowSound(resourceLoadInfo, assetPath, followPos);
+            return soundManager.PlayFollowSound(resourceLoadInfo, followPos);
         }
         
     }

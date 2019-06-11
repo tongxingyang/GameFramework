@@ -238,7 +238,7 @@ namespace GameFramework.Sound.Base
             }
         }
 
-        public int PlayMusic(ResourceLoadInfo resourceLoadInfo,string assetPath)
+        public int PlayMusic(ResourceLoadInfo resourceLoadInfo)
         {
             StopMusic();
             PlaySoundParams playSoundParams = new PlaySoundParams
@@ -254,7 +254,7 @@ namespace GameFramework.Sound.Base
             return musicSerialId;
         }
         
-        public int PlayWorldSound(ResourceLoadInfo resourceLoadInfo,string assetPath,Vector3 worldPos)
+        public int PlayWorldSound(ResourceLoadInfo resourceLoadInfo,Vector3 worldPos)
         {
             PlaySoundParams playSoundParams = new PlaySoundParams
             {
@@ -270,7 +270,7 @@ namespace GameFramework.Sound.Base
         }
         
         
-        public int PlayFollowSound(ResourceLoadInfo resourceLoadInfo,string assetPath,Transform followPos)
+        public int PlayFollowSound(ResourceLoadInfo resourceLoadInfo,Transform followPos)
         {
             PlaySoundParams playSoundParams = new PlaySoundParams
             {
@@ -292,7 +292,7 @@ namespace GameFramework.Sound.Base
             musicSerialId = -1;
         }
 
-        public int PlayUISound(ResourceLoadInfo resourceLoadInfo,string assetPath)
+        public int PlayUISound(ResourceLoadInfo resourceLoadInfo)
         {
             PlaySoundParams playSoundParams = new PlaySoundParams
             {
