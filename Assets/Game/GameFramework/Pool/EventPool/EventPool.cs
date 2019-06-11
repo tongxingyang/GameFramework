@@ -12,11 +12,13 @@ namespace GameFramework.Pool.EventPool
         private EventHandler<T> defaultHandler;
         public int EventHandlerCount => eventHandlers?.Count ?? 0;
         public int EventCount => events?.Count ?? 0;
+        public List<Event<T>> EventLists;
         
         public EventPool(enEventPoolMode mode)
         {
             eventHandlers = new Dictionary<enEventID, LinkedList<EventHandler<T>>>();
             events = new Queue<Event<T>>();
+            EventLists = new List<Event<T>>();
             eventPoolMode = mode;
             defaultHandler = null;
         }
@@ -29,6 +31,7 @@ namespace GameFramework.Pool.EventPool
                 {
                     Event<T> e = events.Dequeue();
                     HandleEvent(e.Sender, e.EventArgs);
+                    e.Reset();
                 }
             }
         }
@@ -36,6 +39,7 @@ namespace GameFramework.Pool.EventPool
         public void Shutdown()
         {
             Clear();
+            EventLists.Clear();
             eventHandlers.Clear();
             defaultHandler = null;
         }
@@ -48,8 +52,8 @@ namespace GameFramework.Pool.EventPool
                 {
                     Event<T> e = events.Dequeue();
                     ReferencePool.ReferencePool.Release<T>(e.EventArgs);
+                    e.Reset();
                 }
-                events.Clear();
             }
         }
         
@@ -119,10 +123,27 @@ namespace GameFramework.Pool.EventPool
         {
             defaultHandler = handler;
         }
+
+        public Event<T> GetEvent()
+        {
+            foreach (Event<T> eventList in EventLists)
+            {
+                if (eventList.IsUsed == false)
+                {
+                    return eventList;
+                }
+            }
+            Event<T> @event = new Event<T>();
+            EventLists.Add(@event);
+            return @event;
+        }
         
         public void Fire(object sender, T e)
         {
-            Event<T> eventNode = new Event<T>(sender, e);
+            Event<T> eventNode = GetEvent();
+            eventNode.IsUsed = true;
+            eventNode.Sender = sender;
+            eventNode.EventArgs = e;
             lock (events)
             {
                 events.Enqueue(eventNode);
