@@ -4,11 +4,10 @@ using UnityEngine;
 
 namespace GameFramework.Web.Base
 {
-    public class WebTask :ITask
+    public class WebTask : ITask
     {
         private static int Serial = 0;
-        
-        private int serialid = -1;
+        private int serialId = -1;
         private bool done = false;
         private int priority = 0;
         private enWebState state;
@@ -26,44 +25,44 @@ namespace GameFramework.Web.Base
         
         public WWWForm WwwForm
         {
-            get { return wwwForm; }
-            set { wwwForm = value; }
+            get => wwwForm;
+            set => wwwForm = value;
         }
         
         public float TimeOut
         {
-            get { return timeOut; }
-            set { timeOut = value; }
+            get => timeOut;
+            set => timeOut = value;
         }
         
         public enWebState State
         {
-            get { return state; }
-            set { state = value; }
+            get => state;
+            set => state = value;
         }
         
         public string WebUrl
         {
-            get { return webUrl; }
-            set { webUrl = value; }
+            get => webUrl;
+            set => webUrl = value;
         }
         
         public int SerialId
         {
-            get { return serialid; }
-            set { serialid = value; }
+            get => serialId;
+            set => serialId = value;
         }
 
         public bool Done
         {
-            get { return done; }
-            set { done = value; }
+            get => done;
+            set => done = value;
         }
 
         public int Priority
         {
-            get { return priority; }
-            set { priority = value; }
+            get => priority;
+            set => priority = value;
         }
 
         public void Clear()
@@ -76,7 +75,7 @@ namespace GameFramework.Web.Base
         
         public WebTask(string webUrl, int priority, float timeout,Action<bool,string,byte[]> callAction)
         {
-            serialid = Serial++;
+            serialId = Serial++;
             this.priority = priority;
             done = false;
             state = enWebState.Todo;
@@ -89,7 +88,7 @@ namespace GameFramework.Web.Base
         
         public WebTask(string webUrl, int priority, float timeout,byte[] postdata,Action<bool,string,byte[]> callAction)
         {
-            serialid = Serial++;
+            serialId = Serial++;
             this.priority = priority;
             done = false;
             state = enWebState.Todo;
@@ -102,7 +101,7 @@ namespace GameFramework.Web.Base
         
         public WebTask(string webUrl, int priority, float timeout,WWWForm wwwForm,Action<bool,string,byte[]> callAction)
         {
-            serialid = Serial++;
+            serialId = Serial++;
             this.priority = priority;
             done = false;
             state = enWebState.Todo;

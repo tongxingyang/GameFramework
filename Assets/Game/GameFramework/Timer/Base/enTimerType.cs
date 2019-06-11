@@ -2,7 +2,7 @@ namespace GameFramework.Timer
 {
     public enum enTimerType
     {
-        TimeScale,
-        NoTimeScale,
+        TimeScale = 0,
+        NoTimeScale = 1,
     }
 }

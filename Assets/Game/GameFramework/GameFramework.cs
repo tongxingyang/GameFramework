@@ -191,10 +191,6 @@ namespace GameFramework
 
         public void RestNormalGameSpeed()
         {
-            if (GameSpeed == 1)
-            {
-                return;
-            }
             GameSpeed = 1f;
         }
         

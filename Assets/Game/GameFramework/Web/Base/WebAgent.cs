@@ -9,15 +9,11 @@ namespace GameFramework.Web.Base
     public class WebAgent : MonoBehaviour,ITaskAgent<WebTask>
     {
         private WebTask webTask;
-        
-        public WebTask Task => webTask;
-
         private UnityWebRequest unityWebRequest = null;
-
-        public UnityWebRequest UnityWebRequest => unityWebRequest;
-
         private float waitTime;  
 
+        public WebTask Task => webTask;
+        public UnityWebRequest UnityWebRequest => unityWebRequest;
         public float WaitTime => waitTime;
         
         void Awake()
@@ -127,7 +123,7 @@ namespace GameFramework.Web.Base
         private void RequestSuccese()
         {
             webTask.State = enWebState.Doing;
-            webTask.callBack?.Invoke(true,String.Empty, unityWebRequest.downloadHandler.data);
+            webTask.callBack?.Invoke(true,unityWebRequest.downloadHandler.text, unityWebRequest.downloadHandler.data);
             webTask.Done = true;
         }
     }

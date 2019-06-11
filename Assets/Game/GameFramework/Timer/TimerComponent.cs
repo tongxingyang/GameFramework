@@ -10,6 +10,7 @@ namespace GameFramework.Timer
         public override int Priority => SingletonMono<GameFramework>.GetInstance().TimerPriority;
         
         private TimerManager timerManager = null;
+        
         public override void OnAwake()
         {
             base.OnAwake();
@@ -34,39 +35,39 @@ namespace GameFramework.Timer
             timerManager.RemoveAllTimer();
         }
 
-        public float GetTimerLeftTime(int squence)
+        public float GetTimerLeftTime(int serialID)
         {
-            return timerManager.GetTimerLeftTime(squence);
+            return timerManager.GetTimerLeftTime(serialID);
         }
 
-        public float GetTimerCurrentTime(int squence)
+        public float GetTimerCurrentTime(int serialID)
         {
-            return timerManager.GetTimerCurrentTime(squence);
+            return timerManager.GetTimerCurrentTime(serialID);
         }
 
-        public void ResetTimerTotalTime(int squence, float totalTime)
+        public void ResetTimerTotalTime(int serialID, int totalTime)
         {
-            timerManager.ResetTimerTotalTime(squence,totalTime);
+            timerManager.ResetTimerTotalTime(serialID,totalTime);
         }
 
-        public void ResetTimer(int squence)
+        public void ResetTimer(int serialID)
         {
-            timerManager.ResetTimer(squence);
+            timerManager.ResetTimer(serialID);
         }
 
-        public void ResumeTimer(int squence)
+        public void ResumeTimer(int serialID)
         {
-            timerManager.ResetTimer(squence);
+            timerManager.ResetTimer(serialID);
         }
 
-        public void PauseTimer(int squence)
+        public void PauseTimer(int serialID)
         {
-            timerManager.PauseTimer(squence);
+            timerManager.PauseTimer(serialID);
         }
 
-        public Timer GetTimer(int squence)
+        public Timer GetTimer(int serialID)
         {
-            return timerManager.GetTimer(squence);
+            return timerManager.GetTimer(serialID);
         }
 
         public void RemoveTimer(TimerManager.OnTimeUpHandler callBack, enTimerType enTimeType)
@@ -74,13 +75,12 @@ namespace GameFramework.Timer
             timerManager.RemoveTimer(callBack,enTimeType);
         }
 
-        public void RemoveTimer(int squence)
+        public void RemoveTimer(int serialID)
         {
-            timerManager.RemoveTimer(squence);
+            timerManager.RemoveTimer(serialID);
         }
 
-        public int AddTimer(float totalTime, int loopTimes, enTimerType timerType, TimerManager.OnTimeUpHandler callBcak,
-            params object[] parms)
+        public int AddTimer(int totalTime, int loopTimes, enTimerType timerType, TimerManager.OnTimeUpHandler callBcak, params object[] parms)
         {
             return timerManager.AddTimer(totalTime, loopTimes, timerType, callBcak, parms);
         }

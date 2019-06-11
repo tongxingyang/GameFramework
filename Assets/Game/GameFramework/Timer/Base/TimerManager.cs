@@ -4,46 +4,47 @@ using GameFramework.Pool.ReferencePool;
 
 namespace GameFramework.Timer
 {
-    public class TimerManager
+    public sealed class TimerManager
     {
         public delegate void OnTimeUpHandler(int timeSquence, params object[] parms);
-        private List<Timer>[] timers;
-        private static int timerSquence;
-
+        private Dictionary<enTimerType, List<Timer>> timers;
+        public static int SerialID;
         public TimerManager()
         {
-            this.timers = new List<Timer>[Enum.GetValues(typeof(enTimerType)).Length];
-            for (int i = 0; i < timers.Length; i++)
+            timers = new Dictionary<enTimerType, List<Timer>>();
+            for (int i = 0; i < Enum.GetValues(typeof(enTimerType)).Length; i++)
             {
-                timers[i] = new List<Timer>();
+                timers.Add((enTimerType)i,new List<Timer>());
             }
-            timerSquence = 0;
+            SerialID = 0;
         }
 
         public void Shutdown()
         {
             RemoveAllTimer();
+            timers.Clear();
             timers = null;
-            timerSquence = 0;
+            SerialID = 0;
         }
         
-        public int AddTimer(float totalTime, int loopTimes, enTimerType timerType, OnTimeUpHandler callBcak, params object[] parms)
+        public int AddTimer(int totalTime, int loopTimes, enTimerType timerType, OnTimeUpHandler callBcak, params object[] parms)
         {
-            timerSquence++;
-            timers[timerType == enTimerType.NoTimeScale ? 0 : 1].Add(ReferencePool.Acquire<Timer>().Init(timerSquence,totalTime,loopTimes,timerType,callBcak,parms));
-            return timerSquence;
+            SerialID++;
+            timers[timerType].Add(ReferencePool.Acquire<Timer>().Init(SerialID,totalTime,loopTimes,timerType,callBcak,parms));
+            return SerialID;
         }
         
-        public void RemoveTimer(int squence)
+        public void RemoveTimer(int serialID)
         {
-            for (int i = 0; i < timers.Length; i++)
+            foreach (KeyValuePair<enTimerType,List<Timer>> keyValuePair in timers)
             {
-                List<Timer> list = timers[i];
-                for (int j = 0; j < list.Count; j++)
+                var list = keyValuePair.Value;
+                foreach (Timer timer in list)
                 {
-                    if (list[j].IsSquenceMatch(squence))
+                    if (timer.IsSerialIdMatch(serialID))
                     {
-                        list[j].TimerFinish();
+                        ReferencePool.Release(timer);
+                        list.Remove(timer);
                         return;
                     }
                 }
@@ -52,72 +53,60 @@ namespace GameFramework.Timer
         
         public void RemoveTimer(OnTimeUpHandler callBack, enTimerType enTimeType)
         {
-            List<Timer> list = timers[enTimeType == enTimerType.NoTimeScale ? 0 : 1];
-            for (int i = 0; i < list.Count; i++)
+            foreach (Timer timer in timers[enTimeType])
             {
-                if (list[i].IsDelegateMatch(callBack))
+                if (timer.IsCallBackMatch(callBack))
                 {
-                    list[i].TimerFinish();
+                    ReferencePool.Release(timer);
+                    timers[enTimeType].Remove(timer);
                     return;
                 }
             }
         }
         
-        public Timer GetTimer(int squence)
+        public Timer GetTimer(int serialID)
         {
-            for (int i = 0; i < timers.Length; i++)
+            foreach (KeyValuePair<enTimerType,List<Timer>> keyValuePair in timers)
             {
-                List<Timer> list = timers[i];
-                for (int j = 0; j < list.Count; j++)
+                var list = keyValuePair.Value;
+                foreach (Timer timer in list)
                 {
-                    if (list[j].IsSquenceMatch(squence))
+                    if (timer.IsSerialIdMatch(serialID))
                     {
-                        return list[j];
+                        return timer;
                     }
                 }
             }
             return null;
         }
         
-        public void PauseTimer(int squence)
+        public void PauseTimer(int serialID)
         {
-            Timer timer = GetTimer(squence);
-            if (timer != null)
-            {
-                timer.TimerPause();
-            }
+            Timer timer = GetTimer(serialID);
+            timer?.TimerPause();
         }
         
-        public void ResumeTimer(int squence)
+        public void ResumeTimer(int serialID)
         {
-            Timer timer = GetTimer(squence);
-            if (timer != null)
-            {
-                timer.TimerResume();
-            }
+            Timer timer = GetTimer(serialID);
+            timer?.TimerResume();
         }
         
-        public void ResetTimer(int squence)
+        public void ResetTimer(int serialID)
         {
-            Timer timer = GetTimer(squence);
-            if (timer != null)
-            {
-                timer.TimerReset();
-            }
+            Timer timer = GetTimer(serialID);
+            timer?.TimerReset();
         }
         
-        public void ResetTimerTotalTime(int squence, float totalTime)
+        public void ResetTimerTotalTime(int serialID, int totalTime)
         {
-            Timer timer = GetTimer(squence);
-            if (timer != null)
-            {
-                timer.ResetTotalTime(totalTime);
-            }
+            Timer timer = GetTimer(serialID);
+            timer?.ResetTotalTime(totalTime);
         }
 
-        public float GetTimerCurrentTime(int squence)
+        public float GetTimerCurrentTime(int serialID)
         {
-            Timer timer = GetTimer(squence);
+            Timer timer = GetTimer(serialID);
             if (timer != null)
             {
                 return timer.CurrentTime;
@@ -125,9 +114,9 @@ namespace GameFramework.Timer
             return -1;
         }
         
-        public float GetTimerLeftTime(int squence)
+        public float GetTimerLeftTime(int serialID)
         {
-            Timer timer = GetTimer(squence);
+            Timer timer = GetTimer(serialID);
             if (timer != null)
             {
                 return timer.GetLeftTime();
@@ -137,26 +126,25 @@ namespace GameFramework.Timer
         
         public void RemoveAllTimer()
         {
-            for (int i = 0; i < timers.Length; i++)
+            foreach (KeyValuePair<enTimerType,List<Timer>> keyValuePair in timers)
             {
-                List<Timer> list = timers[i];
-                for (int j = 0; j < list.Count; j++)
+                var list = keyValuePair.Value;
+                foreach (Timer timer in list)
                 {
-                    ReferencePool.Release(list[j]);
+                    ReferencePool.Release<Timer>(timer);
                 }
-                timers[i].Clear();
+                list.Clear();
             }
         }
         
-        private void TimerUpdate(float detalTime, enTimerType timerType)
+        private void TimerUpdate(int detalTime, enTimerType timerType)
         {
-            List<Timer> list = timers[timerType == enTimerType.NoTimeScale ? 0 : 1];
+            var list = timers[timerType];
             int i = 0;
             while (i < list.Count)
             {
                 if (list[i].IsFinish)
                 {
-                    list[i].Reset();
                     ReferencePool.Release(list[i]);
                     list.RemoveAt(i);
                 }
@@ -167,10 +155,11 @@ namespace GameFramework.Timer
                 }
             }
         }
+        
         public void OnUpdate(float elapseSeconds, float realElapseSeconds)
         {
-            TimerUpdate(elapseSeconds, enTimerType.TimeScale);
-            TimerUpdate(realElapseSeconds, enTimerType.NoTimeScale);
+            TimerUpdate((int)elapseSeconds * 1000, enTimerType.TimeScale);
+            TimerUpdate((int)realElapseSeconds * 1000, enTimerType.NoTimeScale);
         }
     }
 }

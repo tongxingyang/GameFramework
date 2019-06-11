@@ -10,8 +10,8 @@ namespace GameFramework.Web
     {
         private WebManager webManager;
         private Transform instanceRoot;
+        
         public override int Priority => SingletonMono<GameFramework>.GetInstance().WebRequestPriority;
-
         public int TotalAgentCount => webManager.TotalAgentCount;
         public int FreeAgentCount => webManager.FreeAgentCount;
         public int WorkingAgentCount => webManager.WorkingAgentCount;
@@ -31,7 +31,7 @@ namespace GameFramework.Web
 
             for (int i = 0; i < SingletonMono<GameFramework>.GetInstance().WebRequestCount; i++)
             {
-                WebAgent webAgent = new GameObject("Web Request "+(i+1)).AddComponent<WebAgent>();
+                WebAgent webAgent = new GameObject("Web Request "+i).AddComponent<WebAgent>();
                 webAgent.transform.SetParent(instanceRoot);
                 webAgent.transform.localPosition = Vector3.zero;
                 webAgent.transform.localScale = Vector3.one;

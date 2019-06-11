@@ -3,47 +3,47 @@ using GameFramework.Pool.ReferencePool;
 
 namespace GameFramework.Timer
 {
-    public class Timer : EventArgs,IReference
+    public class Timer : EventArgs ,IReference
     {
-        private int squence = -1;
+        private int serialId = -1;
         private object[] parms = null;
         private int loopTimes = -1;
         private enTimerType timerType;
-        private float totalTime = 0f;
-        private float currentTime = 0f;
+        private int totalTime = 0;
+        private int currentTime = 0;
         private bool isFinish = true;
         private bool isRunning = false;
         private TimerManager.OnTimeUpHandler callBack = null;
 
-        public int Squence => squence;
+        public int SerialId => serialId;
         public object[] Parms => parms;
         public int LoopTimes => loopTimes;
-        public enTimerType TimeType;
-        public float TotalTime => totalTime;
-        public float CurrentTime => currentTime;
+        public enTimerType TimeType => timerType;
+        public int TotalTime => totalTime;
+        public int CurrentTime => currentTime;
         public bool IsFinish => isFinish;
         public bool IsRunning => isRunning;
         public TimerManager.OnTimeUpHandler CallBack => callBack;
-        
+
         public void Reset()
         {
-            this.squence = -1;
+            this.serialId = -1;
             this.parms = null;
             this.loopTimes = -1;
-            this.totalTime = 0f;
-            this.currentTime = 0f;
+            this.totalTime = 0;
+            this.currentTime = 0;
             this.callBack = null;
             this.isRunning = false;
             this.isFinish = true;
         }
 
-        public Timer Init(int squence,float totalTime,int loopTimes,enTimerType timerType,TimerManager.OnTimeUpHandler callBack,params object[] parms)
+        public Timer Init(int serialId, int totalTime, int loopTimes, enTimerType timerType,TimerManager.OnTimeUpHandler callBack, params object[] parms)
         {
             if (loopTimes <= 0)
             {
                 loopTimes = -1;
             }
-            this.squence = squence;
+            this.serialId = serialId;
             this.totalTime = totalTime;
             this.loopTimes = loopTimes;
             this.timerType = timerType;
@@ -51,20 +51,20 @@ namespace GameFramework.Timer
             this.parms = parms;
             this.isFinish = false;
             this.isRunning = true;
-            this.currentTime = 0f;
+            this.currentTime = 0;
             return this;
         }
-        
-        public bool IsSquenceMatch(int squence)
+
+        public bool IsSerialIdMatch(int serialId)
         {
-            if (this.squence == squence)
+            if (this.serialId == serialId)
             {
                 return true;
             }
             return false;
         }
 
-        public bool IsDelegateMatch(TimerManager.OnTimeUpHandler callbBack)
+        public bool IsCallBackMatch(TimerManager.OnTimeUpHandler callbBack)
         {
             if (this.callBack == callbBack)
             {
@@ -73,7 +73,7 @@ namespace GameFramework.Timer
             return false;
         }
 
-        public float GetLeftTime()
+        public int GetLeftTime()
         {
             return totalTime - currentTime;
         }
@@ -90,7 +90,7 @@ namespace GameFramework.Timer
 
         public void TimerReset()
         {
-            currentTime = 0f;
+            currentTime = 0;
         }
 
         public void TimerResume()
@@ -98,7 +98,7 @@ namespace GameFramework.Timer
             isRunning = true;
         }
 
-        public void ResetTotalTime(float totalTime)
+        public void ResetTotalTime(int totalTime)
         {
             if (this.totalTime == totalTime)
             {
@@ -108,7 +108,7 @@ namespace GameFramework.Timer
             TimerReset();
         }
 
-        public void Update(float detelTime)
+        public void Update(int detelTime)
         {
             if (this.isFinish || !this.isRunning)
             {
@@ -123,11 +123,7 @@ namespace GameFramework.Timer
                 currentTime += detelTime;
                 if (currentTime >= totalTime)
                 {
-                    if (callBack != null)
-                    {
-                        callBack(squence,parms);
-                    }
-
+                    callBack?.Invoke(serialId, parms);
                     TimerReset();
                     loopTimes--;
                 }
