@@ -12,9 +12,12 @@ namespace GameFramework.Localization.Base
         private readonly Dictionary<enLanguageKey, string> languageDictionary;
         private LoadAssetCallbacks loadAssetCallBacks;
 
+        public delegate void LocalizeDelegate();
+        public static LocalizeDelegate RefreshLanguage;
+        
         public Language Language
         {
-            get { return language; }
+            get => language;
             set
             {
                 if (value == Language.Unspecified)
@@ -55,7 +58,7 @@ namespace GameFramework.Localization.Base
 
         public void Shutdown()
         {
-           
+            languageDictionary.Clear();
         }
         
         public void SetResourceManager(IResourceManager resource)
@@ -64,9 +67,9 @@ namespace GameFramework.Localization.Base
         }
         
 
-        public void LoadLanguage(string assetName)
+        public void LoadLanguage(ResourceLoadInfo resourceLoadInfo)
         {
-            throw new System.NotImplementedException();
+            resourceManager.LoadAsset<TextAsset>(resourceLoadInfo,loadAssetCallBacks);
         }
 
         public void ParseLanguage(string text)
@@ -125,6 +128,11 @@ namespace GameFramework.Localization.Base
             int loadedCount, int totalCount, object userData)
         {
            
+        }
+
+        public static string GetTextValue(enLanguageKey languageKey)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

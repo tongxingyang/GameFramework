@@ -232,7 +232,7 @@ namespace GameFramework.DataTable.Base
                 AddDataRow(value.GetKeyValue<TKeyType>(), value);
             }
         }
-
+        
         public IEnumerator<TValue> GetEnumerator()
         {
             return dataSet.Values.GetEnumerator();
