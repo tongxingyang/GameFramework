@@ -43,8 +43,46 @@ namespace GameFramework.UI.UIExtension
         {
             if (IsOpenLocalize)
             {
-                text = LocalizationManager.GetTextValue(LanguageKey);
+//                    text = LocalizationManager.(LanguageKey);
             }
         }
+
+        public void RefreshLanguage(params object[] parms)
+        {
+//            text = LocalizationManager.(LanguageKey);
+        }
+        
+        public override string text
+        {
+            get
+            {
+                if(IsOpenLocalize)
+                {
+//                    m_Text = Localization.Get(KeyString);
+                    return m_Text;
+                }
+                else
+                {
+                    return m_Text;
+                }
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    if (string.IsNullOrEmpty(m_Text))
+                        return;
+                    m_Text = "";
+                    SetVerticesDirty();
+                }
+                else if (m_Text != value)
+                {
+                    m_Text = value;
+                    SetVerticesDirty();
+                    SetLayoutDirty();
+                }
+            }
+        }
+
     }
 }

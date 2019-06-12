@@ -8,9 +8,9 @@ namespace GameFramework.UI.Base
         UIWindowInfo WindowInfo { get; }
         GameObject CacheGameObject { get; }
         Transform CacheTransform { get; }
-        IUIGroup Group { get; }
+        IUIGroup UIGroup { get; }
         int DepthInUIGroup { get; }
-        void OnInit(int serialId, Camera uiCamera,UIGroup uiGroup,UIWindowContext uiWindowContext = null);
+        void OnInit(int serialId, string assetName, Camera uiCamera, IUIGroup uiGroup, bool pauseCovered, UIWindowContext uiWindowContext = null);
         void OnOpen(UIWindowContext uiWindowContext = null);
         void OnClose(UIWindowContext uiWindowContext = null);
         void OnReFocus(UIWindowContext uiWindowContext = null);

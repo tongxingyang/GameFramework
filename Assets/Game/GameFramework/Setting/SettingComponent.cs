@@ -1,6 +1,7 @@
 ﻿using System;
 using GameFramework.Base;
 using GameFramework.Debug;
+using GameFramework.Localization;
 using GameFramework.Utility.PlayerPrefs;
 using GameFramework.Utility.Singleton;
 using UnityEngine;
@@ -116,6 +117,16 @@ namespace GameFramework.Setting
             PlayerPrefsUtility.SetObject(settingName, obj);
         }
 
+        public Language GetLanguage()
+        {
+            return (Language)PlayerPrefsUtility.GetInt("language", (int) Language.Unspecified);
+        }
+
+        public void SetLanguage(Language language)
+        {
+            PlayerPrefsUtility.SetInt("language", (int) language);
+        }
+        
         public void Save()
         {
             PlayerPrefsUtility.Save();

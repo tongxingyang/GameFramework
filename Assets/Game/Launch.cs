@@ -18,6 +18,10 @@ public class Launch:MonoBehaviour
     private Texture2D _texture2D;
     private Texture2D _icon;
     private DownloadAgent downloadAgent;
+    
+    
+    public AnimationCurve FadeAnimationCurve = new AnimationCurve(new Keyframe(0, 1), new Keyframe(0.3f, 1.05f), new Keyframe(1, 1));
+    
     void Start()
     {
 //        Debuger.Init(AppConst.Path.DebugerLogFilePath);

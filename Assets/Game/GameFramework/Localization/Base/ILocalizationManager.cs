@@ -8,13 +8,12 @@ namespace GameFramework.Localization.Base
         Language Language { get; set; }
         Language SystemLanguage { get; }
         void SetResourceManager(IResourceManager resourceManager);
-        void LoadLanguage(ResourceLoadInfo resourceLoadInfo);
         void ParseLanguage(string text);
         string GetString(enLanguageKey key);
         string GetString(enLanguageKey key,params object[] args);
         bool HasString(enLanguageKey key);
         bool AddString(enLanguageKey key ,string value);
         bool RemoveString(enLanguageKey key);
-        void ChangeLanguage(Language language);
+        void ChangeLanguage(Language language,ResourceLoadInfo resourceLoadInfo);
     }
 }

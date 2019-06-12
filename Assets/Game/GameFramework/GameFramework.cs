@@ -1,5 +1,6 @@
 ﻿using GameFramework.Base;
 using GameFramework.Debug;
+using GameFramework.Localization;
 using GameFramework.Sound;
 using GameFramework.Utility.Singleton;
 using UnityEngine;
@@ -62,43 +63,44 @@ namespace GameFramework
         public int WebRequestCount = 2;
         public int WebRequestPriority = 50;
         
+        [Header("Localization设置")] 
+        public int LocalizationPriority = 50;
         
         public bool EditorResourceMode
         {
-            get { return editorResourceMode; }
-            set { editorResourceMode = value; }
+            get => editorResourceMode;
+            set => editorResourceMode = value;
         }
 
         public int FrameRate
         {
-            get { return frameRate; }
-            set { Application.targetFrameRate = frameRate = value; }
+            get => frameRate;
+            set => Application.targetFrameRate = frameRate = value;
         }
 
         public float GameSpeed
         {
-            get { return gameSpeed; }
-            set { Time.timeScale = gameSpeed = (value >= 0f ? value : 0f); }
+            get => gameSpeed;
+            set => Time.timeScale = gameSpeed = (value >= 0f ? value : 0f);
         }
 
         public bool RunInBackgroiund
         {
-            get { return runInBackgroiund; }
-            set { runInBackgroiund = value; }
+            get => runInBackgroiund;
+            set => runInBackgroiund = value;
         }
 
         public bool NeverSleep
         {
-            get { return neverSleep; }
-            set { neverSleep = value; }
+            get => neverSleep;
+            set => neverSleep = value;
         }
 
         public ThreadPriority ThreadPriority
         {
-            get { return threadPriority; }
-            set { threadPriority = value; }
+            get => threadPriority;
+            set => threadPriority = value;
         }
-        
         
         public bool IsGamePause => gameSpeed <= 0;
 

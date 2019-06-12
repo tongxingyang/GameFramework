@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
-using GameFramework.DataTable.Base;
+﻿using System;
+using System.Collections.Generic;
+using GameFramework.Base;
 using GameFramework.Res.Base;
+using GameFramework.Setting;
+using GameFramework.Utility.Singleton;
 using UnityEngine;
 
 namespace GameFramework.Localization.Base
@@ -39,7 +42,7 @@ namespace GameFramework.Localization.Base
                     case UnityEngine.SystemLanguage.ChineseSimplified: return Language.ChineseSimplified;
                     case UnityEngine.SystemLanguage.ChineseTraditional: return Language.ChineseTraditional;
                     case UnityEngine.SystemLanguage.English: return Language.English;
-                    default: return Language.Unspecified;
+                    default: return Language.English;
                 }
             }
         }
@@ -51,6 +54,17 @@ namespace GameFramework.Localization.Base
            loadAssetCallBacks = new LoadAssetCallbacks(LoadLanguageSuccessCallback, LoadLanguageFailureCallback, LoadLanguageUpdateCallback,LoadLanguageDependencyAssetCallback);
         }
 
+        public Language GetCurrentLanguage()
+        {
+            Language language = Singleton<GameEntry>.GetInstance().GetComponent<SettingComponent>().GetLanguage();
+            if (language == Language.Unspecified)
+            {
+                Singleton<GameEntry>.GetInstance().GetComponent<SettingComponent>().SetLanguage(SystemLanguage);
+            }
+            Language = language;
+            return language;
+        }
+        
         public void OnUpdate(float elapseSeconds, float realElapseSeconds)
         {
             
@@ -67,72 +81,108 @@ namespace GameFramework.Localization.Base
         }
         
 
-        public void LoadLanguage(ResourceLoadInfo resourceLoadInfo)
+        private void LoadLanguage(ResourceLoadInfo resourceLoadInfo)
         {
             resourceManager.LoadAsset<TextAsset>(resourceLoadInfo,loadAssetCallBacks);
         }
 
         public void ParseLanguage(string text)
         {
-            throw new System.NotImplementedException();
+            if (text == String.Empty)
+            {
+                return;
+            }
+            string content = text.Replace("\r", "");
+            string[] lines = content.Split('\n');
+            foreach (string t in lines)
+            {
+                if (t.StartsWith("#"))
+                {
+                    continue;
+                }
+                var data = t.Split(',');
+                languageDictionary.Add((enLanguageKey)int.Parse(data[0]),data[1]);
+            }
+            RefreshLanguage?.Invoke();
         }
 
 
         public string GetString(enLanguageKey key)
         {
-            throw new System.NotImplementedException();
+            if (languageDictionary.TryGetValue(key,out var data))
+            {
+                return data;
+            }
+            return string.Empty;
         }
 
         public string GetString(enLanguageKey key, params object[] args)
         {
-            throw new System.NotImplementedException();
+            if (languageDictionary.TryGetValue(key,out var data))
+            {
+                return Utility.StringUtility.Format(data, args);
+            }
+            return string.Empty;
         }
 
         public bool HasString(enLanguageKey key)
         {
-            throw new System.NotImplementedException();
+            if (languageDictionary.ContainsKey(key))
+            {
+                return true;
+            }
+            return false;
         }
 
         public bool AddString(enLanguageKey key, string value)
         {
-            throw new System.NotImplementedException();
+            if (!HasString(key))
+            {
+                languageDictionary.Add(key, value);
+                return true;
+            }
+            return false;
         }
 
         public bool RemoveString(enLanguageKey key)
         {
-            throw new System.NotImplementedException();
+            if (HasString(key))
+            {
+                languageDictionary.Remove(key);
+                return true;
+            }
+            return false;
         }
 
-        public void ChangeLanguage(Language language)
+
+        public void ChangeLanguage(Language language,ResourceLoadInfo resourceLoadInfo)
         {
-            throw new System.NotImplementedException();
+            Language = language;
+            LoadLanguage(resourceLoadInfo);
         }
         
-        private void LoadLanguageSuccessCallback(string soundAssetName, object soundAsset, float duration, object userData)
+        private void LoadLanguageSuccessCallback(string languageAssetName, object languageAsset, float duration, object userData)
         {
-           
+            var textAsset = languageAsset as TextAsset;
+            if (textAsset != null) ParseLanguage(textAsset.text);
         }
 
-        private void LoadLanguageFailureCallback(string soundAssetName, string errorMessage,
+        private void LoadLanguageFailureCallback(string languageAssetName, string errorMessage,
             object userData)
         {
            
         }
 
-        private void LoadLanguageUpdateCallback(string soundAssetName, float progress, object userData)
+        private void LoadLanguageUpdateCallback(string languageAssetName, float progress, object userData)
         {
            
         }
 
-        private void LoadLanguageDependencyAssetCallback(string soundAssetName, string dependencyAssetName,
+        private void LoadLanguageDependencyAssetCallback(string languageAssetName, string dependencyAssetName,
             int loadedCount, int totalCount, object userData)
         {
            
         }
 
-        public static string GetTextValue(enLanguageKey languageKey)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }
