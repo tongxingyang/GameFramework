@@ -1,7 +1,12 @@
-﻿namespace GameFramework.UI
+﻿using GameFramework.Base;
+using GameFramework.UI.UIExtension;
+using UnityEngine;
+
+namespace GameFramework.UI
 {
-    public class UIComponent
+    [DisallowMultipleComponent]
+    public class UIComponent : GameFrameworkComponent
     {
-        
+        public UIFont MainFont = null;
     }
 }

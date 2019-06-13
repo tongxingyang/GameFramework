@@ -1,6 +1,8 @@
 ﻿using System;
+using GameFramework.Base;
 using GameFramework.Localization;
 using GameFramework.Localization.Base;
+using GameFramework.Utility.Singleton;
 using UnityEngine;
 using UnityEngine.UI;
 namespace GameFramework.UI.UIExtension
@@ -9,8 +11,19 @@ namespace GameFramework.UI.UIExtension
     public class LocalizationText : Text
     {
         public enLanguageKey LanguageKey;
-        public UIFont Font;
         public bool IsOpenLocalize = true;
+        public UIFont Font
+        {
+            get
+            {
+                if (Singleton<GameEntry>.GetInstance().GetComponent<UIComponent>().MainFont != null)
+                {
+                    return Singleton<GameEntry>.GetInstance().GetComponent<UIComponent>().MainFont;
+                }
+                return null;
+            }
+        }
+        
         protected override void Awake()
         {
             base.Awake();
@@ -43,13 +56,13 @@ namespace GameFramework.UI.UIExtension
         {
             if (IsOpenLocalize)
             {
-//                    text = LocalizationManager.(LanguageKey);
+                Singleton<GameEntry>.GetInstance().GetComponent<LocalizationComponent>().GetString(LanguageKey);
             }
         }
 
         public void RefreshLanguage(params object[] parms)
         {
-//            text = LocalizationManager.(LanguageKey);
+            Singleton<GameEntry>.GetInstance().GetComponent<LocalizationComponent>().GetString(LanguageKey, parms);
         }
         
         public override string text
@@ -58,7 +71,7 @@ namespace GameFramework.UI.UIExtension
             {
                 if(IsOpenLocalize)
                 {
-//                    m_Text = Localization.Get(KeyString);
+                    RefreshLanguage();
                     return m_Text;
                 }
                 else

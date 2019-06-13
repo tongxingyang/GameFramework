@@ -2,7 +2,7 @@
 
 namespace GameFramework.UI.Base
 {
-    public interface IUIGroup
+    public interface IUIWindowGroup
     {
         string Name { get; }
         int Depth { get; set; }

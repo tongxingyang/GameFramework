@@ -7,10 +7,12 @@ namespace GameFramework.UI.Base
         int SerialId { get; }
         UIWindowInfo WindowInfo { get; }
         GameObject CacheGameObject { get; }
-        Transform CacheTransform { get; }
-        IUIGroup UIGroup { get; }
+        RectTransform CacheTransform { get; }
+        IUIWindowGroup UIGroup { get; }
         int DepthInUIGroup { get; }
-        void OnInit(int serialId, string assetName, Camera uiCamera, IUIGroup uiGroup, bool pauseCovered, UIWindowContext uiWindowContext = null);
+        bool WindowPaused { get; set; }
+        bool WindowCovered { get; set; }
+        void OnInit(int serialId, string assetName, Camera uiCamera, IUIWindowGroup uiGroup, bool pauseCovered, UIWindowContext uiWindowContext = null);
         void OnOpen(UIWindowContext uiWindowContext = null);
         void OnClose(UIWindowContext uiWindowContext = null);
         void OnReFocus(UIWindowContext uiWindowContext = null);

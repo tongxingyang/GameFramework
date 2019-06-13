@@ -15,5 +15,9 @@ namespace GameFramework
             public static readonly bool DebugerEnableColor = true;
             public static readonly bool DebugerEnableSave = false;
         }
+        public class UIConfig
+        {
+            public static readonly Vector2 GameResolution = new Vector2(1136, 640);
+        }
     }
 }
