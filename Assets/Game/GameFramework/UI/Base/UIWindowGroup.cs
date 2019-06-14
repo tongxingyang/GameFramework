@@ -1,17 +1,26 @@
 ﻿using System.Collections.Generic;
+using GameFramework.Utility.Extension;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace GameFramework.UI.Base
 {
-    public sealed class UIWindowGroup : IUIWindowGroup
+    public class UIWindowGroup : MonoBehaviour ,IUIWindowGroup
     {
+        public const int DepthStep = 10000;
+        
         private string groupName;
-        private int groupDepth;
+        private int groupDepth = -1;
         private bool groupPause;
+        private Canvas groupCanvas;
+        private GraphicRaycaster groupGraphicRaycaster;
         private LinkedList<UIWindow> uiWindows;
 
         public string Name => groupName;
         public int UIWindowCount => uiWindows?.Count ?? 0;
         public IUIWindow CurrentUIWindow => uiWindows.First?.Value;
+        public Canvas GroupCanvas => groupCanvas;
+        public GraphicRaycaster GroupGraphicRaycaster => groupGraphicRaycaster;
         
         public int Depth
         {
@@ -23,6 +32,7 @@ namespace GameFramework.UI.Base
                     return;
                 }
                 groupDepth = value;
+                SetDepth(groupDepth);
                 Refresh();
             }
         }
@@ -41,10 +51,12 @@ namespace GameFramework.UI.Base
             }
         }
 
-        public UIWindowGroup(string name, int depth)
+        public void Awake()
         {
+            groupCanvas = gameObject.GetOrAddComponent<Canvas>();
+            groupGraphicRaycaster = gameObject.GetOrAddComponent<GraphicRaycaster>();
+            groupCanvas.overrideSorting = true;
             groupName = name;
-            groupDepth = depth;
             groupPause = false;
             uiWindows = new LinkedList<UIWindow>();
         }
@@ -87,6 +99,12 @@ namespace GameFramework.UI.Base
         public void GetAllUIWindows(List<IUIWindow> result)
         {
             throw new System.NotImplementedException();
+        }
+
+        private void SetDepth(int depth)
+        {
+            groupCanvas.overrideSorting = true;
+            groupCanvas.sortingOrder = DepthStep * depth;
         }
     }
 }

@@ -203,6 +203,7 @@ namespace GameFramework.UI.Base
             canvasGroup = gameObject.GetOrAddComponent<CanvasGroup>();
             canvasScaler = gameObject.GetOrAddComponent<CanvasScaler>();
             graphicRaycaster = gameObject.GetOrAddComponent<GraphicRaycaster>();
+            canvas.overrideSorting = true;
             MatchCanvas();
             graphicRaycaster.enabled = IsCanInput;
         }
