@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using GameFramework.Debug;
 using GameFramework.Utility.Extension;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,7 +19,7 @@ namespace GameFramework.UI.Base
 
         public string Name => groupName;
         public int UIWindowCount => uiWindows?.Count ?? 0;
-        public IUIWindow CurrentUIWindow => uiWindows.First?.Value;
+        public UIWindow CurrentUIWindow => uiWindows.First?.Value;
         public Canvas GroupCanvas => groupCanvas;
         public GraphicRaycaster GroupGraphicRaycaster => groupGraphicRaycaster;
         
@@ -51,7 +52,7 @@ namespace GameFramework.UI.Base
             }
         }
 
-        public void Awake()
+        public void OnInit()
         {
             groupCanvas = gameObject.GetOrAddComponent<Canvas>();
             groupGraphicRaycaster = gameObject.GetOrAddComponent<GraphicRaycaster>();
@@ -59,52 +60,234 @@ namespace GameFramework.UI.Base
             groupName = name;
             groupPause = false;
             uiWindows = new LinkedList<UIWindow>();
+            RectTransform transform = GetComponent<RectTransform>();
+            transform.anchorMin = Vector2.zero;
+            transform.anchorMax = Vector2.one;
+            transform.anchoredPosition = Vector2.zero;
+            transform.sizeDelta = Vector2.zero;
+        }
+
+        public void Refresh()
+        {
+            LinkedListNode<UIWindow> current = uiWindows.First;
+            bool pause = groupPause;
+            bool cover = false;
+            int depth = UIWindowCount;
+            while (current != null)
+            {
+                LinkedListNode<UIWindow> next = current.Next;
+                current.Value.OnDepthChange(Depth, depth--);
+                if (pause)
+                {
+                    if (!current.Value.WindowCovered)
+                    {
+                        current.Value.WindowCovered = true;
+                        current.Value.OnCover();
+                    }
+                    if (!current.Value.WindowPaused)
+                    {
+                        current.Value.WindowPaused = true;
+                        current.Value.OnPause();
+                    }
+                }
+                else
+                {
+                    if (current.Value.WindowPaused)
+                    {
+                        current.Value.WindowPaused = false;
+                        current.Value.OnResume();
+                    }
+                    if (current.Value.PauseCovered)
+                    {
+                        pause = true;
+                    }
+                    if (cover)
+                    {
+                        if (!current.Value.WindowPaused)
+                        {
+                            current.Value.WindowPaused = true;
+                            current.Value.OnCover();
+                        }
+                    }
+                    else
+                    {
+                        if (current.Value.WindowCovered)
+                        {
+                            current.Value.WindowCovered = false;
+                            current.Value.OnReveal();
+                        }
+                        cover = true;
+                    }
+                }
+                current = next;
+            }
         }
         
         public bool HasUIWindow(int serialId)
         {
-            throw new System.NotImplementedException();
+            foreach (UIWindow uiWindow in uiWindows)
+            {
+                if (uiWindow.SerialId == serialId)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public bool HasUIWindow(string windowName)
         {
-            throw new System.NotImplementedException();
+            foreach (UIWindow uiWindow in uiWindows)
+            {
+                if (uiWindow.AssetName == windowName)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
-        public IUIWindow GetUIWindow(int serialId)
+        public UIWindow GetUIWindow(int serialId)
         {
-            throw new System.NotImplementedException();
+            foreach (UIWindow uiWindow in uiWindows)
+            {
+                if (uiWindow.SerialId == serialId)
+                {
+                    return uiWindow;
+                }
+            }
+            return null;
         }
 
-        public IUIWindow GetUIWindow(string windowName)
+        public UIWindow GetUIWindow(string windowName)
         {
-            throw new System.NotImplementedException();
+            foreach (UIWindow uiWindow in uiWindows)
+            {
+                if (uiWindow.AssetName == windowName)
+                {
+                    return uiWindow;
+                }
+            }
+            return null;
         }
 
-        public IUIWindow[] GetUIWindows(string windowName)
+        public UIWindow[] GetUIWindows(string windowName)
         {
-            throw new System.NotImplementedException();
+            List<UIWindow> results = new List<UIWindow>();
+            foreach (UIWindow uiWindow in uiWindows)
+            {
+                if (uiWindow.AssetName == windowName)
+                {
+                    results.Add(uiWindow);
+                }
+            }
+            return results.ToArray();
         }
 
-        public void GetUIWindows(string windowName, List<IUIWindow> result)
+        public void GetUIWindows(string windowName, List<UIWindow> result, bool isClearList = true )
         {
-            throw new System.NotImplementedException();
+            if(isClearList)result.Clear();
+            foreach (UIWindow uiWindow in uiWindows)
+            {
+                if (uiWindow.AssetName == windowName)
+                {
+                    result.Add(uiWindow);
+                }
+            }
         }
 
-        public IUIWindow[] GetAllUIWindows()
+        public UIWindow[] GetAllUIWindows()
         {
-            throw new System.NotImplementedException();
+            List<UIWindow> results = new List<UIWindow>();
+            foreach (UIWindow uiWindow in uiWindows)
+            {
+                results.Add(uiWindow);
+            }
+            return results.ToArray();
         }
 
-        public void GetAllUIWindows(List<IUIWindow> result)
+        public void GetAllUIWindows(List<UIWindow> result)
         {
-            throw new System.NotImplementedException();
+            result.Clear();
+            foreach (UIWindow uiWindow in uiWindows)
+            {
+                result.Add(uiWindow);
+            }
+        }
+
+        public void OnUpdate(float elapseSeconds, float realElapseSeconds)
+        {
+            LinkedListNode<UIWindow> current = uiWindows.First;
+            while (current != null)
+            {
+                if (current.Value.WindowPaused)
+                {
+                    break;
+                }
+                LinkedListNode<UIWindow> next = current.Next;
+                current.Value.OnUpdate(elapseSeconds, realElapseSeconds);
+                current = next;
+            }
+        }
+
+        public void OnLateUpdate()
+        {
+            LinkedListNode<UIWindow> current = uiWindows.First;
+            while (current != null)
+            {
+                if (current.Value.WindowPaused)
+                {
+                    break;
+                }
+                LinkedListNode<UIWindow> next = current.Next;
+                current.Value.OnLateUpdate();
+                current = next;
+            }
         }
 
         private void SetDepth(int depth)
         {
             groupCanvas.overrideSorting = true;
             groupCanvas.sortingOrder = DepthStep * depth;
+        }
+        
+        public void AddUIForm(UIWindow uiWindow)
+        {
+            if (uiWindow != null)
+            {
+                uiWindows.AddFirst(uiWindow);
+            }
+        }
+        
+        public void RemoveUIForm(UIWindow uiWindow)
+        {
+            if (uiWindow == null)
+            {
+                Debuger.LogError(Utility.StringUtility.Format("can not find the uiwindow '{0}'", uiWindow.AssetName));
+                return;
+            }
+            if (!uiWindow.WindowCovered)
+            {
+                uiWindow.WindowCovered = true;
+                uiWindow.OnCover();
+            }
+            if (!uiWindow.WindowPaused)
+            {
+                uiWindow.WindowPaused = true;
+                uiWindow.OnPause();
+            }
+            uiWindows.Remove(uiWindow);
+        }
+
+        public void RefocusUIWindow(UIWindow uiWindow)
+        {
+            if (uiWindow == null)
+            {
+                Debuger.LogError(Utility.StringUtility.Format("can not find the uiwindow '{0}'", uiWindow.AssetName));
+                return;
+            }
+            uiWindows.Remove(uiWindow);
+            uiWindows.AddFirst(uiWindow);
         }
     }
 }

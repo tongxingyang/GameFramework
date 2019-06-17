@@ -12,10 +12,11 @@ namespace GameFramework.UI.Base
     public class UIWindow : MonoBehaviour, IUIWindow
     {
         public const int DepthStep = 100;
+        
         public float OpenAnimationTime = 0.5f;
         public float CloseAnimationTime = 0.5f;
-        public bool IsFullScreen = true;
         public bool IsCanInput = true;
+        public bool IsCameraRender = true;
         
         [Header("打开UI动画")]
         public bool IsPlayOpenFadeAnim = true;
@@ -46,11 +47,10 @@ namespace GameFramework.UI.Base
         private UIWindowInfo windowInfo;
         private GameObject cacheGameObject;
         private RectTransform cacheTransform;
-        private IUIWindowGroup uiGroup;
+        private UIWindowGroup uiGroup;
         private int depthInUIGroup;
         private Canvas canvas;
         private CanvasGroup canvasGroup;
-        private CanvasScaler canvasScaler;
         private GraphicRaycaster graphicRaycaster;
         
         public int SerialId => serialId;
@@ -64,7 +64,7 @@ namespace GameFramework.UI.Base
         public bool WindowCovered
         {
             get => windowCovered;
-            set => windowPaused = value;
+            set => windowCovered = value;
         }
         public int OriginalLayer => originalLayer;
         public int OriginalDepth => originalDepth;
@@ -75,14 +75,8 @@ namespace GameFramework.UI.Base
         public UIWindowInfo WindowInfo => windowInfo;
         public GameObject CacheGameObject => cacheGameObject ?? (cacheGameObject = this.gameObject);
         public RectTransform CacheTransform => cacheTransform ?? (cacheTransform = GetComponent<RectTransform>());
-        public IUIWindowGroup UIGroup => uiGroup;
+        public UIWindowGroup UIGroup => uiGroup;
         public int DepthInUIGroup => depthInUIGroup;
-
-
-#if UNITY_EDITOR
-        private int resolutionWidth = 0;
-        private int resolutionHeight = 0;
-#endif
         
         public string Name
         {
@@ -95,9 +89,10 @@ namespace GameFramework.UI.Base
             
         }
 
-        public virtual void OnInit(int serialId, string assetName, Camera uiCamera, IUIWindowGroup uiGroup, bool pauseCovered, UIWindowContext uiWindowContext = null)
+        public virtual void OnInit(int serialId, string assetName, Camera uiCamera, UIWindowGroup uiGroup, bool pauseCovered, UIWindowContext uiWindowContext = null)
         {
-          
+            windowPaused = true;
+            windowCovered = true;
             this.serialId = serialId;
             this.assetName = assetName;
             this.uiCamera = uiCamera;
@@ -107,7 +102,7 @@ namespace GameFramework.UI.Base
             InitCanvas();
             SetCanvasMode(uiCamera);
         }
-        
+
         public virtual void OnOpen(UIWindowContext uiWindowContext = null)
         {
             visible = true;
@@ -126,7 +121,7 @@ namespace GameFramework.UI.Base
             CacheGameObject.SetActive(false);
         }
 
-        public virtual void OnReFocus(UIWindowContext uiWindowContext = null)
+        public virtual void OnRefocus(UIWindowContext uiWindowContext = null)
         {
         }
 
@@ -166,17 +161,10 @@ namespace GameFramework.UI.Base
         {
             this.depthInUIGroup = depthInGroup;
         }
-        
+
         public virtual void OnUpdate(float elapseSeconds, float realElapseSeconds)
         {
-#if UNITY_EDITOR
-            if (resolutionWidth != Screen.width || resolutionHeight != Screen.height)
-            {
-                resolutionWidth = Screen.width;
-                resolutionHeight = Screen.height;
-                MatchCanvas();
-            }
-#endif
+            
         }
         
         public virtual void OnLateUpdate()
@@ -201,31 +189,15 @@ namespace GameFramework.UI.Base
         {
             canvas = gameObject.GetOrAddComponent<Canvas>();
             canvasGroup = gameObject.GetOrAddComponent<CanvasGroup>();
-            canvasScaler = gameObject.GetOrAddComponent<CanvasScaler>();
             graphicRaycaster = gameObject.GetOrAddComponent<GraphicRaycaster>();
             canvas.overrideSorting = true;
-            MatchCanvas();
             graphicRaycaster.enabled = IsCanInput;
-        }
-
-        private void MatchCanvas()
-        {
-            canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            canvasScaler.referenceResolution = AppConst.UIConfig.GameResolution;
-            canvasScaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
-            if (Screen.width / canvasScaler.referenceResolution.x > Screen.height / canvasScaler.referenceResolution.y)
-            {
-                canvasScaler.matchWidthOrHeight = IsFullScreen ? 0 : 1;
-            }
-            else
-            {
-                canvasScaler.matchWidthOrHeight = IsFullScreen ? 1 : 0;
-            }
         }
 
         private void SetCanvasMode(Camera camera)
         {
             canvas.renderMode = camera == null ? RenderMode.ScreenSpaceOverlay : RenderMode.ScreenSpaceCamera;
+            if (camera != null) canvas.worldCamera = camera;
             canvas.pixelPerfect = false;
         }
 

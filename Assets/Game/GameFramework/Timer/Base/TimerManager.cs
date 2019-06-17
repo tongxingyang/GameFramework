@@ -150,7 +150,7 @@ namespace GameFramework.Timer
                 }
                 else
                 {
-                    list[i].Update(detalTime);
+                    list[i].OnUpdate(detalTime);
                     i++;
                 }
             }

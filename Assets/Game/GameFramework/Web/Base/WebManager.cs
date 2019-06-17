@@ -22,7 +22,7 @@ namespace GameFramework.Web.Base
 
         public void OnUpdate(float elapseSeconds, float realElapseSeconds)
         {
-            taskPool.OnUpdate(elapseSeconds,realElapseSeconds);
+            taskPool.OnUpdate(elapseSeconds, realElapseSeconds);
         }
 
         public void Shutdown()
@@ -65,6 +65,5 @@ namespace GameFramework.Web.Base
         {
             taskPool.AddAgent(webAgent);
         }
-        
     }
 }

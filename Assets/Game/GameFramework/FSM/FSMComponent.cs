@@ -19,7 +19,7 @@ namespace GameFramework.FSM
         public override void OnUpdate(float elapseSeconds, float realElapseSeconds)
         {
             base.OnUpdate(elapseSeconds, realElapseSeconds);
-            fsmManager.OnUpdate(elapseSeconds,realElapseSeconds);
+            fsmManager.OnUpdate(elapseSeconds, realElapseSeconds);
         }
 
         public override void Shutdown()

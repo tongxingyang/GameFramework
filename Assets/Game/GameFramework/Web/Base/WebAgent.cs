@@ -16,16 +16,15 @@ namespace GameFramework.Web.Base
         public UnityWebRequest UnityWebRequest => unityWebRequest;
         public float WaitTime => waitTime;
         
-        void Awake()
+        public void Awake()
         {
-            webTask = null;
-            waitTime = 0;
-            
+
         }
         
         public void Initialize()
         {
-            
+            webTask = null;
+            waitTime = 0;
         }
 
         public void OnUpdate(float elapseSeconds, float realElapseSeconds)

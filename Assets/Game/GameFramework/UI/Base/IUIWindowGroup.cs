@@ -8,14 +8,16 @@ namespace GameFramework.UI.Base
         int Depth { get; set; }
         bool Pause { get; set; }
         int UIWindowCount { get; }
-        IUIWindow CurrentUIWindow { get; }
+        UIWindow CurrentUIWindow { get; }
         bool HasUIWindow(int serialId);
         bool HasUIWindow(string windowName);
-        IUIWindow GetUIWindow(int serialId);
-        IUIWindow GetUIWindow(string windowName);
-        IUIWindow[] GetUIWindows(string windowName);
-        void GetUIWindows(string windowName, List<IUIWindow> result);
-        IUIWindow[] GetAllUIWindows();
-        void GetAllUIWindows(List<IUIWindow> result);
+        UIWindow GetUIWindow(int serialId);
+        UIWindow GetUIWindow(string windowName);
+        UIWindow[] GetUIWindows(string windowName);
+        void GetUIWindows(string windowName, List<UIWindow> result, bool isClearList = true);
+        UIWindow[] GetAllUIWindows();
+        void GetAllUIWindows(List<UIWindow> result);
+        void OnUpdate(float elapseSeconds, float realElapseSeconds);
+        void OnLateUpdate();
     }
 }

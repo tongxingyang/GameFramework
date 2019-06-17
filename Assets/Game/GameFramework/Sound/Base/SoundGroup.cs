@@ -55,11 +55,22 @@ namespace GameFramework.Sound.Base
             }
         }
 
-        public void Awake()
+        public void OnAwake()
         {
             sounds = new List<Sound>();
         }
 
+        public void OnUpdate(float elapseSeconds, float realElapseSeconds)
+        {
+            if (sounds != null && sounds.Count > 0)
+            {
+                foreach (Sound sound in sounds)
+                {
+                    sound.OnUpdate(elapseSeconds, realElapseSeconds);
+                }
+            }
+        }
+        
         public bool HasSoundInGroup(string name)
         {
             foreach (Sound sound in sounds)
@@ -115,6 +126,7 @@ namespace GameFramework.Sound.Base
                 {
                     string str = Name + "_" + sounds.Count;
                     currentSound = new GameObject(str).AddComponent<Sound>();
+                    currentSound.OnInit();
                     currentSound.SoundName = str;
                     currentSound.transform.SetParent(transform);
                     currentSound.transform.localPosition = Vector3.zero;

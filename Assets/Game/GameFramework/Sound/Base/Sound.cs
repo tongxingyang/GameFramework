@@ -115,7 +115,7 @@ namespace GameFramework.Sound.Base
         }
 
 
-        void Awake()
+        public void OnInit()
         {
             cacheTransform = transform;
             audioSource = gameObject.GetOrAddComponent<AudioSource>();
@@ -123,7 +123,7 @@ namespace GameFramework.Sound.Base
             audioSource.rolloffMode = AudioRolloffMode.Custom;
         }
 
-        void Update()
+        public void OnUpdate(float elapseSeconds, float realElapseSeconds)
         {
             if (!IsPlaying && audioSource.clip != null)
             {

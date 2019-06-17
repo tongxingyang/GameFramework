@@ -108,7 +108,7 @@ namespace GameFramework.Timer
             TimerReset();
         }
 
-        public void Update(int detelTime)
+        public void OnUpdate(int detelTime)
         {
             if (this.isFinish || !this.isRunning)
             {

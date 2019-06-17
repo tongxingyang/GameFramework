@@ -21,20 +21,20 @@ namespace GameFramework.Download
         public float CurrentSpeed => downloadManager.CurrentSpeed;
         public int DefaultTimeout
         {
-            get { return downloadManager.DefaultTimeout; }
-            set { downloadManager.DefaultTimeout = value; }
+            get => downloadManager.DefaultTimeout;
+            set => downloadManager.DefaultTimeout = value;
         }
 
         public int RetryCount
         {
-            get { return downloadManager.RetryCount; }
-            set { downloadManager.RetryCount = value; }
+            get => downloadManager.RetryCount;
+            set => downloadManager.RetryCount = value;
         }
 
         public bool IsOpenMultiThread
         {
-            get { return downloadManager.IsOpenMultiThread; }
-            set { downloadManager.IsOpenMultiThread = value; }
+            get => downloadManager.IsOpenMultiThread;
+            set => downloadManager.IsOpenMultiThread = value;
         }
         
         public override void OnAwake()

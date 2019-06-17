@@ -9,8 +9,9 @@ namespace GameFramework.Sound.Base
 {
     public sealed class SoundManager : ISoundManager
     {
-        private Dictionary<string, SoundGroup> soundGroups;
         public static int Serial = 0;
+
+        private Dictionary<string, SoundGroup> soundGroups;
         private List<int> soundBeingLoaded;
         private List<int> soundToReleaseOnLoad;
         private IResourceManager resourceManager;
@@ -32,7 +33,13 @@ namespace GameFramework.Sound.Base
 
         public void OnUpdate(float elapseSeconds, float realElapseSeconds)
         {
-            
+            if (soundGroups.Count > 0)
+            {
+                foreach (KeyValuePair<string,SoundGroup> keyValuePair in soundGroups)
+                {
+                    keyValuePair.Value.OnUpdate(elapseSeconds, realElapseSeconds);
+                }
+            }
         }
 
         public void Shutdown()

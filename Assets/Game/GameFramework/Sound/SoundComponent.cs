@@ -42,6 +42,7 @@ namespace GameFramework.Sound
         {
             if (HasSoundGroup(info.Name)) return false;
             SoundGroup soundGroup = (new GameObject(name)).AddComponent<SoundGroup>();
+            soundGroup.OnAwake();
             soundGroup.Name = name;
             soundGroup.AddWhenDontHaveEnoughSound = info.AddWhenDontHaveEnoughSound;
             soundGroup.Mute = info.Mute;
@@ -61,6 +62,7 @@ namespace GameFramework.Sound
         private void AddSound(string name,SoundGroup soundGroup)
         {
             Base.Sound sound = new GameObject(name).AddComponent<Base.Sound>();
+            sound.OnInit();
             sound.SoundName = name;
             sound.transform.SetParent(soundGroup.transform);
             sound.transform.localPosition = Vector3.zero;
