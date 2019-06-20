@@ -29,6 +29,9 @@ namespace GameFramework
 
         [SerializeField] 
         private ThreadPriority threadPriority = ThreadPriority.High;
+       
+        [Header("Animation设置")] 
+        public int AnimationPriority = 50;
         
         [Header("DataNode设置")] 
         public int DataNodePriority = 50;
