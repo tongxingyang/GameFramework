@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace GameFramework.Utility.Extension
 {
@@ -35,6 +36,41 @@ namespace GameFramework.Utility.Extension
             {
                 transforms[i].gameObject.layer = layer;
             }
+        }
+
+        public static bool LayerMarskContains(this LayerMask mask, int layer)
+        {
+            return ((mask.value & (1 << layer)) > 0);
+        }
+        
+        public static bool LayerMarskContains(this LayerMask mask, GameObject gameobject) 
+        {
+            return ((mask.value & (1 << gameobject.layer)) > 0);
+        }
+
+        public static void DestoryAllChildren(this Transform transform)
+        {
+            for (int t = transform.childCount - 1; t >= 0; t--)
+            {
+                if (Application.isPlaying)
+                {
+                    UnityEngine.Object.Destroy(transform.GetChild(t).gameObject);
+                }
+                else
+                {
+                    UnityEngine.Object.DestroyImmediate(transform.GetChild(t).gameObject);
+                }
+            }
+        }
+        
+        public static void ScrollToTop(this ScrollRect scrollRect)
+        {
+            scrollRect.normalizedPosition = new Vector2(0, 1);
+        }
+
+        public static void ScrollToBottom(this ScrollRect scrollRect)
+        {
+            scrollRect.normalizedPosition = new Vector2(0, 0);
         }
     }
 }

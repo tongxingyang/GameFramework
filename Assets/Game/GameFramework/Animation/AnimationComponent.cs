@@ -1,30 +1,188 @@
-﻿using GameFramework.Base;
+﻿using System.Collections;
+using System.Collections.Generic;
+using GameFramework.Animation.Base;
+using GameFramework.Base;
 using GameFramework.Debug;
+using GameFramework.Tool;
 using GameFramework.Utility.Singleton;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace GameFramework.Animation
 {
     [DisallowMultipleComponent]
-    public class AnimationManager : GameFrameworkComponent
+    public class AnimationComponent : GameFrameworkComponent
     {
+        private static AnimationComponent self;
+
+        public static AnimationComponent Instance
+        {
+            get { return self; }
+        }
+        
+        private Dictionary<GameObject,AnimationItem> animationItems = new Dictionary<GameObject, AnimationItem>();
+        private Dictionary<GameObject,Coroutine> coroutines = new Dictionary<GameObject, Coroutine>();
+        private List<GameObject> removeList = new List<GameObject>();
+        private List<UnityAction> actions = new List<UnityAction>();
+        
         public override int Priority => SingletonMono<GameFramework>.GetInstance().AnimationPriority;
         
         public override void OnAwake()
         {
+            self = this;
             base.OnAwake();
         }
 
         public override void OnUpdate(float elapseSeconds, float realElapseSeconds)
         {
             base.OnUpdate(elapseSeconds, realElapseSeconds);
+            foreach (AnimationItem item in this.animationItems.Values)
+            {
+                this.UpdateAnimation(item);
+            }
+            foreach (GameObject item in this.removeList)
+            {
+                this.animationItems.Remove(item);
+            }
+            foreach (UnityAction action in this.actions)
+            {
+                try
+                {
+                    action.Invoke();
+                }
+                catch (System.Exception e)
+                {
+                    UnityEngine.Debug.LogErrorFormat(
+                        "AnimationManager action error: {0}",
+                        e
+                    );
+                }
+            }
+            this.removeList.Clear();
+            this.actions.Clear();
         }
 
+        private void UpdateAnimation(AnimationItem item)
+        {
+            bool isDone = true;
+            if (item.parameter.isColor)
+            {
+                isDone &= (item.obj == null || AnimationColor.Color(item));
+            }
+            if (item.parameter.isFading)
+            {
+                isDone &= (item.obj == null || AnimationFade.Fade(item));
+            }
+            if (item.parameter.isResizing)
+            {
+                isDone &= (item.obj == null || AnimationSize.Resize(item));
+            }
+            if (item.parameter.isRotating)
+            {
+                isDone &= (item.obj == null || AnimationRotate.Rotate(item));
+            }
+            if (item.parameter.isScaling)
+            {
+                isDone &= (item.obj == null || AnimationScale.Scale(item));
+            }
+            if (item.parameter.isMoving)
+            {
+                isDone &= (item.obj == null || AnimationMove.Move(item));
+            }
+            item.frameCallback?.Invoke();
+            if (isDone)
+            {
+                if (item.callback != null)
+                {
+                    if (!actions.Contains(item.callback))
+                    {
+                        actions.Add(item.callback);
+                    }
+                }
+                removeList.Add(item.obj);
+            }
+            else
+            {
+                item.time += Time.unscaledDeltaTime;
+            }
+        }
+        
         public override void Shutdown()
         {
             base.Shutdown();
+            foreach (KeyValuePair<GameObject,Coroutine> keyValuePair in coroutines)
+            {
+                StopCoroutine(keyValuePair.Value);
+            }
+            coroutines.Clear();
+            animationItems.Clear();
+            removeList.Clear();
+            actions.Clear();
+            
         }
 
+        private IEnumerator AnimationDelay(AnimationItem item,float delayTime)
+        {
+            yield return Yielders.GetWaitForSeconds(delayTime);
+            coroutines.Remove(item.obj);
+            if (!animationItems.ContainsKey(item.obj))
+            {
+                this.animationItems.Add(item.obj,item);
+            }
+        }
+
+        public AnimationParam GetAnimationParam(GameObject obj, string name)
+        {
+            AnimationCombo combo = obj.GetComponent<AnimationCombo>();
+            if (combo == null || combo.GetAnimation(name) == null)
+            {
+                return null;
+            }
+            return combo.GetAnimation(name);
+        }
+        
+        public static void PlayAnimation(GameObject obj,string name,UnityAction finishCallback = null,UnityAction frameCallback = null,bool loop = false, float delay = 0)
+        {
+            AnimationParam param = Instance.GetAnimationParam(obj, name);
+            if (obj == null || param == null)
+            {
+                return;
+            }
+            param.loop = param.loop ? param.loop : loop;
+            param.delay = delay != 0 ? delay : param.delay;
+            AnimationItem item = new AnimationItem
+            {
+                obj = obj,
+                time = param.startTime,
+                parameter = param,
+                callback = finishCallback,
+                frameCallback = frameCallback
+            };
+            if (param.delay != 0)
+            {
+                if (Instance.coroutines.ContainsKey(obj))
+                {
+                    Instance.StopCoroutine(Instance.coroutines[obj]);
+                    Instance.coroutines[obj] = Instance.StartCoroutine(Instance.AnimationDelay(item, param.delay));
+                }
+                else
+                {
+                    Instance.coroutines.Add(obj, Instance.StartCoroutine(Instance.AnimationDelay(item, param.delay)));
+                }
+            }
+            else
+            {
+                if (Instance.animationItems.ContainsKey(obj))
+                {
+                    Instance.animationItems[obj] = item;
+                }
+                else
+                {
+                    Instance.animationItems.Add(obj,item);
+                }
+            }
+        }
+        
         #region Animator
 
         public static int GetIDParamByName(string name)
@@ -241,6 +399,19 @@ namespace GameFramework.Animation
         #endregion
         
         #endregion
-       
+
+        public static bool HasParameterOfType(Animator animator, string name, AnimatorControllerParameterType type)
+        {
+            if (string.IsNullOrEmpty(name)) { return false; }
+            AnimatorControllerParameter[] parameters = animator.parameters;
+            foreach (AnimatorControllerParameter currParam in parameters) 
+            {
+                if (currParam.type == type && currParam.name == name) 
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }
