@@ -20,11 +20,10 @@ namespace GameFramework.Animation.Base
                 time = Mathf.Min(item.time, param.moveDuration);
             }
             Vector3 currentPosition = new Vector3(
-                startPosition.x + section.x * param.MoveCurveX.Evaluate(time),
-                startPosition.y + section.y * param.MoveCurveY.Evaluate(time),
-                startPosition.z + section.z * param.MoveCurveZ.Evaluate(time)
+                startPosition.x + section.x * param.moveCurveX.Evaluate(time),
+                startPosition.y + section.y * param.moveCurveY.Evaluate(time),
+                startPosition.z + section.z * param.moveCurveZ.Evaluate(time)
             );
-            RectTransform rectTransform;
             if (item.parameter.positionSpace == enPositionSpace.Self)
             {
                 item.obj.transform.localPosition = currentPosition;
@@ -35,7 +34,7 @@ namespace GameFramework.Animation.Base
             }
             else
             {
-                rectTransform = item.obj.GetComponent<RectTransform>();
+                var rectTransform = item.obj.GetComponent<RectTransform>();
                 rectTransform.anchoredPosition = currentPosition;
             }
             if (item.time >= item.parameter.colorDuration && !item.parameter.loop)
