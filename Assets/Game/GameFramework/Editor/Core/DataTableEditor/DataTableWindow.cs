@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using GameFramework.DataTable.Base;
 using GameFramework.Utility;
@@ -35,6 +36,10 @@ public class DataTableWindow : EditorWindow
     {
         for (int i = 0; i < paths.Length; i++)
         {
+            if (paths.Contains("Localization"))
+            {
+                continue;
+            }
             FileInfo fileInfo = new FileInfo(paths[i]);
             int index = fileInfo.Name.LastIndexOf('.');
             string destName = DestDir + fileInfo.Name.Substring(0, index) + ".bytes";
@@ -239,9 +244,17 @@ public class DataTableWindow : EditorWindow
     private static string[] SplitLine(string line)
     {
         line = line.TrimEnd(eof);
-        return line.Split(',');
+        return SplitCsvLine(line);
     }
 
+    private static string CsvLineSeperator = @"(((?<x>(?=[,\r\n]+))|""(?<x>([^""]|"""")+)""|(?<x>[^,\r\n]+)),?)";
+    public static string[] SplitCsvLine(string line) {
+        var value = (from System.Text.RegularExpressions.Match m in System.Text.RegularExpressions.Regex.Matches(line,
+                CsvLineSeperator, System.Text.RegularExpressions.RegexOptions.ExplicitCapture)
+            select m.Groups[1].Value);
+        return value.ToArray();
+    }
+    
     private static string[] RemoveUnuse(string[] arr,bool[] useList)
     {
        List<string> list = new List<string>();
