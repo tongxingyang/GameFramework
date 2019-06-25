@@ -1,7 +1,9 @@
 ﻿using GameFramework.Base;
 using GameFramework.Debug;
+using GameFramework.DevelopTool;
 using GameFramework.Localization;
 using GameFramework.Sound;
+using GameFramework.Utility.Extension;
 using GameFramework.Utility.Singleton;
 using UnityEngine;
 
@@ -109,8 +111,17 @@ namespace GameFramework
 
         #region Unity Function
 
+
         void Awake()
         {
+            if (AppConst.GameConfig.IsShowFpsCounter)
+            {
+                this.gameObject.GetOrAddComponent<FPSCounter>();
+            }
+            if (AppConst.GameConfig.IsShowMemoryDetector)
+            {
+                this.gameObject.GetOrAddComponent<MemoryDetector>();
+            }
             Application.lowMemory += OnLowMemory;
             InitDebuger();
             Application.backgroundLoadingPriority = ThreadPriority;
@@ -132,7 +143,7 @@ namespace GameFramework
         {
             Singleton<GameEntry>.GetInstance().OnUpdate(Time.deltaTime, Time.unscaledDeltaTime);
         }
-
+        
         void LateUpdate()
         {
             Singleton<GameEntry>.GetInstance().OnLateUpdate();
