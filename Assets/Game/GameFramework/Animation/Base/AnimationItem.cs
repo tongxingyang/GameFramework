@@ -9,6 +9,14 @@ namespace GameFramework.Animation.Base
         UI = 1,
         World = 2,
     }
+    
+    public enum AnimationPlayType
+    {
+        Once,
+        Loop,
+        PingPong,
+    }
+    
     public class AnimationItem
     {
         public GameObject obj;

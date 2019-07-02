@@ -8,34 +8,55 @@ namespace GameFramework.Animation.Base
         {
             AnimationParam param = item.parameter;
             float time = 0;
-            if (param.loop)
+            if (param.playType == AnimationPlayType.Loop)
             {
-                time = item.time % param.colorDuration;
+                float factor = item.time / param.durationTime;
+                time = factor - Mathf.Floor(factor);
             }
-            else
+            else if(param.playType == AnimationPlayType.PingPong)
             {
-                time = Mathf.Min(item.time, param.colorDuration);
+                float factor = item.time / param.durationTime;
+                bool isOdd = Mathf.FloorToInt(factor)%2 == 1;
+                factor =factor - Mathf.Floor(factor); 
+                time = isOdd ? 1f-factor:factor;
             }
+            else if (param.playType == AnimationPlayType.Once)
+            {
+                time = Mathf.Clamp01(item.time / param.durationTime);
+            }
+            Color diffColor = param.targetColor - param.startColor;
             if (item.parameter.image != null)
             {
                 item.parameter.image.color = new Color(
-                    param.colorCurveR.Evaluate(time), param.colorCurveG.Evaluate(time),
-                    param.colorCurveB.Evaluate(time), param.colorCurveA.Evaluate(time));
+                    param.startColor.r + diffColor.r * param.colorCurveR.Evaluate(time), param.startColor.g + diffColor.g * param.colorCurveG.Evaluate(time),
+                    param.startColor.b + diffColor.b * param.colorCurveB.Evaluate(time), param.startColor.a + diffColor.a * param.colorCurveA.Evaluate(time));
             }
             else if (item.parameter.renderer != null)
             {
                 item.parameter.renderer.color = new Color(
-                    param.colorCurveR.Evaluate(time), param.colorCurveG.Evaluate(time),
-                    param.colorCurveB.Evaluate(time), param.colorCurveA.Evaluate(time));
+                    param.startColor.r + diffColor.r * param.colorCurveR.Evaluate(time), param.startColor.g + diffColor.g * param.colorCurveG.Evaluate(time),
+                    param.startColor.b + diffColor.b * param.colorCurveB.Evaluate(time), param.startColor.a + diffColor.a * param.colorCurveA.Evaluate(time));
             }
             else
             {
                 return true;
             }
 
-            if (item.time >= item.parameter.colorDuration && !item.parameter.loop)
+            if (item.time >= item.parameter.durationTime && item.parameter.playType == AnimationPlayType.Once)
             {
                 return true;
+            }
+            if (item.parameter.playType == AnimationPlayType.Loop ||
+                item.parameter.playType == AnimationPlayType.PingPong)
+            {
+                if (param.loopCount == -1 || param.loopCount == 0)
+                {
+                    return false;
+                }
+                if (item.time >= item.parameter.durationTime * item.parameter.loopCount)
+                {
+                    return true;
+                }
             }
             return false;
         }

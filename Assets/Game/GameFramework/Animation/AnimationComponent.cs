@@ -103,7 +103,14 @@ namespace GameFramework.Animation
             }
             else
             {
-                item.time += Time.unscaledDeltaTime;
+                if (item.parameter.isRealTime)
+                {
+                    item.time += Time.unscaledDeltaTime;
+                }
+                else
+                {
+                    item.time += Time.deltaTime;
+                }
             }
         }
         
@@ -141,19 +148,17 @@ namespace GameFramework.Animation
             return combo.GetAnimation(name);
         }
         
-        public static void PlayAnimation(GameObject obj,string name,UnityAction finishCallback = null,UnityAction frameCallback = null,bool loop = false, float delay = 0)
+        public static void PlayAnimation(GameObject obj,string name,UnityAction finishCallback = null,UnityAction frameCallback = null)
         {
             AnimationParam param = Instance.GetAnimationParam(obj, name);
             if (obj == null || param == null)
             {
                 return;
             }
-            param.loop = param.loop ? param.loop : loop;
-            param.delay = delay != 0 ? delay : param.delay;
             AnimationItem item = new AnimationItem
             {
                 obj = obj,
-                time = param.startTime,
+                time = param.durationTime,
                 parameter = param,
                 callback = finishCallback,
                 frameCallback = frameCallback
@@ -182,6 +187,34 @@ namespace GameFramework.Animation
                 }
             }
         }
+
+        public static void StopAnimation(GameObject obj, string name, bool isCallBack = false)
+        {
+            AnimationParam param = Instance.GetAnimationParam(obj, name);
+            if (obj == null || param == null)
+            {
+                return;
+            }
+            if (Instance.coroutines.ContainsKey(obj))
+            {
+                Instance.StopCoroutine(Instance.coroutines[obj]);
+                Instance.coroutines.Remove(obj);
+                return;
+            }
+            if (Instance.animationItems.ContainsKey(obj))
+            {
+                var item = Instance.animationItems[obj];
+                if (item.callback != null && isCallBack)
+                {
+                    if (!Instance.actions.Contains(item.callback))
+                    {
+                        Instance.actions.Add(item.callback);
+                    }
+                }
+            }
+            Instance.removeList.Add(obj);
+        }
+        
         
         #region Animator
 

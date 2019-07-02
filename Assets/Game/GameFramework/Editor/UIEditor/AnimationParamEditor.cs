@@ -20,8 +20,15 @@ namespace Game.GameFramework.Editor.UIEditor
         {
             param.animationName = EditorGUILayout.TextField(new GUIContent("动画名称"), param.animationName);
             param.delay = EditorGUILayout.FloatField(new GUIContent("延迟时间"), param.delay);
-            param.loop = EditorGUILayout.Toggle(new GUIContent("是否循环"), param.loop);
-            param.startTime = EditorGUILayout.FloatField(new GUIContent("起始时间"), param.startTime);
+            param.playType = (AnimationPlayType) EditorGUILayout.EnumPopup(new GUIContent("动画类型"),param.playType);
+            if (param.playType != AnimationPlayType.Once)
+            {
+                EditorGUILayout.HelpBox("-1或者0 为永久循环", MessageType.Info);
+                param.loopCount = EditorGUILayout.IntField(new GUIContent("循环次数"), param.loopCount);
+            }
+            param.durationTime = EditorGUILayout.FloatField(new GUIContent("动画时间"), param.durationTime);
+            param.isRealTime = EditorGUILayout.Toggle(new GUIContent("是否随时间缩放"), param.isRealTime);
+            
             param.isColor = EditorGUILayout.Toggle(new GUIContent("Color Animation"), param.isColor);
             if (param.isColor)
             {
@@ -64,8 +71,9 @@ namespace Game.GameFramework.Editor.UIEditor
 
         private void ShowColorParams()
         {
-            EditorGUILayout.LabelField(new GUIContent("曲线时长"), new GUIContent(param.colorDuration.ToString()));
-            this.param.renderer = EditorGUILayout.ObjectField(new GUIContent("Renderer", "The renderer of the object."),
+            this.param.startColor = EditorGUILayout.ColorField(new GUIContent("开始颜色值"), param.startColor);
+            this.param.targetColor = EditorGUILayout.ColorField(new GUIContent("结束颜色值"), param.targetColor);
+            this.param.renderer = EditorGUILayout.ObjectField(new GUIContent("SpriteRenderer", "The renderer of the object."),
                 this.param.renderer, typeof(SpriteRenderer), true) as SpriteRenderer;
             this.param.image = EditorGUILayout.ObjectField(new GUIContent("Image", "The image of the object."),
                 this.param.image, typeof(Image), true) as Image;
@@ -77,7 +85,8 @@ namespace Game.GameFramework.Editor.UIEditor
 
         private void ShowFadeParams()
         {
-            EditorGUILayout.LabelField(new GUIContent("曲线时长"), new GUIContent(param.fadeDuration.ToString()));
+            this.param.startAlpha = EditorGUILayout.FloatField(new GUIContent("开始alpha值"), param.startAlpha);
+            this.param.targetAlpha = EditorGUILayout.FloatField(new GUIContent("结束alpha值"), param.targetAlpha);
             this.param.canvasGroup =
                 EditorGUILayout.ObjectField(new GUIContent("CanvasGroup", "The canvasGroup of the object."),
                     this.param.canvasGroup, typeof(CanvasGroup), true) as CanvasGroup;
@@ -91,14 +100,16 @@ namespace Game.GameFramework.Editor.UIEditor
         
         private void ShowResizeParams()
         {
-            EditorGUILayout.LabelField(new GUIContent("曲线时长"), new GUIContent(param.resizeDuration.ToString()));
+            this.param.startSize = EditorGUILayout.Vector2Field(new GUIContent("开始大小值"), param.startSize);
+            this.param.targetSize = EditorGUILayout.Vector2Field(new GUIContent("结束大小值"), param.targetSize);
             this.param.sizeCurveX = EditorGUILayout.CurveField(new GUIContent("Size X"), this.param.sizeCurveX);
             this.param.sizeCurveY = EditorGUILayout.CurveField(new GUIContent("Size Y"), this.param.sizeCurveY);
         }
         
         private void ShowRotateParams()
         {
-            EditorGUILayout.LabelField(new GUIContent("曲线时长"), new GUIContent(param.rotateDuration.ToString()));
+            this.param.startAngle = EditorGUILayout.Vector3Field(new GUIContent("开始角度值"), param.startAngle);
+            this.param.targetAngle = EditorGUILayout.Vector3Field(new GUIContent("结束角度值"), param.targetAngle);
             this.param.angleInterval =
                 EditorGUILayout.IntField(new GUIContent("Angle Interval"), this.param.angleInterval);
             this.param.rotateCurveX = EditorGUILayout.CurveField(new GUIContent("Rotate X"), this.param.rotateCurveX);
@@ -108,7 +119,8 @@ namespace Game.GameFramework.Editor.UIEditor
         
         private void ShowScaleParams()
         {
-            EditorGUILayout.LabelField(new GUIContent("曲线时长"), new GUIContent(param.scaleDuration.ToString()));
+            this.param.startScale = EditorGUILayout.Vector3Field(new GUIContent("开始缩放值"), param.startScale);
+            this.param.targetScale = EditorGUILayout.Vector3Field(new GUIContent("结束缩放值"), param.targetScale);
             this.param.scaleCurveX = EditorGUILayout.CurveField(new GUIContent("Scale X"), this.param.scaleCurveX);
             this.param.scaleCurveY = EditorGUILayout.CurveField(new GUIContent("Scale Y"), this.param.scaleCurveY);
             this.param.scaleCurveZ = EditorGUILayout.CurveField(new GUIContent("Scale Z"), this.param.scaleCurveZ);
@@ -116,9 +128,8 @@ namespace Game.GameFramework.Editor.UIEditor
         
         private void ShowMoveParams()
         {
-            EditorGUILayout.LabelField(new GUIContent("曲线时长"), new GUIContent(param.moveDuration.ToString()));
-            this.param.startPosition = EditorGUILayout.Vector3Field(new GUIContent("开始位置"), param.startPosition);
-            this.param.targetPosition = EditorGUILayout.Vector3Field(new GUIContent("目标位置"), param.targetPosition);
+            this.param.startPosition = EditorGUILayout.Vector3Field(new GUIContent("开始位置值"), param.startPosition);
+            this.param.targetPosition = EditorGUILayout.Vector3Field(new GUIContent("结束位置值"), param.targetPosition);
             this.param.positionSpace = (enPositionSpace) EditorGUILayout.EnumPopup(new GUIContent("参考坐标系"),param.positionSpace);
             this.param.moveCurveX = EditorGUILayout.CurveField(new GUIContent("Move X"), this.param.moveCurveX);
             this.param.moveCurveY = EditorGUILayout.CurveField(new GUIContent("Move Y"), this.param.moveCurveY);
