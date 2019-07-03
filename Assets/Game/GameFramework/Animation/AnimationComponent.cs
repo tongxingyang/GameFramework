@@ -148,7 +148,7 @@ namespace GameFramework.Animation
             return combo.GetAnimation(name);
         }
         
-        public static void PlayAnimation(GameObject obj,string name,UnityAction finishCallback = null,UnityAction frameCallback = null)
+        public static void PlayAnimation(GameObject obj,string name,float startTime = 0,UnityAction finishCallback = null,UnityAction frameCallback = null)
         {
             AnimationParam param = Instance.GetAnimationParam(obj, name);
             if (obj == null || param == null)
@@ -158,7 +158,7 @@ namespace GameFramework.Animation
             AnimationItem item = new AnimationItem
             {
                 obj = obj,
-                time = param.durationTime,
+                time = startTime,
                 parameter = param,
                 callback = finishCallback,
                 frameCallback = frameCallback
