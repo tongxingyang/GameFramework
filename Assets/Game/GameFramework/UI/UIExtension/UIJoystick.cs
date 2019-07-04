@@ -392,6 +392,8 @@ namespace GameFramework.UI.UIExtension
             Vector2 pos;
             if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(TouchBorderRectTransform, data, UICamera, out pos))
                 return;
+            pos.x = pos.x + TouchBorderRectTransform.localPosition.x;
+            pos.y = pos.y + TouchBorderRectTransform.localPosition.y;
             BackgroundRectTransform.anchoredPosition = pos;
             CursorRectTransform.anchoredPosition = pos;
             SetStateChange(true);
@@ -403,6 +405,8 @@ namespace GameFramework.UI.UIExtension
             Vector2 pos;
             if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(TouchBorderRectTransform, data, UICamera, out pos))
                 return;
+            pos.x = pos.x + TouchBorderRectTransform.localPosition.x;
+            pos.y = pos.y + TouchBorderRectTransform.localPosition.y;
             Vector2 link = pos - BackgroundRectTransform.anchoredPosition;
             if (link.sqrMagnitude <= MoveMaxDistance * MoveMaxDistance)
                 CursorRectTransform.anchoredPosition = pos;
