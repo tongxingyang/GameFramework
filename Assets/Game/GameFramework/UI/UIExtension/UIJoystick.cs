@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using com.ootii.Input;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -446,21 +447,21 @@ namespace GameFramework.UI.UIExtension
         
         private Vector2 GetDir()
         {
-            if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.D))
+            if (InputManager.IsPressed(EnumInput.W) && InputManager.IsPressed(EnumInput.D))
                 return new Vector2(100, 100);
-            else if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.A))
+            else if (InputManager.IsPressed(EnumInput.W) && InputManager.IsPressed(EnumInput.A))
                 return new Vector2(-100, 100);
-            else if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.D))
+            else if (InputManager.IsPressed(EnumInput.S) && InputManager.IsPressed(EnumInput.D))
                 return new Vector2(100, -100);
-            else if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.A))
+            else if (InputManager.IsPressed(EnumInput.S) && InputManager.IsPressed(EnumInput.A))
                 return new Vector2(-100, -100);
-            else if (Input.GetKey(KeyCode.W))
+            else if (InputManager.IsPressed(EnumInput.W))
                 return new Vector2(0, 100);
-            else if (Input.GetKey(KeyCode.S))
+            else if (InputManager.IsPressed(EnumInput.S))
                 return new Vector2(0, -100);
-            else if (Input.GetKey(KeyCode.A))
+            else if (InputManager.IsPressed(EnumInput.A))
                 return new Vector2(-100, 0);
-            else if (Input.GetKey(KeyCode.D))
+            else if (InputManager.IsPressed(EnumInput.D))
                 return new Vector2(100, 0);
             else
                 return Vector2.zero;

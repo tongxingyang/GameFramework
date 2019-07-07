@@ -57,6 +57,9 @@ namespace GameFramework
         [Header("Setting设置")] 
         public int SettingPriority = 50;
 
+        [Header("Input设置")] 
+        public int InputPriority = 50;
+
         [Header("Sound设置")] 
         [SerializeField] public int SoundPriority = 50;
         public SoundGroupInfo[] SoundGroupInfos;
