@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using com.ootii.Input;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -13,6 +14,7 @@ namespace GameFramework.UI.UIExtension
         public RectTransform BackgroundRectTransform;
         public RectTransform CursorRectTransform;
         public RectTransform TouchBorderRectTransform;
+        public RectTransform InstructionsRectTransform;
         public float MoveMaxDistance = 150f;
         public float CheckTimeMobile = 0.2f;
         public float CheckTimePC = 0.1f;
@@ -30,6 +32,7 @@ namespace GameFramework.UI.UIExtension
         private bool isInit = false;
         private Vector2 backgroundFirstPos;
         private Vector2 centerFirstPos;
+        private Vector2 instructionsFirstPos;
         private Vector2 oldDir = Vector2.zero;
         private float lastDownTime;
         private float pressHoldTime = 0.4f;
@@ -44,6 +47,8 @@ namespace GameFramework.UI.UIExtension
             SetStateChange(false);
             backgroundFirstPos = BackgroundRectTransform.anchoredPosition;
             centerFirstPos = CursorRectTransform.anchoredPosition;
+            instructionsFirstPos = InstructionsRectTransform.anchoredPosition;
+            InstructionsRectTransform.gameObject.SetActive(false);
             AddPointDown(JoystickPointDown);
             AddDrag(JoystickDrag);
             AddPointUp(JoystickPointUp);
@@ -396,6 +401,7 @@ namespace GameFramework.UI.UIExtension
             pos.y = pos.y + TouchBorderRectTransform.localPosition.y;
             BackgroundRectTransform.anchoredPosition = pos;
             CursorRectTransform.anchoredPosition = pos;
+            InstructionsRectTransform.anchoredPosition = pos;
             SetStateChange(true);
             lastDownTime = Time.time;
         }
@@ -403,6 +409,7 @@ namespace GameFramework.UI.UIExtension
         private void JoystickDrag(Vector2 data)
         {
             Vector2 pos;
+            InstructionsRectTransform.gameObject.SetActive(true);
             if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(TouchBorderRectTransform, data, UICamera, out pos))
                 return;
             pos.x = pos.x + TouchBorderRectTransform.localPosition.x;
@@ -413,6 +420,9 @@ namespace GameFramework.UI.UIExtension
             else
                 CursorRectTransform.anchoredPosition = BackgroundRectTransform.anchoredPosition + link.normalized * MoveMaxDistance;
 
+            float angle = Vector2.Angle(Vector2.up, link.normalized);
+            angle *= Mathf.Sign(Vector3.Cross(Vector2.up, link.normalized).z);
+            InstructionsRectTransform.localEulerAngles = new Vector3(0, 0, angle);
         }
 
         private void JoystickPointUp(Vector2 data)
@@ -423,6 +433,9 @@ namespace GameFramework.UI.UIExtension
             BackgroundRectTransform.anchoredPosition = backgroundFirstPos;
             CursorRectTransform.anchoredPosition = centerFirstPos;
             SetStateChange(false);
+            InstructionsRectTransform.anchoredPosition = instructionsFirstPos;
+            InstructionsRectTransform.gameObject.SetActive(false);
+            InstructionsRectTransform.localEulerAngles = Vector3.zero;
 #if UNITY_EDITOR || UNITY_STANDALONE
             if (Time.time - lastDownTime < CheckTimePC && sq > 100)
                 OnJoystickSlider?.Invoke();
@@ -434,21 +447,21 @@ namespace GameFramework.UI.UIExtension
         
         private Vector2 GetDir()
         {
-            if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.D))
+            if (InputManager.IsPressed(EnumInput.W) && InputManager.IsPressed(EnumInput.D))
                 return new Vector2(100, 100);
-            else if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.A))
+            else if (InputManager.IsPressed(EnumInput.W) && InputManager.IsPressed(EnumInput.A))
                 return new Vector2(-100, 100);
-            else if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.D))
+            else if (InputManager.IsPressed(EnumInput.S) && InputManager.IsPressed(EnumInput.D))
                 return new Vector2(100, -100);
-            else if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.A))
+            else if (InputManager.IsPressed(EnumInput.S) && InputManager.IsPressed(EnumInput.A))
                 return new Vector2(-100, -100);
-            else if (Input.GetKey(KeyCode.W))
+            else if (InputManager.IsPressed(EnumInput.W))
                 return new Vector2(0, 100);
-            else if (Input.GetKey(KeyCode.S))
+            else if (InputManager.IsPressed(EnumInput.S))
                 return new Vector2(0, -100);
-            else if (Input.GetKey(KeyCode.A))
+            else if (InputManager.IsPressed(EnumInput.A))
                 return new Vector2(-100, 0);
-            else if (Input.GetKey(KeyCode.D))
+            else if (InputManager.IsPressed(EnumInput.D))
                 return new Vector2(100, 0);
             else
                 return Vector2.zero;

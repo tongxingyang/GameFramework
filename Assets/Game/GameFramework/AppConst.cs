@@ -23,5 +23,13 @@ namespace GameFramework
         {
             public static readonly Vector2 GameResolution = new Vector2(1136, 640);
         }
+
+        public class PlayerPrefsConfig
+        {
+            public static bool useSecure = true;
+            public static int Iterations = 555;
+            public static string Password = "txy!123";
+            public static string Salt = "txy";
+        }
     }
 }
