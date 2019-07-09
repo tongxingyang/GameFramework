@@ -117,13 +117,9 @@ namespace GameFramework
 
         void Awake()
         {
-            if (AppConst.GameConfig.IsShowFpsCounter)
+            if (AppConst.GameConfig.IsShowDevelopInfo)
             {
-                this.gameObject.GetOrAddComponent<FPSCounter>();
-            }
-            if (AppConst.GameConfig.IsShowMemoryDetector)
-            {
-                this.gameObject.GetOrAddComponent<MemoryDetector>();
+                this.gameObject.GetOrAddComponent<DevelopComponent>();
             }
             Application.lowMemory += OnLowMemory;
             InitDebuger();

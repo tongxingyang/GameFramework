@@ -13,8 +13,7 @@ namespace GameFramework
         public class GameConfig
         {
             public static readonly bool IsDebugMode = true;
-            public static readonly bool IsShowFpsCounter = true;
-            public static readonly bool IsShowMemoryDetector = true;
+            public static readonly bool IsShowDevelopInfo = true;
             public static readonly bool DebugerEnableLog = true;
             public static readonly bool DebugerEnableColor = true;
             public static readonly bool DebugerEnableSave = false;
