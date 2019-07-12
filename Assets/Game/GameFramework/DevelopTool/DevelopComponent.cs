@@ -5,20 +5,27 @@ namespace GameFramework.DevelopTool
     public partial class DevelopComponent : MonoBehaviour
     {
         public static DevelopComponent Instance = null;
-
+        private DevelopDebugFps _fpsInfo  = null;
+        private DevelopDebugSystem _sysInfo = null;
+        private DevelopDebugSelect _selectInfo = null;
+        private DevelopDebugProfiler _profilerInfo = null;
+        private DevelopDebugLog _logInfo = null;
+        private bool isInit = false;
         void Awake()
         {
             Instance = this;
+            _fpsInfo = new DevelopDebugFps();
+            _sysInfo = new DevelopDebugSystem();
+            _selectInfo = new DevelopDebugSelect();
+            _profilerInfo = new DevelopDebugProfiler();
+            _logInfo = new DevelopDebugLog();
+            isInit = true;
             _fpsInfo.Init();
             Application.logMessageReceived += _logInfo.OnLogMessageReceived;
             SetShowType(ShowType.ShowNon);
         }
 
-        private DevelopDebugFps _fpsInfo = new DevelopDebugFps();
-        private DevelopDebugSystem _sysInfo = new DevelopDebugSystem();
-        private DevelopDebugSelect _selectInfo = new DevelopDebugSelect();
-        private DevelopDebugProfiler _profilerInfo = new DevelopDebugProfiler();
-        private DevelopDebugLog _logInfo = new DevelopDebugLog();
+       
 
         private static float _myScreenWidth = 960f;
         private static float _myScreenHeight = 640f;
@@ -51,6 +58,7 @@ namespace GameFramework.DevelopTool
 
         void Update()
         {
+            if(!isInit) return;
             _fpsInfo.Update();
             if (UnityEngine.Input.GetKeyDown(KeyCode.F4) && _showType == ShowType.ShowNon)
             {
@@ -128,6 +136,16 @@ namespace GameFramework.DevelopTool
             }
         }
 
+        void OnDestroy()
+        {
+            Application.logMessageReceived -= _logInfo.OnLogMessageReceived;
+            _fpsInfo = null;
+            _sysInfo = null;
+            _selectInfo = null;
+            _profilerInfo = null;
+            _logInfo = null;
+        }
+        
         #region DevelopDebugSelect
 
         public class DevelopDebugSelect

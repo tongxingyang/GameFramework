@@ -12,7 +12,50 @@ namespace GameFramework.Setting
     public class SettingComponent:GameFrameworkComponent
     {
         public override int Priority => SingletonMono<GameFramework>.GetInstance().SettingPriority;
-        
+
+        private enShaderLODLevel shaderLodLevel = enShaderLODLevel.High;
+
+        public enShaderLODLevel ShaderLodLevel
+        {
+            get => shaderLodLevel;
+            set
+            {
+                if (shaderLodLevel != value)
+                {
+                    shaderLodLevel = value;
+                    if (shaderLodLevel == enShaderLODLevel.High)
+                    {
+                        Shader.globalMaximumLOD = 600;
+                    }
+                    else if (shaderLodLevel == enShaderLODLevel.Normal)
+                    {
+                        Shader.globalMaximumLOD = 400;
+                    }
+                    else if(shaderLodLevel == enShaderLODLevel.Low)
+                    {
+                        Shader.globalMaximumLOD = 200;
+                    }
+                    SetShaderLodLevel();
+                }
+            }
+        }
+
+        public override void OnAwake()
+        {
+            base.OnAwake();
+            ShaderLodLevel = GetShaderLodLevel();
+        }
+
+        public enShaderLODLevel GetShaderLodLevel()
+        {
+            return (enShaderLODLevel)GetInt(PlayerPrefsKeys.ShaderLODLevel, 2);
+        }
+
+        public void SetShaderLodLevel()
+        {
+            SetInt(PlayerPrefsKeys.ShaderLODLevel,(int)ShaderLodLevel);
+        }
+
         public bool HasSetting(string settingName)
         {
             return PlayerPrefsUtility.HasKey(settingName);

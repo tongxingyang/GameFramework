@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Profiling;
 
 namespace GameFramework.DevelopTool
@@ -17,6 +18,18 @@ namespace GameFramework.DevelopTool
                 }
                 GUILayout.Space(10);
                 GUILayout.Label("<b>内存信息</b>");
+                GUILayout.BeginHorizontal();
+                if (GUILayout.Button("卸载未使用的资源"))
+                {
+                    Resources.UnloadUnusedAssets();
+                }
+                GUILayout.EndHorizontal();
+                GUILayout.BeginHorizontal();
+                if (GUILayout.Button("执行GC垃圾回收"))
+                {
+                    GC.Collect();
+                }
+                GUILayout.EndHorizontal();
                 GUILayout.BeginVertical("box");
                 {
                     Instance.DrawItem("Supported:", Profiler.supported.ToString());

@@ -30,7 +30,7 @@ namespace GameFramework.Utility.PlayerPrefs
 
         public static float GetFloat(string key, float defaultValue = 0.0f)
         {
-            float retValue = defaultValue;
+            float retValue;
 
             string strValue = GetString(key);
 
@@ -46,7 +46,7 @@ namespace GameFramework.Utility.PlayerPrefs
 
         public static int GetInt(string key, int defaultValue = 0)
         {
-            int retValue = defaultValue;
+            int retValue;
 
             string strValue = GetString(key);
 
@@ -62,7 +62,7 @@ namespace GameFramework.Utility.PlayerPrefs
 
         public static bool GetBool(string key, bool defaultValue = false)
         {
-            bool retValue = defaultValue;
+            bool retValue;
 
             string strValue = GetString(key);
 
