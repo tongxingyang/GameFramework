@@ -448,3 +448,71 @@ namespace GameFramework.Animation
         }
     }
 }
+/*
+namespace MeshAnimation
+{
+//    [RequireComponent(typeof(MeshRenderer))]
+    [DisallowMultipleComponent]
+    public class MeshAnimator : MonoBehaviour
+    {
+        public ExportMeshAnimationData sss;
+        protected Transform CachedTransform;
+        protected List<MeshFilter> SubMeshFilter;
+//        protected MeshRenderer MeshRenderer;
+        protected MeshAnimationDataItem MeshAnimationDataItem;
+        public float SpeedFactor { get; set; }
+        public string RoleName = "";
+
+        private int frame = 0;
+        private float inx = 0;
+        void Awake()
+        {
+            CachedTransform = transform;
+//            MeshRenderer = gameObject.GetComponent<MeshRenderer>();
+            SpeedFactor = 1;
+            MeshAnimationDataItem jjjj = new MeshAnimationDataItem(sss);
+            SetAnimationItem(jjjj);
+        }
+
+        public void SetAnimationItem(MeshAnimationDataItem item)
+        {
+            MeshAnimationDataItem = item;
+            SubMeshFilter = new List<MeshFilter>();
+//            MeshFilter mainMf = gameObject.AddComponent<MeshFilter>();
+//            MeshRenderer mainMr = gameObject.GetComponent<MeshRenderer>();
+//            SubMeshFilter.Add(mainMf);
+            int otherSubMeshCount = item.animationSubMeshDic.Count ;
+            Transform parent = CachedTransform;
+            while (otherSubMeshCount-- > 0)
+            {
+                GameObject child = new GameObject("SubMesh"+otherSubMeshCount);
+                MeshFilter childMf = child.AddComponent<MeshFilter>();
+                child.AddComponent<MeshRenderer>();
+                SubMeshFilter.Add(childMf);
+//                childMr.sharedMaterial = mainMr.sharedMaterial;
+                child.transform.SetParent(parent,false);
+//                parent = child.transform;
+            }
+        }
+
+        void Update()
+        {
+            inx += Time.deltaTime;
+            if (inx >= 0.033f)
+            {
+                inx = 0;
+                MeshAnimationDataItem.UpdateMeshWithSubMesh(frame,"stand",SubMeshFilter);
+                frame++;
+                if (frame >= 60)
+                {
+                    frame = 0;
+                }
+
+            }
+//            MeshAnimationDataItem.UpdateMeshWithSubMesh();
+        }
+        
+    }
+    
+}
+*/
