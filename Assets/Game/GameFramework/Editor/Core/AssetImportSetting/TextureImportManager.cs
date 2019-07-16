@@ -10,7 +10,6 @@ namespace GameFramework.Editor.Core.AssetImportSetting
     public class TextureImportManager
     {
         public string TextureImportRulePath = "Assets/TextureImportRules.asset";
-
         public class TextureImportRule : ScriptableObject
         {
             [Serializable]
@@ -18,10 +17,7 @@ namespace GameFramework.Editor.Core.AssetImportSetting
             {
                 public string AssetPath = String.Empty;
                 public string FileFilter = String.Empty;
-                public bool IsRecursive = true;
-                public int Index = -1;
-                public int TotalCount = 0;
-                public int TotalMenory = 0;
+                public int Index = 0;
                 public bool IsMinMap = false;
                 public bool IsReadWriteEnable = false;
                 public int MaxTextureSize = -1;
@@ -29,7 +25,6 @@ namespace GameFramework.Editor.Core.AssetImportSetting
                 public TextureImporterType TextureImporterType = TextureImporterType.Default;
                 public TextureImporterFormat AndroidImporterFormat = TextureImporterFormat.ETC2_RGB4;
                 public TextureImporterFormat IphoneImporterFormat = TextureImporterFormat.PVRTC_RGB4;
-
                 public bool IsMatch(string name)
                 {
                     return Regex.IsMatch(name, FileFilter);
@@ -45,7 +40,7 @@ namespace GameFramework.Editor.Core.AssetImportSetting
 
             public int GetNextIndex()
             {
-                int next = -1;
+                int next = 0;
                 for (int i = 0; i < TextureImportDatas.Count; i++)
                 {
                     if (TextureImportDatas[i].Index >= next)
@@ -61,26 +56,16 @@ namespace GameFramework.Editor.Core.AssetImportSetting
                 return TextureImportDatas.FirstOrDefault(t => t.Index == index);
             }
 
-            public TextureImportData GetRule(string path, string name)
+            public TextureImportData GetRule(string path, string fileName)
             {
                 TextureImportData rule = null;
                 for (int i = 0; i < TextureImportDatas.Count; i++)
                 {
-                    if (path.StartsWith(TextureImportDatas[i].AssetPath))
+                    if (path.Equals(TextureImportDatas[i].AssetPath))
                     {
-                        if (rule == null)
+                        if (TextureImportDatas[i].IsMatch(fileName))
                         {
-                            if (TextureImportDatas[i].IsMatch(name))
-                            {
-                                rule = TextureImportDatas[i];
-                            }
-                        }
-                        else if (rule.Index < TextureImportDatas[i].Index)
-                        {
-                            if (TextureImportDatas[i].IsMatch(name))
-                            {
-                                rule = TextureImportDatas[i];
-                            }
+                            rule = TextureImportDatas[i];
                         }
                     }
                 }
@@ -144,41 +129,36 @@ namespace GameFramework.Editor.Core.AssetImportSetting
 
         public static void ReImportTextures(TextureImportRule.TextureImportData data)
         {
-//            if(data == null) return;
-//            string[] guids = AssetDatabase.FindAssets("t:Texture", new string[] { data.AssetPath });
-//            for (int i = 0; i < guids.Length; i++)
-//            {
-//                string path = AssetDatabase.GUIDToAssetPath(guids[i]);
-//                
-//                if (string.IsNullOrEmpty(path))
-//                {
-//                    continue;
-//                }
-//                
-//                if (!data.IsRecursive)
-//                {
-//                    string dir = path.Remove(path.LastIndexOf('/'));
-//                    if (!dir.Equals(data.AssetPath))
-//                    {
-//                        continue;
-//                    }
-//                }
-//                
-//                string name = path.Substring(path.LastIndexOf('/') + 1);
-//                if (data.IsMatch(name))
-//                {
-//                    AssetImporter assetImporter = AssetImporter.GetAtPath(path);
-//                    if (null != assetImporter)
-//                    {
-//                        ApplyRulesToTexture(assetImporter, data);
-//                    }
-//                }
-//            }
+            if(data == null) return;
+            string[] guids = AssetDatabase.FindAssets("t:Texture", new string[] { data.AssetPath });
+            for (int i = 0; i < guids.Length; i++)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guids[i]);
+                if (string.IsNullOrEmpty(path))
+                {
+                    continue;
+                }
+                string dir = path.Remove(path.LastIndexOf('/'));
+                if (!dir.Equals(data.AssetPath))
+                {
+                    continue;
+                }
+                string fileName = path.Substring(path.LastIndexOf('/') + 1);
+                if (!data.IsMatch(fileName))
+                {
+                    continue;
+                }
+                TextureImporter textureImporter = AssetImporter.GetAtPath(path) as TextureImporter;
+                if (null != textureImporter)
+                {
+                    ApplyRulesToTexture(textureImporter, data);
+                }
+            }
         }
 
         public static void TextureImport(TextureImporter textureImporter)
         {
-            if(null==textureImporter) return;
+            if(null == textureImporter) return;
             string dir = textureImporter.assetPath.Remove(textureImporter.assetPath.LastIndexOf('/'));
             string name = textureImporter.assetPath.Substring(textureImporter.assetPath.LastIndexOf('/') + 1);
             TextureImportRule.TextureImportData data = Instance.ImportRule.GetRule(dir, name);
