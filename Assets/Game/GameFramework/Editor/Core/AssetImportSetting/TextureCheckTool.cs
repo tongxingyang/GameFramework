@@ -14,7 +14,7 @@ namespace GameFramework.Editor.Core.AssetImportSetting
             public string Message;
         }
 
-        private static List<TextureData> GetCheckTextureDatas(string dir,out int totalCount,out long totalMemory)
+        private static List<TextureData> GetCheckTextureDatas(string dir, out int totalCount, out long totalMemory)
         {
             List<TextureData> outPuts = new List<TextureData>();
             string[] guids = AssetDatabase.FindAssets("t:Texture", new string[] {dir});
@@ -37,16 +37,18 @@ namespace GameFramework.Editor.Core.AssetImportSetting
                         long size = Profiler.GetRuntimeMemorySizeLong(obj);
                         totalMemory += size;
                         stringBuilder.Append("RuntimeMemorySize大小 : " + ConvertToString(size) + "\t");
-                        stringBuilder.Append("长宽 : "+texture.width + "*" + texture.height + "\t");
+                        stringBuilder.Append("长宽 : " + texture.width + "*" + texture.height + "\t");
                         stringBuilder.Append("是否开启mipmap : " + textureImporter.mipmapEnabled + "\t");
                         stringBuilder.Append("是否开启读写 : " + textureImporter.isReadable + "\t");
                         stringBuilder.Append("texture type:" + textureImporter.textureType + "\t");
                         stringBuilder.Append("alpha source:" + textureImporter.alphaSource + "\t");
-                        TextureImporterPlatformSettings settingAndroid = textureImporter.GetPlatformTextureSettings("Android");
+                        TextureImporterPlatformSettings settingAndroid =
+                            textureImporter.GetPlatformTextureSettings("Android");
                         stringBuilder.Append("android :" + settingAndroid.format + "\t");
-                        TextureImporterPlatformSettings settingIos = textureImporter.GetPlatformTextureSettings("iPhone");
+                        TextureImporterPlatformSettings settingIos =
+                            textureImporter.GetPlatformTextureSettings("iPhone");
                         stringBuilder.Append("ios :" + settingIos.format + "\t");
-                        outPuts.Add(new TextureData(){Message = stringBuilder.ToString(),Size = size});
+                        outPuts.Add(new TextureData() {Message = stringBuilder.ToString(), Size = size});
                     }
                 }
             }
@@ -56,7 +58,7 @@ namespace GameFramework.Editor.Core.AssetImportSetting
             EditorUtility.ClearProgressBar();
             return outPuts;
         }
-        
+
         public static string ConvertToString(long size)
         {
             string output = "";
@@ -81,21 +83,23 @@ namespace GameFramework.Editor.Core.AssetImportSetting
             }
             return output;
         }
-        
+
         [MenuItem("Tools/AssetCheck/Texture检测信息", true)]
         private static bool CheckTextureFormatInfo()
         {
-            if (Selection.assetGUIDs.Length == 1) {
-                string path = AssetDatabase.GUIDToAssetPath (Selection.assetGUIDs [0]);
-                if (AssetDatabase.IsValidFolder (path))
+            if (Selection.assetGUIDs.Length == 1)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(Selection.assetGUIDs[0]);
+                if (AssetDatabase.IsValidFolder(path))
                     return true;
             }
             return false;
         }
+
         [MenuItem("Tools/AssetCheck/Texture检测信息", false)]
         private static void CheckTextureFormatManual()
         {
-            string path = AssetDatabase.GUIDToAssetPath (Selection.assetGUIDs [0]);
+            string path = AssetDatabase.GUIDToAssetPath(Selection.assetGUIDs[0]);
             int totalCount;
             long totalMem;
             List<TextureData> outputs = GetCheckTextureDatas(path, out totalCount, out totalMem);

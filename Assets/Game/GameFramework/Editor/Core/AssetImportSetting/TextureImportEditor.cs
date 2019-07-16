@@ -2,26 +2,29 @@
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
+
 namespace GameFramework.Editor.Core.AssetImportSetting
 {
-    public class TextureImportEditor:EditorWindow
+    public class TextureImportEditor : EditorWindow
     {
         [MenuItem("Tools/导入设置/Texture 导入设置")]
         public static void ShowTextureImportWditor()
         {
             TextureImportEditor textureImportEditor = GetWindow<TextureImportEditor>();
             textureImportEditor.Show();
-            textureImportEditor.position = new Rect(100,100,1300,400);
-            textureImportEditor.minSize = new Vector2(1300,600);
+            textureImportEditor.position = new Rect(100, 100, 1300, 400);
+            textureImportEditor.minSize = new Vector2(1300, 600);
         }
+
         private string[] textureType = new[] {"Default", "NormalMap", "Sprite", "Lightmap", "Cookie"};
         private string[] alphaSrc = new string[] {"FromInput", "None", "FromGrayScale"};
+
         private string[] androidFormats = new string[]
         {
             "RGB ETC 4Bits", "RGB ETC2 4Bits", "RGB1A ETC2 4Bits", "RGBA ETC2 8Bits", "RGB 16", "RGB 24", "RGBA 16",
             "RGBA 32"
         };
-        
+
         private string[] iphoneFormats = new string[]
         {
             "RGB PVRTC 2Bits", "RGB PVRTC 4Bits", "RGBA PVRTC 2Bits", "RGBA PVRTC 4Bits",
@@ -34,9 +37,16 @@ namespace GameFramework.Editor.Core.AssetImportSetting
         private int alphaSrcIndex = 0;
         private int androidFormatsIndex = 0;
         private int iphoneFormatsIndex = 0;
-        
+
         private Vector2 scrollPosition;
-        private TextureImportManager.TextureImportRule.TextureImportData  currenTextureImportData = new TextureImportManager.TextureImportRule.TextureImportData(){AssetPath = String.Empty,FileFilter = String.Empty};
+
+        private TextureImportManager.TextureImportRule.TextureImportData currenTextureImportData =
+            new TextureImportManager.TextureImportRule.TextureImportData()
+            {
+                AssetPath = String.Empty,
+                FileFilter = String.Empty
+            };
+
         private int currentSelectIndex;
 
         private TextureImportManager.TextureImportRule.TextureImportData GetNextTextureImportData()
@@ -51,7 +61,7 @@ namespace GameFramework.Editor.Core.AssetImportSetting
 
         private void GetSelectIndexDataInfo(TextureImportManager.TextureImportRule.TextureImportData data)
         {
-            if(data == null) return;
+            if (data == null) return;
             currenTextureImportData = data;
             switch (data.AlphaSource)
             {
@@ -179,7 +189,7 @@ namespace GameFramework.Editor.Core.AssetImportSetting
         {
             TextureImportManager.TextureImportRule.TextureImportData data =
                 TextureImportManager.Instance.ImportRule.GetRule(currentSelectIndex);
-            if(data==null) return;
+            if (data == null) return;
             data = currenTextureImportData;
         }
 
@@ -254,7 +264,7 @@ namespace GameFramework.Editor.Core.AssetImportSetting
 
         private void SetiPhoneFormatInfo()
         {
-             switch (iphoneFormatsIndex)
+            switch (iphoneFormatsIndex)
             {
                 case 0:
                     currenTextureImportData.IphoneImporterFormat = TextureImporterFormat.PVRTC_RGB2;
@@ -318,7 +328,7 @@ namespace GameFramework.Editor.Core.AssetImportSetting
                     break;
             }
         }
-        
+
         private void OnGUI()
         {
             EditorGUILayout.BeginHorizontal();
@@ -365,27 +375,32 @@ namespace GameFramework.Editor.Core.AssetImportSetting
                 SetiPhoneFormatInfo();
             }
             EditorGUILayout.EndHorizontal();
-            
+
             EditorGUILayout.Space();
             EditorGUILayout.BeginHorizontal();
             {
-                currenTextureImportData.IsMinMap = EditorGUILayout.ToggleLeft("是否开启Mipmap", currenTextureImportData.IsMinMap);
-                currenTextureImportData.IsReadWriteEnable = EditorGUILayout.ToggleLeft("是否开启ReadWrite", currenTextureImportData.IsReadWriteEnable);
+                currenTextureImportData.IsMinMap =
+                    EditorGUILayout.ToggleLeft("是否开启Mipmap", currenTextureImportData.IsMinMap);
+                currenTextureImportData.IsReadWriteEnable =
+                    EditorGUILayout.ToggleLeft("是否开启ReadWrite", currenTextureImportData.IsReadWriteEnable);
                 currenTextureImportData.Index = EditorGUILayout.IntField("Priority", currenTextureImportData.Index);
-                currenTextureImportData.MaxTextureSize = EditorGUILayout.IntField("纹理MaxSize", currenTextureImportData.MaxTextureSize);
+                currenTextureImportData.MaxTextureSize =
+                    EditorGUILayout.IntField("纹理MaxSize", currenTextureImportData.MaxTextureSize);
             }
             EditorGUILayout.EndHorizontal();
             GUILayout.Space(25);
-            int height = (TextureImportManager.Instance.ImportRule.TextureImportDatas.Count+1) * 20;
-            TextureImportManager.TextureImportRule.TextureImportData rule = TextureImportManager.Instance.ImportRule.GetRule(currentSelectIndex);
+            int height = (TextureImportManager.Instance.ImportRule.TextureImportDatas.Count + 1) * 20;
+            TextureImportManager.TextureImportRule.TextureImportData rule =
+                TextureImportManager.Instance.ImportRule.GetRule(currentSelectIndex);
             string[] guids = null;
             if (null != rule)
             {
-                guids = AssetDatabase.FindAssets("t:Texture", new string[] { rule.AssetPath });
+                guids = AssetDatabase.FindAssets("t:Texture", new string[] {rule.AssetPath});
                 height += (guids.Length + 1) * 20;
             }
 
-            scrollPosition = GUI.BeginScrollView(new Rect(0, 30, position.width, position.height - 30), scrollPosition, new Rect(0, 0, 1250, height));
+            scrollPosition = GUI.BeginScrollView(new Rect(0, 30, position.width, position.height - 30), scrollPosition,
+                new Rect(0, 0, 1250, height));
             EditorGUILayout.BeginHorizontal();
             {
                 GUILayout.Label("AssetPath", EditorStyles.label, GUILayout.MinWidth(100));
@@ -406,10 +421,11 @@ namespace GameFramework.Editor.Core.AssetImportSetting
             for (int i = 0; i < TextureImportManager.Instance.ImportRule.TextureImportDatas.Count; i++)
             {
                 EditorGUILayout.BeginHorizontal();
-                TextureImportManager.TextureImportRule.TextureImportData data = TextureImportManager.Instance.ImportRule.TextureImportDatas[i];
+                TextureImportManager.TextureImportRule.TextureImportData data =
+                    TextureImportManager.Instance.ImportRule.TextureImportDatas[i];
 
                 GUI.color = data.Index == currentSelectIndex ? Color.green : new Color(0.8f, 0.8f, 0.8f, 1);
-                
+
                 if (GUILayout.Button(data.AssetPath, style, GUILayout.MinWidth(100)))
                 {
                     currentSelectIndex = data.Index;
@@ -500,9 +516,12 @@ namespace GameFramework.Editor.Core.AssetImportSetting
                             GUILayout.Label(ai.isReadable.ToString(), EditorStyles.label, GUILayout.MinWidth(100));
                             TextureImporterPlatformSettings settingAndroid = ai.GetPlatformTextureSettings("Android");
                             TextureImporterPlatformSettings settingiPhone = ai.GetPlatformTextureSettings("iPhone");
-                            GUILayout.Label(settingAndroid.maxTextureSize.ToString(), EditorStyles.label, GUILayout.MinWidth(100));
-                            GUILayout.Label(settingAndroid.format.ToString(), EditorStyles.label, GUILayout.MinWidth(100));
-                            GUILayout.Label(settingiPhone.format.ToString(), EditorStyles.label, GUILayout.MinWidth(100));
+                            GUILayout.Label(settingAndroid.maxTextureSize.ToString(), EditorStyles.label,
+                                GUILayout.MinWidth(100));
+                            GUILayout.Label(settingAndroid.format.ToString(), EditorStyles.label,
+                                GUILayout.MinWidth(100));
+                            GUILayout.Label(settingiPhone.format.ToString(), EditorStyles.label,
+                                GUILayout.MinWidth(100));
                             GUILayout.Label("", EditorStyles.label, GUILayout.MinWidth(100));
                         }
                         EditorGUILayout.EndHorizontal();

@@ -10,6 +10,7 @@ namespace GameFramework.Editor.Core.AssetImportSetting
     public class TextureImportManager
     {
         public string TextureImportRulePath = "Assets/TextureImportRules.asset";
+
         public class TextureImportRule : ScriptableObject
         {
             [Serializable]
@@ -25,6 +26,7 @@ namespace GameFramework.Editor.Core.AssetImportSetting
                 public TextureImporterType TextureImporterType = TextureImporterType.Default;
                 public TextureImporterFormat AndroidImporterFormat = TextureImporterFormat.ETC2_RGB4;
                 public TextureImporterFormat IphoneImporterFormat = TextureImporterFormat.PVRTC_RGB4;
+
                 public bool IsMatch(string name)
                 {
                     return Regex.IsMatch(name, FileFilter);
@@ -129,8 +131,8 @@ namespace GameFramework.Editor.Core.AssetImportSetting
 
         public static void ReImportTextures(TextureImportRule.TextureImportData data)
         {
-            if(data == null) return;
-            string[] guids = AssetDatabase.FindAssets("t:Texture", new string[] { data.AssetPath });
+            if (data == null) return;
+            string[] guids = AssetDatabase.FindAssets("t:Texture", new string[] {data.AssetPath});
             for (int i = 0; i < guids.Length; i++)
             {
                 string path = AssetDatabase.GUIDToAssetPath(guids[i]);
@@ -158,7 +160,7 @@ namespace GameFramework.Editor.Core.AssetImportSetting
 
         public static void TextureImport(TextureImporter textureImporter)
         {
-            if(null == textureImporter) return;
+            if (null == textureImporter) return;
             string dir = textureImporter.assetPath.Remove(textureImporter.assetPath.LastIndexOf('/'));
             string name = textureImporter.assetPath.Substring(textureImporter.assetPath.LastIndexOf('/') + 1);
             TextureImportRule.TextureImportData data = Instance.ImportRule.GetRule(dir, name);
@@ -167,8 +169,9 @@ namespace GameFramework.Editor.Core.AssetImportSetting
                 ApplyRulesToTexture(textureImporter, data);
             }
         }
-        
-        public static void ApplyRulesToTexture(TextureImporter textureImporter, TextureImportRule.TextureImportData data)
+
+        public static void ApplyRulesToTexture(TextureImporter textureImporter,
+            TextureImportRule.TextureImportData data)
         {
             if (null == textureImporter) return;
             if (textureImporter.textureType != data.TextureImporterType)
