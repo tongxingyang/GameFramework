@@ -20,7 +20,6 @@ namespace GameFramework.Editor.Core.AssetImportSetting
         private AudioClipLoadType androidLoadType = AudioClipLoadType.CompressedInMemory;
         private AudioClipLoadType iPhoneLoadType = AudioClipLoadType.CompressedInMemory;
         private Vector2 scrollPosition;
-
         private AudioClipImportManager.AudioClipImportRule.AudioClipImportData currenAudioClipImportData =
             new AudioClipImportManager.AudioClipImportRule.AudioClipImportData()
             {
@@ -65,9 +64,12 @@ namespace GameFramework.Editor.Core.AssetImportSetting
             currenAudioClipImportData.iPhoneClipLoadType = iPhoneLoadType;
             currenAudioClipImportData.iPhoneCompressionFormat = iPhoneClipType;
         }
-
+        private GUIStyle style = new GUIStyle();
         private void OnGUI()
         {
+            style.normal.textColor = Color.red;
+            GUILayout.Label("建议 小于200k : "+AudioClipLoadType.DecompressOnLoad+" 大于200k小于1M : "+AudioClipLoadType.CompressedInMemory+" 大于1M : "+AudioClipLoadType.Streaming,style);
+            style.normal.textColor = Color.black;
             EditorGUILayout.BeginHorizontal();
             {
                 EditorGUILayout.LabelField("Path:");
@@ -160,7 +162,7 @@ namespace GameFramework.Editor.Core.AssetImportSetting
             }
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.Space();
-            GUIStyle style = GUI.skin.textField;
+            style = GUI.skin.textField;
             for (int i = 0; i < AudioClipImportManager.Instance.ImportRule.AudioClipImportDatas.Count; i++)
             {
                 EditorGUILayout.BeginHorizontal();
