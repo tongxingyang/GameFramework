@@ -15,31 +15,11 @@ namespace GameFramework.Editor.Core.AssetImportSetting
             textureImportEditor.position = new Rect(100, 100, 1300, 400);
             textureImportEditor.minSize = new Vector2(1300, 600);
         }
-
-        private string[] textureType = new[] {"Default", "NormalMap", "Sprite", "Lightmap", "Cookie"};
-        private string[] alphaSrc = new string[] {"FromInput", "None", "FromGrayScale"};
-
-        private string[] androidFormats = new string[]
-        {
-            "RGB ETC 4Bits", "RGB ETC2 4Bits", "RGB1A ETC2 4Bits", "RGBA ETC2 8Bits", "RGB 16", "RGB 24", "RGBA 16",
-            "RGBA 32"
-        };
-
-        private string[] iphoneFormats = new string[]
-        {
-            "RGB PVRTC 2Bits", "RGB PVRTC 4Bits", "RGBA PVRTC 2Bits", "RGBA PVRTC 4Bits",
-            "RGB 16", "RGB 24", "RGBA 16", "RGBA 32",
-            "RGB ASTC 4x4", "RGB ASTC 5x5", "RGB ASTC 6x6", "RGB ASTC 8x8", "RGB ASTC 10x10", "RGB ASTC 12x12",
-            "RGBA ASTC 4x4", "RGBA ASTC 5x5", "RGBA ASTC 6x6", "RGBA ASTC 8x8", "RGBA ASTC 10x10", "RGBA ASTC 12x12",
-        };
-
-        private int textureTypeIndex = 0;
-        private int alphaSrcIndex = 0;
-        private int androidFormatsIndex = 0;
-        private int iphoneFormatsIndex = 0;
-
+        private TextureImporterType textureType = TextureImporterType.Default;
+        private TextureImporterAlphaSource alphaSourceType = TextureImporterAlphaSource.FromInput;
+        private TextureImporterFormat androidFormatType = TextureImporterFormat.ETC2_RGB4;
+        private TextureImporterFormat iPhoneFormatType = TextureImporterFormat.PVRTC_RGB2;
         private Vector2 scrollPosition;
-
         private TextureImportManager.TextureImportRule.TextureImportData currenTextureImportData =
             new TextureImportManager.TextureImportRule.TextureImportData()
             {
@@ -48,7 +28,6 @@ namespace GameFramework.Editor.Core.AssetImportSetting
             };
 
         private int currentSelectIndex;
-
         private TextureImportManager.TextureImportRule.TextureImportData GetNextTextureImportData()
         {
             TextureImportManager.TextureImportRule.TextureImportData data =
@@ -63,270 +42,34 @@ namespace GameFramework.Editor.Core.AssetImportSetting
         {
             if (data == null) return;
             currenTextureImportData = data;
-            switch (data.AlphaSource)
-            {
-                case TextureImporterAlphaSource.FromInput:
-                    alphaSrcIndex = 0;
-                    break;
-                case TextureImporterAlphaSource.None:
-                    alphaSrcIndex = 1;
-                    break;
-                case TextureImporterAlphaSource.FromGrayScale:
-                    alphaSrcIndex = 2;
-                    break;
-            }
-            switch (data.TextureImporterType)
-            {
-                case TextureImporterType.Default:
-                    textureTypeIndex = 0;
-                    break;
-                case TextureImporterType.NormalMap:
-                    textureTypeIndex = 1;
-                    break;
-                case TextureImporterType.Sprite:
-                    textureTypeIndex = 2;
-                    break;
-                case TextureImporterType.Lightmap:
-                    textureTypeIndex = 3;
-                    break;
-                case TextureImporterType.Cookie:
-                    textureTypeIndex = 4;
-                    break;
-            }
-            switch (data.AndroidImporterFormat)
-            {
-                case TextureImporterFormat.ETC_RGB4:
-                    androidFormatsIndex = 0;
-                    break;
-                case TextureImporterFormat.ETC2_RGB4:
-                    androidFormatsIndex = 1;
-                    break;
-                case TextureImporterFormat.ETC2_RGB4_PUNCHTHROUGH_ALPHA:
-                    androidFormatsIndex = 2;
-                    break;
-                case TextureImporterFormat.ETC2_RGBA8:
-                    androidFormatsIndex = 3;
-                    break;
-                case TextureImporterFormat.RGB16:
-                    androidFormatsIndex = 4;
-                    break;
-                case TextureImporterFormat.RGB24:
-                    androidFormatsIndex = 5;
-                    break;
-                case TextureImporterFormat.RGBA16:
-                    androidFormatsIndex = 6;
-                    break;
-                case TextureImporterFormat.RGBA32:
-                    androidFormatsIndex = 7;
-                    break;
-            }
-            switch (data.IphoneImporterFormat)
-            {
-                case TextureImporterFormat.PVRTC_RGB2:
-                    iphoneFormatsIndex = 0;
-                    break;
-                case TextureImporterFormat.PVRTC_RGB4:
-                    iphoneFormatsIndex = 1;
-                    break;
-                case TextureImporterFormat.PVRTC_RGBA2:
-                    iphoneFormatsIndex = 2;
-                    break;
-                case TextureImporterFormat.PVRTC_RGBA4:
-                    iphoneFormatsIndex = 3;
-                    break;
-                case TextureImporterFormat.RGB16:
-                    iphoneFormatsIndex = 4;
-                    break;
-                case TextureImporterFormat.RGB24:
-                    iphoneFormatsIndex = 5;
-                    break;
-                case TextureImporterFormat.RGBA16:
-                    iphoneFormatsIndex = 6;
-                    break;
-                case TextureImporterFormat.RGBA32:
-                    iphoneFormatsIndex = 7;
-                    break;
-                case TextureImporterFormat.ASTC_RGB_4x4:
-                    iphoneFormatsIndex = 8;
-                    break;
-                case TextureImporterFormat.ASTC_RGB_5x5:
-                    iphoneFormatsIndex = 9;
-                    break;
-                case TextureImporterFormat.ASTC_RGB_6x6:
-                    iphoneFormatsIndex = 10;
-                    break;
-                case TextureImporterFormat.ASTC_RGB_8x8:
-                    iphoneFormatsIndex = 11;
-                    break;
-                case TextureImporterFormat.ASTC_RGB_10x10:
-                    iphoneFormatsIndex = 12;
-                    break;
-                case TextureImporterFormat.ASTC_RGB_12x12:
-                    iphoneFormatsIndex = 13;
-                    break;
-                case TextureImporterFormat.ASTC_RGBA_4x4:
-                    iphoneFormatsIndex = 14;
-                    break;
-                case TextureImporterFormat.ASTC_RGBA_5x5:
-                    iphoneFormatsIndex = 15;
-                    break;
-                case TextureImporterFormat.ASTC_RGBA_6x6:
-                    iphoneFormatsIndex = 16;
-                    break;
-                case TextureImporterFormat.ASTC_RGBA_8x8:
-                    iphoneFormatsIndex = 17;
-                    break;
-                case TextureImporterFormat.ASTC_RGBA_10x10:
-                    iphoneFormatsIndex = 18;
-                    break;
-                case TextureImporterFormat.ASTC_RGBA_12x12:
-                    iphoneFormatsIndex = 19;
-                    break;
-            }
         }
 
         private void SetSelectIndexDataInfo()
         {
             TextureImportManager.TextureImportRule.TextureImportData data =
                 TextureImportManager.Instance.ImportRule.GetRule(currentSelectIndex);
-            if (data == null) return;
-            data = currenTextureImportData;
+            if (data != null) 
+                data = currenTextureImportData;
         }
 
         private void SetTextureTypeInfo()
         {
-            switch (textureTypeIndex)
-            {
-                case 0:
-                    currenTextureImportData.TextureImporterType = TextureImporterType.Default;
-                    break;
-                case 1:
-                    currenTextureImportData.TextureImporterType = TextureImporterType.NormalMap;
-                    break;
-                case 2:
-                    currenTextureImportData.TextureImporterType = TextureImporterType.Sprite;
-                    break;
-                case 3:
-                    currenTextureImportData.TextureImporterType = TextureImporterType.Lightmap;
-                    break;
-                case 4:
-                    currenTextureImportData.TextureImporterType = TextureImporterType.Cookie;
-                    break;
-            }
+            currenTextureImportData.TextureImporterType = textureType;
         }
 
         private void SetAlphaSourceInfo()
         {
-            switch (alphaSrcIndex)
-            {
-                case 0:
-                    currenTextureImportData.AlphaSource = TextureImporterAlphaSource.FromInput;
-                    break;
-                case 1:
-                    currenTextureImportData.AlphaSource = TextureImporterAlphaSource.None;
-                    break;
-                case 2:
-                    currenTextureImportData.AlphaSource = TextureImporterAlphaSource.FromGrayScale;
-                    break;
-            }
+            currenTextureImportData.AlphaSource = alphaSourceType;
         }
 
         private void SetAndroidFormatInfo()
         {
-            switch (androidFormatsIndex)
-            {
-                case 0:
-                    currenTextureImportData.AndroidImporterFormat = TextureImporterFormat.ETC_RGB4;
-                    break;
-                case 1:
-                    currenTextureImportData.AndroidImporterFormat = TextureImporterFormat.ETC2_RGB4;
-                    break;
-                case 2:
-                    currenTextureImportData.AndroidImporterFormat = TextureImporterFormat.ETC2_RGB4_PUNCHTHROUGH_ALPHA;
-                    break;
-                case 3:
-                    currenTextureImportData.AndroidImporterFormat = TextureImporterFormat.ETC2_RGBA8;
-                    break;
-                case 4:
-                    currenTextureImportData.AndroidImporterFormat = TextureImporterFormat.RGB16;
-                    break;
-                case 5:
-                    currenTextureImportData.AndroidImporterFormat = TextureImporterFormat.RGB24;
-                    break;
-                case 6:
-                    currenTextureImportData.AndroidImporterFormat = TextureImporterFormat.RGBA16;
-                    break;
-                case 7:
-                    currenTextureImportData.AndroidImporterFormat = TextureImporterFormat.RGBA32;
-                    break;
-            }
+            currenTextureImportData.AndroidImporterFormat = androidFormatType;
         }
 
         private void SetiPhoneFormatInfo()
         {
-            switch (iphoneFormatsIndex)
-            {
-                case 0:
-                    currenTextureImportData.IphoneImporterFormat = TextureImporterFormat.PVRTC_RGB2;
-                    break;
-                case 1:
-                    currenTextureImportData.IphoneImporterFormat = TextureImporterFormat.PVRTC_RGB4;
-                    break;
-                case 2:
-                    currenTextureImportData.IphoneImporterFormat = TextureImporterFormat.PVRTC_RGBA2;
-                    break;
-                case 3:
-                    currenTextureImportData.IphoneImporterFormat = TextureImporterFormat.PVRTC_RGBA4;
-                    break;
-                case 4:
-                    currenTextureImportData.IphoneImporterFormat = TextureImporterFormat.RGB16;
-                    break;
-                case 5:
-                    currenTextureImportData.IphoneImporterFormat = TextureImporterFormat.RGB24;
-                    break;
-                case 6:
-                    currenTextureImportData.IphoneImporterFormat = TextureImporterFormat.RGBA16;
-                    break;
-                case 7:
-                    currenTextureImportData.IphoneImporterFormat = TextureImporterFormat.RGBA32;
-                    break;
-                case 8:
-                    currenTextureImportData.IphoneImporterFormat = TextureImporterFormat.ASTC_RGB_4x4;
-                    break;
-                case 9:
-                    currenTextureImportData.IphoneImporterFormat = TextureImporterFormat.ASTC_RGB_5x5;
-                    break;
-                case 10:
-                    currenTextureImportData.IphoneImporterFormat = TextureImporterFormat.ASTC_RGB_6x6;
-                    break;
-                case 11:
-                    currenTextureImportData.IphoneImporterFormat = TextureImporterFormat.ASTC_RGB_8x8;
-                    break;
-                case 12:
-                    currenTextureImportData.IphoneImporterFormat = TextureImporterFormat.ASTC_RGB_10x10;
-                    break;
-                case 13:
-                    currenTextureImportData.IphoneImporterFormat = TextureImporterFormat.ASTC_RGB_12x12;
-                    break;
-                case 14:
-                    currenTextureImportData.IphoneImporterFormat = TextureImporterFormat.ASTC_RGBA_4x4;
-                    break;
-                case 15:
-                    currenTextureImportData.IphoneImporterFormat = TextureImporterFormat.ASTC_RGBA_5x5;
-                    break;
-                case 16:
-                    currenTextureImportData.IphoneImporterFormat = TextureImporterFormat.ASTC_RGBA_6x6;
-                    break;
-                case 17:
-                    currenTextureImportData.IphoneImporterFormat = TextureImporterFormat.ASTC_RGBA_8x8;
-                    break;
-                case 18:
-                    currenTextureImportData.IphoneImporterFormat = TextureImporterFormat.ASTC_RGBA_10x10;
-                    break;
-                case 19:
-                    currenTextureImportData.IphoneImporterFormat = TextureImporterFormat.ASTC_RGBA_12x12;
-                    break;
-            }
+            currenTextureImportData.IphoneImporterFormat = iPhoneFormatType;
         }
 
         private void OnGUI()
@@ -365,17 +108,16 @@ namespace GameFramework.Editor.Core.AssetImportSetting
             EditorGUILayout.Space();
             EditorGUILayout.BeginHorizontal();
             {
-                textureTypeIndex = EditorGUILayout.Popup("Texture类型", textureTypeIndex, textureType);
+                textureType = (TextureImporterType)EditorGUILayout.EnumPopup("Texture类型", textureType);
                 SetTextureTypeInfo();
-                alphaSrcIndex = EditorGUILayout.Popup("AlphaSource", alphaSrcIndex, alphaSrc);
+                alphaSourceType = (TextureImporterAlphaSource)EditorGUILayout.EnumPopup("AlphaSource", alphaSourceType);
                 SetAlphaSourceInfo();
-                androidFormatsIndex = EditorGUILayout.Popup("Android", androidFormatsIndex, androidFormats);
+                androidFormatType = (TextureImporterFormat)EditorGUILayout.EnumPopup("Android", androidFormatType);
                 SetAndroidFormatInfo();
-                iphoneFormatsIndex = EditorGUILayout.Popup("iPhone", iphoneFormatsIndex, iphoneFormats);
+                iPhoneFormatType = (TextureImporterFormat)EditorGUILayout.EnumPopup("iPhone", iPhoneFormatType);
                 SetiPhoneFormatInfo();
             }
             EditorGUILayout.EndHorizontal();
-
             EditorGUILayout.Space();
             EditorGUILayout.BeginHorizontal();
             {
@@ -383,7 +125,7 @@ namespace GameFramework.Editor.Core.AssetImportSetting
                     EditorGUILayout.ToggleLeft("是否开启Mipmap", currenTextureImportData.IsMinMap);
                 currenTextureImportData.IsReadWriteEnable =
                     EditorGUILayout.ToggleLeft("是否开启ReadWrite", currenTextureImportData.IsReadWriteEnable);
-                currenTextureImportData.Index = EditorGUILayout.IntField("Priority", currenTextureImportData.Index);
+                currenTextureImportData.Index = EditorGUILayout.IntField("Rule Index", currenTextureImportData.Index);
                 currenTextureImportData.MaxTextureSize =
                     EditorGUILayout.IntField("纹理MaxSize", currenTextureImportData.MaxTextureSize);
             }
