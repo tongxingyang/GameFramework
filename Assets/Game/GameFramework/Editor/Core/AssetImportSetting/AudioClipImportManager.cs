@@ -9,7 +9,7 @@ namespace GameFramework.Editor.Core.AssetImportSetting
 {
     public class AudioClipImportManager
     {
-        public string AudioClipImportRulePath = "Assets/AudioClipImportRules.asset";
+        public static string AudioClipImportRulePath = "Assets/Game/GameFramework/Editor/EditorAsset/AudioClipImportRules.asset";
 
         public class AudioClipImportRule : ScriptableObject
         {
@@ -98,9 +98,9 @@ namespace GameFramework.Editor.Core.AssetImportSetting
             }
         }
 
-        private AudioClipImportRule importRule;
+        private static  AudioClipImportRule importRule;
 
-        public AudioClipImportRule ImportRule
+        public static  AudioClipImportRule ImportRule
         {
             get
             {
@@ -115,20 +115,6 @@ namespace GameFramework.Editor.Core.AssetImportSetting
                     }
                 }
                 return importRule;
-            }
-        }
-
-        private static AudioClipImportManager instance;
-
-        public static AudioClipImportManager Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = new AudioClipImportManager();
-                }
-                return instance;
             }
         }
 
@@ -166,7 +152,7 @@ namespace GameFramework.Editor.Core.AssetImportSetting
             if (null == audioClipImporter) return;
             string dir = audioClipImporter.assetPath.Remove(audioClipImporter.assetPath.LastIndexOf('/'));
             string name = audioClipImporter.assetPath.Substring(audioClipImporter.assetPath.LastIndexOf('/') + 1);
-            AudioClipImportRule.AudioClipImportData data = Instance.ImportRule.GetRule(dir, name);
+            AudioClipImportRule.AudioClipImportData data = ImportRule.GetRule(dir, name);
             if (data != null)
             {
                 ApplyRulesToAudioClip(audioClipImporter, data);

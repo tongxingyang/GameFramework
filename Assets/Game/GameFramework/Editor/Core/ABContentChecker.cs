@@ -32,10 +32,10 @@
 
         void ReadContent()
         {
-            AssetBundle bundle = null;
+            UnityEngine.AssetBundle bundle = null;
             try
             {
-                bundle = AssetBundle.LoadFromFile(Application.dataPath + AssetDatabase.GetAssetPath(Selection.activeObject).Remove(0, 6));
+                bundle = UnityEngine.AssetBundle.LoadFromFile(Application.dataPath + AssetDatabase.GetAssetPath(Selection.activeObject).Remove(0, 6));
 
                 if (bundle != null)
                 {

@@ -9,7 +9,7 @@ namespace GameFramework.Editor.Core.AssetImportSetting
 {
     public class TextureImportManager
     {
-        public string TextureImportRulePath = "Assets/TextureImportRules.asset";
+        public static string TextureImportRulePath = "Assets/Game/GameFramework/Editor/EditorAsset/TextureImportRules.asset";
 
         public class TextureImportRule : ScriptableObject
         {
@@ -24,9 +24,11 @@ namespace GameFramework.Editor.Core.AssetImportSetting
                 public int MaxTextureSize = -1;
                 public TextureImporterAlphaSource AlphaSource = TextureImporterAlphaSource.FromInput;
                 public TextureImporterType TextureImporterType = TextureImporterType.Default;
-                public TextureImporterFormat AndroidImporterFormat = TextureImporterFormat.ETC2_RGB4;
-                public TextureImporterFormat IphoneImporterFormat = TextureImporterFormat.PVRTC_RGB4;
-
+                public TextureImporterFormat AndroidImporterFormat = TextureImporterFormat.ETC2_RGBA8;
+                public TextureImporterCompression AndroidImporterCompression = TextureImporterCompression.Compressed;
+                public TextureImporterFormat IphoneImporterFormat = TextureImporterFormat.ASTC_RGBA_8x8;
+                public TextureImporterCompression IphoneImporterCompression = TextureImporterCompression.Compressed;
+                
                 public bool IsMatch(string name)
                 {
                     return Regex.IsMatch(name, FileFilter);
@@ -95,9 +97,9 @@ namespace GameFramework.Editor.Core.AssetImportSetting
             }
         }
 
-        private TextureImportRule importRule;
+        private static TextureImportRule importRule;
 
-        public TextureImportRule ImportRule
+        public static TextureImportRule ImportRule
         {
             get
             {
@@ -112,20 +114,6 @@ namespace GameFramework.Editor.Core.AssetImportSetting
                     }
                 }
                 return importRule;
-            }
-        }
-
-        private static TextureImportManager instance;
-
-        public static TextureImportManager Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = new TextureImportManager();
-                }
-                return instance;
             }
         }
 
@@ -163,7 +151,7 @@ namespace GameFramework.Editor.Core.AssetImportSetting
             if (null == textureImporter) return;
             string dir = textureImporter.assetPath.Remove(textureImporter.assetPath.LastIndexOf('/'));
             string name = textureImporter.assetPath.Substring(textureImporter.assetPath.LastIndexOf('/') + 1);
-            TextureImportRule.TextureImportData data = Instance.ImportRule.GetRule(dir, name);
+            TextureImportRule.TextureImportData data = ImportRule.GetRule(dir, name);
             if (data != null)
             {
                 ApplyRulesToTexture(textureImporter, data);
@@ -187,12 +175,14 @@ namespace GameFramework.Editor.Core.AssetImportSetting
             TextureImporterPlatformSettings settingAndroid = textureImporter.GetPlatformTextureSettings("Android");
             settingAndroid.overridden = true;
             settingAndroid.format = data.AndroidImporterFormat;
+            settingAndroid.textureCompression = data.AndroidImporterCompression;
             settingAndroid.maxTextureSize = textureImporter.maxTextureSize;
             textureImporter.SetPlatformTextureSettings(settingAndroid);
 
             TextureImporterPlatformSettings settingIos = textureImporter.GetPlatformTextureSettings("iPhone");
             settingIos.overridden = true;
             settingIos.format = data.IphoneImporterFormat;
+            settingIos.textureCompression = data.IphoneImporterCompression;
             settingIos.maxTextureSize = textureImporter.maxTextureSize;
             textureImporter.SetPlatformTextureSettings(settingIos);
             textureImporter.SaveAndReimport();

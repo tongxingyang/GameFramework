@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace GameFramework
 {
@@ -29,6 +30,18 @@ namespace GameFramework
             public static int Iterations = 555;
             public static string Password = "txy!123";
             public static string Salt = "txy";
+        }
+        
+        public static class AssetBundleConfig
+        {
+            public static string BundleSuffix => "assetbundle";
+            public static bool LuaEncrypt = true;
+            public static string AssetBundleVariant = String.Empty;
+            public static string OutputDir => "output";
+            public static string AssetBundleOutputDir => string.Format("{0}/Assetbundle/", OutputDir);
+            public static string AssetBundlePatchDir => string.Format("{0}/Patch/", OutputDir);
+            public static bool ResetAssetBundleName = true;
+            public static bool EnableAssetBundleRedundance = true;
         }
     }
 }

@@ -8,48 +8,49 @@ namespace GameFramework.Utility.MD5Utility
 {
     public class MD5Utility
     {
-        public static string GetHexString(byte[] bytes)
+        private static MD5CryptoServiceProvider md5 = null;
+        public static MD5CryptoServiceProvider Md5 => md5 ?? (md5 = new MD5CryptoServiceProvider());
+
+        private static StringBuilder builder = null;
+        public static StringBuilder Builder => builder ?? (builder = new StringBuilder());
+        
+        private static string GetHexString(byte[] bytes)
         {
-            StringBuilder sb = new StringBuilder();
+            Builder.Length = 0;
+            Builder.Clear();
             for (int i = 0; i < bytes.Length; i++) {
-                sb.Append(bytes[i].ToString("x2"));
+                Builder.Append(bytes[i].ToString("x2"));
             }
-            return sb.ToString();
+            return Builder.ToString();
         }
 
         public static string ComputeHash(byte[] bytes)
         {
-            MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
-            byte[] buffer = md5.ComputeHash(bytes);
+            byte[] buffer = Md5.ComputeHash(bytes);
             string hash = GetHexString(buffer);
-            md5.Clear();
+            Md5.Clear();
+            return hash;
+        }
+        
+        public static string ComputeHash(Stream sm)
+        {
+            byte[] buffer = Md5.ComputeHash(sm);
+            string hash = GetHexString(buffer);
+            Md5.Clear();
             return hash;
         }
 
-        public static string ComputeHashUTF8(string text)
+        public static string ComputeHashUtf8(string text)
         {
-            MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
             byte[] bytes = Encoding.UTF8.GetBytes(text);
             string hash = ComputeHash(bytes);
-            md5.Clear();
             return hash;
         }
 
         public static string ComputeHashUnicode(string text)
         {
-            MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
             byte[] bytes = Encoding.Unicode.GetBytes(text);
             string hash = ComputeHash(bytes);
-            md5.Clear();
-            return hash;
-        }
-
-        public static string ComputeHash(Stream sm)
-        {
-            MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
-            byte[] buffer = md5.ComputeHash(sm);
-            string hash = GetHexString(buffer);
-            md5.Clear();
             return hash;
         }
 
@@ -57,12 +58,9 @@ namespace GameFramework.Utility.MD5Utility
         {
             try
             {
-                MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
                 using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
                 {
-                    byte[] retVal = md5.ComputeHash(fs);
-                    string str = GetHexString(retVal);
-                    return str;
+                    return ComputeHash(fs);
                 }
             }
             catch (System.Exception ex)
@@ -73,7 +71,7 @@ namespace GameFramework.Utility.MD5Utility
             return string.Empty;
         }
         
-        public static string GetFileMD5(string filePath)
+        public static string GetFileMd5(string filePath)
         {
             if (FileUtility.IsFileExist(filePath))
             {
@@ -82,14 +80,14 @@ namespace GameFramework.Utility.MD5Utility
             return string.Empty;
         }
 
-        public static string GetMD5(byte[] data)
+        public static string GetMd5(byte[] data)
         {
             return ComputeHash(data);
         }
 
-        public static string GetMd5UTF8(string data)
+        public static string GetMd5Utf8(string data)
         {
-            return ComputeHashUTF8(data);
+            return ComputeHashUtf8(data);
         }
 
         public static string GetMd5Unicode(string data)
@@ -97,5 +95,9 @@ namespace GameFramework.Utility.MD5Utility
             return ComputeHashUnicode(data);
         }
         
+        public static string GetMd5Stream(Stream sm)
+        {
+            return ComputeHash(sm);
+        }
     }
 }

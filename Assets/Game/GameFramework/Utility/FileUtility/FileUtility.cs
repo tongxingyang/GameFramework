@@ -384,6 +384,10 @@ namespace GameFramework.Utility.File
 
         public static void CopyFile(string srcFile, string desFile)
         {
+            if (!IsDirectoryExist(desFile))
+            {
+                CreateDirectory(desFile);
+            }
             System.IO.File.Copy(srcFile, desFile);
         }
 

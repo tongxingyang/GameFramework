@@ -7,7 +7,7 @@ namespace GameFramework.Editor.Core.AssetImportSetting
     public class AudioClipImportEditor : EditorWindow
     {
         [MenuItem("Tools/导入设置/AudioClip 导入设置")]
-        public static void ShowAudioClipImportWditor()
+        public static void ShowAudioClipImportEditor()
         {
             AudioClipImportEditor AudioClipImportEditor = GetWindow<AudioClipImportEditor>();
             AudioClipImportEditor.Show();
@@ -34,7 +34,7 @@ namespace GameFramework.Editor.Core.AssetImportSetting
             AudioClipImportManager.AudioClipImportRule.AudioClipImportData data =
                 new AudioClipImportManager.AudioClipImportRule.AudioClipImportData
                 {
-                    Index = AudioClipImportManager.Instance.ImportRule.GetNextIndex()
+                    Index = AudioClipImportManager.ImportRule.GetNextIndex()
                 };
             return data;
         }
@@ -48,7 +48,7 @@ namespace GameFramework.Editor.Core.AssetImportSetting
         private void SetSelectIndexDataInfo()
         {
             AudioClipImportManager.AudioClipImportRule.AudioClipImportData data =
-                AudioClipImportManager.Instance.ImportRule.GetRule(currentSelectIndex);
+                AudioClipImportManager.ImportRule.GetRule(currentSelectIndex);
             if (data != null)
                 data = currenAudioClipImportData;
         }
@@ -82,7 +82,7 @@ namespace GameFramework.Editor.Core.AssetImportSetting
                 }
                 if (GUILayout.Button("Delete", GUILayout.MinWidth(100)))
                 {
-                    AudioClipImportManager.Instance.ImportRule.Delete(currentSelectIndex);
+                    AudioClipImportManager.ImportRule.Delete(currentSelectIndex);
                 }
                 if (GUILayout.Button("New Data", GUILayout.MinWidth(100)))
                 {
@@ -94,7 +94,7 @@ namespace GameFramework.Editor.Core.AssetImportSetting
                     AudioClipImportManager.AudioClipImportRule.AudioClipImportData data = GetNextAudioClipImportData();
                     data.AssetPath = currenAudioClipImportData.AssetPath;
                     data.FileFilter = currenAudioClipImportData.FileFilter;
-                    AudioClipImportManager.Instance.ImportRule.Add(data);
+                    AudioClipImportManager.ImportRule.Add(data);
                     currenAudioClipImportData = data;
                     currentSelectIndex = data.Index;
                     GetSelectIndexDataInfo(data);
@@ -132,9 +132,9 @@ namespace GameFramework.Editor.Core.AssetImportSetting
             }
             EditorGUILayout.EndHorizontal();
             GUILayout.Space(25);
-            int height = (AudioClipImportManager.Instance.ImportRule.AudioClipImportDatas.Count + 1) * 20;
+            int height = (AudioClipImportManager.ImportRule.AudioClipImportDatas.Count + 1) * 20;
             AudioClipImportManager.AudioClipImportRule.AudioClipImportData rule =
-                AudioClipImportManager.Instance.ImportRule.GetRule(currentSelectIndex);
+                AudioClipImportManager.ImportRule.GetRule(currentSelectIndex);
             string[] guids = null;
             if (null != rule)
             {
@@ -163,11 +163,11 @@ namespace GameFramework.Editor.Core.AssetImportSetting
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.Space();
             style = GUI.skin.textField;
-            for (int i = 0; i < AudioClipImportManager.Instance.ImportRule.AudioClipImportDatas.Count; i++)
+            for (int i = 0; i < AudioClipImportManager.ImportRule.AudioClipImportDatas.Count; i++)
             {
                 EditorGUILayout.BeginHorizontal();
                 AudioClipImportManager.AudioClipImportRule.AudioClipImportData data =
-                    AudioClipImportManager.Instance.ImportRule.AudioClipImportDatas[i];
+                    AudioClipImportManager.ImportRule.AudioClipImportDatas[i];
 
                 GUI.color = data.Index == currentSelectIndex ? Color.green : new Color(0.8f, 0.8f, 0.8f, 1);
 
@@ -290,9 +290,9 @@ namespace GameFramework.Editor.Core.AssetImportSetting
                 }
             }
             GUI.EndScrollView();
-            if (EditorUtility.IsDirty(AudioClipImportManager.Instance.ImportRule))
+            if (EditorUtility.IsDirty(AudioClipImportManager.ImportRule))
             {
-                EditorUtility.SetDirty(AudioClipImportManager.Instance.ImportRule);
+                EditorUtility.SetDirty(AudioClipImportManager.ImportRule);
                 AssetDatabase.Refresh();
             }
         }
