@@ -176,7 +176,7 @@ namespace GameFramework.Utility.PlayerPrefs
 
         static string Encrypt(string strPlain, string password)
         {
-            if (!AppConst.PlayerPrefsConfig.useSecure)
+            if (!AppConst.PlayerPrefsConfig.UseSecure)
                 return strPlain;
             try
             {
@@ -204,7 +204,7 @@ namespace GameFramework.Utility.PlayerPrefs
 
         static string Decrypt(string strEncript, string password)
         {
-            if (!AppConst.PlayerPrefsConfig.useSecure)
+            if (!AppConst.PlayerPrefsConfig.UseSecure)
                 return strEncript;
             try
             {

@@ -13,22 +13,28 @@ namespace GameFramework.Editor.Core.AssetBundle
             "Assets/Game/GameFramework/Editor/EditorAsset/AssetBundleBuildRules.asset";
 
 //        public static Dictionary<string, HashSet<string>> AssetBundleNameMap = new Dictionary<string, HashSet<string>>();
-        
         public class AssetBundleBuildRule : ScriptableObject
         {
             [Flags]
             public enum Platform
             {
                 Undefined = 0,
-                Windows64 = 1 << 0,
-                MacOs = 1 << 1,
-                Ios = 1 << 2,
-                Android = 1 << 3,
+                Windows32 = 1 << 0,
+                Windows64 = 1 << 1,
+                MacOs = 1 << 2,
+                Ios = 1 << 3,
+                Android = 1 << 4,
             }
             
             public enum enRuleType
             {
                 None,
+                //路径下的所有文件使用相同的AssetBundleName
+                AllFileWithSameBundleName,
+                //路径下的所有文件使用上层目录路径的Name
+                AllFileWithSamePathName,
+                //一个文件打成一个AssetBundle
+                SingleFileWithFileName,
             }
             
             [Serializable]
@@ -45,11 +51,10 @@ namespace GameFramework.Editor.Core.AssetBundle
             public bool ZipSelected = true;
             public bool UncompressedAssetBundle;
             public bool DisableWriteTypeTree;
-            public bool DeterministicAssetBundle;
+            public bool DeterministicAssetBundle = true;
             public bool ForceRebuildAssetBundle;
             public bool IgnoreTypeTreeChanges;
-            public bool AppendHashToAssetBundleName;
-            public bool ChunkBasedCompression;
+            public bool ChunkBasedCompression = true;
             public Platform Platforms;
         }
         
@@ -75,18 +80,18 @@ namespace GameFramework.Editor.Core.AssetBundle
         
         public static bool IsPlatformSelected(AssetBundleBuildRule.Platform platform)
         {
-            return (AssetBundleBuildManager.AssetBundleRule.Platforms & platform) != 0;
+            return (AssetBundleRule.Platforms & platform) != 0;
         }
         
         public static void SelectPlatform(AssetBundleBuildRule.Platform platform, bool selected)
         {
             if (selected)
             {
-                AssetBundleBuildManager.AssetBundleRule.Platforms |= platform;
+                AssetBundleRule.Platforms |= platform;
             }
             else
             {
-                AssetBundleBuildManager.AssetBundleRule.Platforms &= ~platform;
+                AssetBundleRule.Platforms &= ~platform;
             }
         }
         
@@ -94,37 +99,32 @@ namespace GameFramework.Editor.Core.AssetBundle
         {
             BuildAssetBundleOptions buildOptions = BuildAssetBundleOptions.None;
 
-            if (AssetBundleBuildManager.AssetBundleRule.UncompressedAssetBundle)
+            if (AssetBundleRule.UncompressedAssetBundle)
             {
                 buildOptions |= BuildAssetBundleOptions.UncompressedAssetBundle;
             }
 
-            if (AssetBundleBuildManager.AssetBundleRule.DisableWriteTypeTree)
+            if (AssetBundleRule.DisableWriteTypeTree)
             {
                 buildOptions |= BuildAssetBundleOptions.DisableWriteTypeTree;
             }
 
-            if (AssetBundleBuildManager.AssetBundleRule.DeterministicAssetBundle)
+            if (AssetBundleRule.DeterministicAssetBundle)
             {
                 buildOptions |= BuildAssetBundleOptions.DeterministicAssetBundle;
             }
 
-            if (AssetBundleBuildManager.AssetBundleRule.ForceRebuildAssetBundle)
+            if (AssetBundleRule.ForceRebuildAssetBundle)
             {
                 buildOptions |= BuildAssetBundleOptions.ForceRebuildAssetBundle;
             }
 
-            if (AssetBundleBuildManager.AssetBundleRule.IgnoreTypeTreeChanges)
+            if (AssetBundleRule.IgnoreTypeTreeChanges)
             {
                 buildOptions |= BuildAssetBundleOptions.IgnoreTypeTreeChanges;
             }
 
-            if (AssetBundleBuildManager.AssetBundleRule.AppendHashToAssetBundleName)
-            {
-                buildOptions |= BuildAssetBundleOptions.AppendHashToAssetBundleName;
-            }
-
-            if (AssetBundleBuildManager.AssetBundleRule.ChunkBasedCompression)
+            if (AssetBundleRule.ChunkBasedCompression)
             {
                 buildOptions |= BuildAssetBundleOptions.ChunkBasedCompression;
             }
@@ -136,8 +136,43 @@ namespace GameFramework.Editor.Core.AssetBundle
         {
             Reset();
             SetAllAssetBundleName(AppConst.AssetBundleConfig.EnableAssetBundleRedundance);
+            BuildAssetBundleOptions buildAssetBundleOptions = GetBuildAssetBundleOptions();
+            AssetBundleBuild[] buildMap = null;
+            bool isSuccess = false;
+            isSuccess = BuildAssetBundles(AssetBundleBuildRule.Platform.Windows32, buildMap, buildAssetBundleOptions);
+
+            if (isSuccess)
+            {
+                isSuccess = BuildAssetBundles(AssetBundleBuildRule.Platform.Windows64, buildMap, buildAssetBundleOptions);
+            }
+
+            if (isSuccess)
+            {
+                isSuccess = BuildAssetBundles(AssetBundleBuildRule.Platform.MacOs, buildMap, buildAssetBundleOptions);
+            }
+
+            if (isSuccess)
+            {
+                isSuccess = BuildAssetBundles(AssetBundleBuildRule.Platform.Ios, buildMap, buildAssetBundleOptions);
+            }
+
+            if (isSuccess)
+            {
+                isSuccess = BuildAssetBundles(AssetBundleBuildRule.Platform.Android, buildMap, buildAssetBundleOptions);
+            }
+
             AssetDatabase.RemoveUnusedAssetBundleNames();
             AssetDatabase.Refresh();
+        }
+
+        public static bool BuildAssetBundles(AssetBundleBuildRule.Platform platform, AssetBundleBuild[] buildMap,
+            BuildAssetBundleOptions buildAssetBundleOptions)
+        {
+            if (!IsPlatformSelected(platform))
+            {
+                return true;
+            }
+            return false;
         }
         
         public static void Reset()
@@ -182,9 +217,6 @@ namespace GameFramework.Editor.Core.AssetBundle
         /// <summary>
         /// BundleData/BB/CC/DD.xx      AssetBundleName 文件的上一级目录为AssetBundleName
         /// </summary>
-        /// <param name="inPath"></param>
-        /// <param name="outPath"></param>
-        /// <param name="exts"></param>
         public static void SetAssetBundleNameUsePathName(string inPath, string outPath, List<string> exts)
         {
             if (inPath.EndsWith("/"))
@@ -209,9 +241,6 @@ namespace GameFramework.Editor.Core.AssetBundle
         /// <summary>
         /// 文件夹下每个资源独自打成一个AssetBundle
         /// </summary>
-        /// <param name="inPath"></param>
-        /// <param name="outPath"></param>
-        /// <param name="exts"></param>
         public static void SetAssetBundleNamePathSingle(string inPath, string outPath, List<string> exts)
         {
             if (inPath.EndsWith("/"))
@@ -237,9 +266,6 @@ namespace GameFramework.Editor.Core.AssetBundle
         /// <summary>
         /// 设置文件夹下所有指定后缀文件相同的 AssetBundle名
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="abName"></param>
-        /// <param name="exts"></param>
         public static void SetAssetBundleNameAll(string path, string abName, List<string> exts)
         {
             if (path.EndsWith("/"))
