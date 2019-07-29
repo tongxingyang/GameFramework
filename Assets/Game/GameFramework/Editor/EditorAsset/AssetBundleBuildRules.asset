@@ -16,9 +16,8 @@ MonoBehaviour:
   ZipSelected: 1
   UncompressedAssetBundle: 0
   DisableWriteTypeTree: 0
-  DeterministicAssetBundle: 0
+  DeterministicAssetBundle: 1
   ForceRebuildAssetBundle: 0
   IgnoreTypeTreeChanges: 0
-  AppendHashToAssetBundleName: 0
-  ChunkBasedCompression: 0
+  ChunkBasedCompression: 1
   Platforms: 0

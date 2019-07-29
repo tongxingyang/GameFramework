@@ -1,6 +1,5 @@
 using System;
 using GameFramework.Utility;
-using UnityEditorInternal.Profiling.Memory.Experimental;
 
 namespace GameFramework.DataTable.Base
 {

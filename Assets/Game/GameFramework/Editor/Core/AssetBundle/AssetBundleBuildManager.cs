@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
 using System.Text.RegularExpressions;
+using GameFramework.Utility;
+using GameFramework.Utility.Compress;
 using GameFramework.Utility.File;
 using UnityEditor;
 using UnityEngine;
+using Version = GameFramework.Update.Version.Version;
 
 namespace GameFramework.Editor.Core.AssetBundle
 {
@@ -12,13 +17,20 @@ namespace GameFramework.Editor.Core.AssetBundle
         public static string AssetBundleBuildRulePath =
             "Assets/Game/GameFramework/Editor/EditorAsset/AssetBundleBuildRules.asset";
 
-//        public static Dictionary<string, HashSet<string>> AssetBundleNameMap = new Dictionary<string, HashSet<string>>();
+        public static string VersionFile = "version.json";
+        
+        public static string OutputDirectory = "";
+        public static string WorkingDirectory => $"{OutputDirectory}/Working/";
+        public static string TempWorkingDirectory => $"{OutputDirectory}/TempWorking/";
+        public static string UpdateFullDirectory => $"{OutputDirectory}/Update/{CurrentVersion.ToString()}/";
+        public static string PackageDirectory => $"{OutputDirectory}/Package/{CurrentVersion.ToString()}/";
+        public static Version CurrentVersion = new Version("0.0.1");
+
         public class AssetBundleBuildRule : ScriptableObject
         {
             [Flags]
             public enum Platform
             {
-                Undefined = 0,
                 Windows32 = 1 << 0,
                 Windows64 = 1 << 1,
                 MacOs = 1 << 2,
@@ -56,6 +68,7 @@ namespace GameFramework.Editor.Core.AssetBundle
             public bool IgnoreTypeTreeChanges;
             public bool ChunkBasedCompression = true;
             public Platform Platforms;
+            public string AssetBundleVariant = string.Empty;
         }
         
         private static AssetBundleBuildRule assetBundleRule;
@@ -132,55 +145,205 @@ namespace GameFramework.Editor.Core.AssetBundle
             return buildOptions;
         }
         
-        public static void BuildAssetBundle()
+        private static BuildTarget GetBuildTarget(AssetBundleBuildRule.Platform platform)
         {
+            switch (platform)
+            {
+                case AssetBundleBuildRule.Platform.Windows32:
+                    return BuildTarget.StandaloneWindows;
+                case AssetBundleBuildRule.Platform.Windows64:
+                    return BuildTarget.StandaloneWindows64;
+                case AssetBundleBuildRule.Platform.MacOs:
+                    return BuildTarget.StandaloneOSX;
+                case AssetBundleBuildRule.Platform.Ios:
+                    return BuildTarget.iOS;
+                case AssetBundleBuildRule.Platform.Android:
+                    return BuildTarget.Android;
+                default:
+                    throw new Exception("打包平台不存在.... 请检查");
+            }
+        }
+        
+        public static bool BuildAssetBundle()
+        {
+            if (Directory.Exists(PackageDirectory))
+            {
+                Directory.Delete(PackageDirectory,true);
+            }
+            Directory.CreateDirectory(PackageDirectory);
+            if (Directory.Exists(WorkingDirectory))
+            {
+                Directory.Delete(WorkingDirectory,true);
+            }
+            Directory.CreateDirectory(WorkingDirectory);
+            if (Directory.Exists(TempWorkingDirectory))
+            {
+                Directory.Delete(TempWorkingDirectory,true);
+            }
+            Directory.CreateDirectory(TempWorkingDirectory);
+            if (Directory.Exists(UpdateFullDirectory))
+            {
+                Directory.Delete(UpdateFullDirectory,true);
+            }
+            Directory.CreateDirectory(UpdateFullDirectory);
+            
             Reset();
             SetAllAssetBundleName(AppConst.AssetBundleConfig.EnableAssetBundleRedundance);
             BuildAssetBundleOptions buildAssetBundleOptions = GetBuildAssetBundleOptions();
-            AssetBundleBuild[] buildMap = null;
             bool isSuccess = false;
-            isSuccess = BuildAssetBundles(AssetBundleBuildRule.Platform.Windows32, buildMap, buildAssetBundleOptions);
+            isSuccess = BuildAssetBundles(AssetBundleBuildRule.Platform.Windows32, buildAssetBundleOptions);
 
             if (isSuccess)
             {
-                isSuccess = BuildAssetBundles(AssetBundleBuildRule.Platform.Windows64, buildMap, buildAssetBundleOptions);
+                isSuccess = BuildAssetBundles(AssetBundleBuildRule.Platform.Windows64, buildAssetBundleOptions);
             }
 
             if (isSuccess)
             {
-                isSuccess = BuildAssetBundles(AssetBundleBuildRule.Platform.MacOs, buildMap, buildAssetBundleOptions);
+                isSuccess = BuildAssetBundles(AssetBundleBuildRule.Platform.MacOs, buildAssetBundleOptions);
             }
 
             if (isSuccess)
             {
-                isSuccess = BuildAssetBundles(AssetBundleBuildRule.Platform.Ios, buildMap, buildAssetBundleOptions);
+                isSuccess = BuildAssetBundles(AssetBundleBuildRule.Platform.Ios, buildAssetBundleOptions);
             }
 
             if (isSuccess)
             {
-                isSuccess = BuildAssetBundles(AssetBundleBuildRule.Platform.Android, buildMap, buildAssetBundleOptions);
+                isSuccess = BuildAssetBundles(AssetBundleBuildRule.Platform.Android, buildAssetBundleOptions);
             }
-
+            
             AssetDatabase.RemoveUnusedAssetBundleNames();
             AssetDatabase.Refresh();
+            return isSuccess;
         }
 
-        public static bool BuildAssetBundles(AssetBundleBuildRule.Platform platform, AssetBundleBuild[] buildMap,
-            BuildAssetBundleOptions buildAssetBundleOptions)
+        public static bool BuildAssetBundles(AssetBundleBuildRule.Platform platform,BuildAssetBundleOptions buildAssetBundleOptions)
         {
             if (!IsPlatformSelected(platform))
             {
                 return true;
             }
-            return false;
+            string platformName = platform.ToString();
+            string workingPath = $"{WorkingDirectory}{platformName}/";
+            string tempworkingPath = $"{TempWorkingDirectory}{platformName}/";
+            string packagePath = $"{PackageDirectory}{platformName}/";
+            string updatePath = $"{UpdateFullDirectory}{platformName}/";
+            if (Directory.Exists(workingPath))
+            {
+                Directory.Delete(workingPath,true);
+            }
+            Directory.CreateDirectory(workingPath);
+            
+            if (Directory.Exists(packagePath))
+            {
+                Directory.Delete(packagePath,true);
+            }
+            Directory.CreateDirectory(packagePath);
+            
+            if (Directory.Exists(updatePath))
+            {
+                Directory.Delete(updatePath,true);
+            }
+            Directory.CreateDirectory(updatePath);
+
+            AssetBundleManifest assetBundleManifest =
+                BuildPipeline.BuildAssetBundles(workingPath, buildAssetBundleOptions, GetBuildTarget(platform));
+            if (assetBundleManifest == null)
+            {
+                return false;
+            }
+            ProcessUpdate(workingPath,updatePath,platform);
+            ProcessPackage(workingPath, tempworkingPath, packagePath, platform);
+            return true;
         }
+
+        private static void ProcessUpdate(string workingPath ,string updatePath, AssetBundleBuildRule.Platform platform)
+        {
+            string updateVersionPath = $"{updatePath}{AppConst.AssetBundleConfig.VersionFile}";
+            using (ByteBuffer buffer = new ByteBuffer())
+            {
+                ValueParse.WriteValue(buffer, CurrentVersion.MasterVersion, ValueParse.IntParse);
+                ValueParse.WriteValue(buffer, CurrentVersion.MinorVersion, ValueParse.IntParse);
+                ValueParse.WriteValue(buffer, CurrentVersion.RevisedVersion, ValueParse.IntParse);
+                ValueParse.WriteValue(buffer,
+                    string.IsNullOrEmpty(AssetBundleRule.AssetBundleVariant) ? "" : AssetBundleRule.AssetBundleVariant,
+                    ValueParse.StringParse);
+                File.WriteAllBytes(updateVersionPath,buffer.ToBytes());
+            }
+            string[] allFiles = Directory.GetFiles(workingPath, "*", SearchOption.AllDirectories);
+            List<string> allAssetBundleFiles = new List<string>();
+            foreach (string tempFile in allFiles)
+            {
+                string path = tempFile.Replace("\\", "/");
+                if(Path.GetExtension(path) == ".mainfest") continue;
+                allAssetBundleFiles.Add(path);
+            }
+            EditorUtility.ClearProgressBar();
+            int index = 0;
+            int count = allAssetBundleFiles.Count;
+            foreach (string assetBundleFile in allAssetBundleFiles)
+            {
+                index++;
+                EditorUtility.DisplayProgressBar("压缩AssetBundle", "压缩AssetBundle文件", (float)index / (float)count);
+                string target = assetBundleFile.Replace(workingPath, updatePath);
+                string targetPath = Path.GetDirectoryName(target);
+                if (!Directory.Exists(targetPath))
+                {
+                    if (targetPath != null) Directory.CreateDirectory(targetPath);
+                    //Compress
+                    ZIPUtility.ZipCompress(assetBundleFile,new FileInfo[]{new FileInfo(assetBundleFile), },target+".zip",4);
+                }
+            }
+            EditorUtility.ClearProgressBar();
+        }
+        
+        private static void ProcessPackage(string workingPath ,string tempworkingPath ,string packagePath, AssetBundleBuildRule.Platform platform)
+        {
+            string packageVersionPath = $"{packagePath}{AppConst.AssetBundleConfig.VersionFile}";
+            using (ByteBuffer buffer = new ByteBuffer())
+            {
+                ValueParse.WriteValue(buffer, CurrentVersion.MasterVersion, ValueParse.IntParse);
+                ValueParse.WriteValue(buffer, CurrentVersion.MinorVersion, ValueParse.IntParse);
+                ValueParse.WriteValue(buffer, CurrentVersion.RevisedVersion, ValueParse.IntParse);
+                ValueParse.WriteValue(buffer,
+                    string.IsNullOrEmpty(AssetBundleRule.AssetBundleVariant) ? "" : AssetBundleRule.AssetBundleVariant,
+                    ValueParse.StringParse);
+                File.WriteAllBytes(packageVersionPath,buffer.ToBytes());
+            }
+            //Compress
+            string[] allFiles = Directory.GetFiles(workingPath, "*", SearchOption.AllDirectories);
+            List<string> allAssetBundleFiles = new List<string>();
+            foreach (string tempFile in allFiles)
+            {
+                string path = tempFile.Replace("\\", "/");
+                if(Path.GetExtension(path) == ".mainfest") continue;
+                allAssetBundleFiles.Add(path);
+            }
+            EditorUtility.ClearProgressBar();
+            int index = 0;
+            int count = allAssetBundleFiles.Count;
+            foreach (string assetBundleFile in allAssetBundleFiles)
+            {
+                index++;
+                EditorUtility.DisplayProgressBar("复制AssetBundle", "复制AssetBundle文件", (float)index / (float)count);
+                string target = assetBundleFile.Replace(workingPath, tempworkingPath);
+                string targetPath = Path.GetDirectoryName(target);
+                if (!Directory.Exists(targetPath))
+                {
+                    if (targetPath != null) Directory.CreateDirectory(targetPath);
+                    File.Copy(assetBundleFile, target);
+                }
+            }
+            EditorUtility.ClearProgressBar();
+            ZIPUtility.ZipCompress(tempworkingPath,packageVersionPath,"*",4);
+            EditorUtility.DisplayDialog("压缩AssetBundle", "压缩AssetBundle文件夹完成", "确定");
+            Directory.Delete(tempworkingPath,true);
+        }
+
         
         public static void Reset()
         {
-            if (FileUtility.IsDirectoryExist(AppConst.AssetBundleConfig.AssetBundleOutputDir))
-            {
-                FileUtility.DeleteDirectory(AppConst.AssetBundleConfig.AssetBundleOutputDir);
-            }
             if (AppConst.AssetBundleConfig.ResetAssetBundleName)
             {
                 var assetBundleNames = AssetDatabase.GetAllAssetBundleNames();
@@ -188,7 +351,6 @@ namespace GameFramework.Editor.Core.AssetBundle
                 {
                     AssetDatabase.RemoveAssetBundleName(assetBundleName, true);
                 }
-//                AssetBundleNameMap.Clear();
             }
             AssetDatabase.Refresh();
         }
@@ -208,9 +370,9 @@ namespace GameFramework.Editor.Core.AssetBundle
             abName = abName.ToLower();
             abName += AppConst.AssetBundleConfig.BundleSuffix;
             if (import.assetBundleName != abName ||
-                import.assetBundleVariant != AppConst.AssetBundleConfig.AssetBundleVariant)
+                import.assetBundleVariant != AssetBundleRule.AssetBundleVariant)
             {
-                import.SetAssetBundleNameAndVariant(abName,AppConst.AssetBundleConfig.AssetBundleVariant);
+                import.SetAssetBundleNameAndVariant(abName,AssetBundleRule.AssetBundleVariant);
                 import.SaveAndReimport();
             }
         }

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using GameFramework.Res.Base;
-using UnityEditor.Build.Content;
 
 namespace GameFramework.DataTable.Base
 {

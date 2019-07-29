@@ -36,14 +36,10 @@ namespace GameFramework
         public static class AssetBundleConfig
         {
             public static string BundleSuffix => "assetbundle";
+            public static string AssetBundlePackageFile => "AssetBundle.zip";
             public static bool LuaEncrypt = true;
-            public static string AssetBundleVariant = String.Empty;
             public static string VersionFile => "version.dat";
             public static string ListFile => "filelist.dat";
-            public static string OutputDir => "output";
-            public static string FullDir => "full";//上传资源服务器的bundle
-            public static string Working => "working";//拷贝到streaming目录下的bundle
-            public static string AssetBundleOutputDir => string.Format("{0}/Assetbundle/", OutputDir);
             public static bool ResetAssetBundleName = true;
             public static bool EnableAssetBundleRedundance = true;
         }

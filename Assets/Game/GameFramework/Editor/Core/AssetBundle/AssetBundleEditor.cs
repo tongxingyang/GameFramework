@@ -2,6 +2,7 @@
 using GameFramework.Utility.File;
 using UnityEditor;
 using UnityEngine;
+using Version = GameFramework.Update.Version.Version;
 
 namespace GameFramework.Editor.Core.AssetBundle
 {
@@ -14,6 +15,7 @@ namespace GameFramework.Editor.Core.AssetBundle
             assetBundleEditor.Show();
             assetBundleEditor.position = new Rect(100, 100, 1300, 400);
             assetBundleEditor.minSize = new Vector2(1300, 600);
+            GetVersion();
         }
 
         private Vector2 scrollPosition;
@@ -27,7 +29,7 @@ namespace GameFramework.Editor.Core.AssetBundle
         {
             EditorGUILayout.LabelField("设置场景随包发布,不需要打成ab的名字:",EditorStyles.boldLabel);
 
-            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.BeginHorizontal("box");
             {
                 EditorGUILayout.LabelField("SceneName:", GUILayout.MinWidth(100));
                 scenceName = EditorGUILayout.TextField(scenceName);
@@ -59,6 +61,13 @@ namespace GameFramework.Editor.Core.AssetBundle
                 EditorGUILayout.EndHorizontal();
             }
             GUILayout.Space(15);
+            EditorGUILayout.BeginHorizontal("box");
+            {
+                AssetBundleBuildManager.AssetBundleRule.AssetBundleVariant = EditorGUILayout.TextField(
+                    "AssetBundle变体名称", AssetBundleBuildManager.AssetBundleRule.AssetBundleVariant,
+                    GUILayout.Width(500));
+            }
+            EditorGUILayout.EndHorizontal();
             EditorGUILayout.BeginHorizontal();
             {
                 EditorGUILayout.LabelField("AssetPath:", GUILayout.MinWidth(100));
@@ -207,6 +216,60 @@ namespace GameFramework.Editor.Core.AssetBundle
                 EditorGUILayout.EndVertical();
             }
             EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space();
+            EditorGUILayout.BeginHorizontal("box");
+            {
+                EditorGUILayout.LabelField("版本设置 :", GUILayout.Width(100));
+                AssetBundleBuildManager.CurrentVersion.MasterVersion = int.Parse(EditorGUILayout.TextField("主版本号: ",AssetBundleBuildManager.CurrentVersion.MasterVersion.ToString(),GUILayout.Width(300)));
+                AssetBundleBuildManager.CurrentVersion.MinorVersion = int.Parse(EditorGUILayout.TextField("次版本号: ",AssetBundleBuildManager.CurrentVersion.MinorVersion.ToString(),GUILayout.Width(300)));
+                AssetBundleBuildManager.CurrentVersion.RevisedVersion = int.Parse(EditorGUILayout.TextField("修订版本号: ",AssetBundleBuildManager.CurrentVersion.RevisedVersion.ToString(),GUILayout.Width(300)));
+                if (GUILayout.Button("保存版本信息", GUILayout.MinWidth(100)))
+                {
+                    SaveVersion();
+                }
+            }
+            EditorGUILayout.EndHorizontal();
+            
+            EditorGUILayout.BeginVertical("box");
+            {
+                EditorGUILayout.BeginHorizontal();
+                {
+                    EditorGUILayout.LabelField("保存打包路径:", GUILayout.Width(100));
+                    if (GUILayout.Button("Browse..."))
+                    {
+                        string directory = EditorUtility.OpenFolderPanel("选择文件夹", AssetBundleBuildManager.OutputDirectory, string.Empty);
+                        if (!string.IsNullOrEmpty(directory))
+                        {
+                            AssetBundleBuildManager.OutputDirectory = directory;
+                        }
+                    }
+                }
+                EditorGUILayout.EndHorizontal();
+                AssetBundleBuildManager.OutputDirectory = EditorGUILayout.TextField(AssetBundleBuildManager.OutputDirectory, GUILayout.Width(900));
+                EditorGUILayout.LabelField(AssetBundleBuildManager.WorkingDirectory, GUILayout.Width(900));
+                EditorGUILayout.LabelField(AssetBundleBuildManager.UpdateFullDirectory, GUILayout.Width(900));
+                EditorGUILayout.LabelField(AssetBundleBuildManager.PackageDirectory, GUILayout.Width(900));
+            }
+            EditorGUILayout.EndVertical();
+            EditorGUILayout.BeginHorizontal();
+            {
+                if (GUILayout.Button("清除AssetBundleName",GUILayout.Width(320)))
+                {
+                    AssetBundleBuildManager.Reset();
+                }
+                if (GUILayout.Button("设置AssetBundleName",GUILayout.Width(320)))
+                {
+                    AssetBundleBuildManager.SetAllAssetBundleName();
+                } 
+                if (GUILayout.Button("构建AssetBundle",GUILayout.Width(320)))
+                {
+                    AssetBundleBuildManager.BuildAssetBundle();
+                }
+                if (GUILayout.Button("分析AssetBundle",GUILayout.Width(320)))
+                {
+                }
+            }
+            EditorGUILayout.EndHorizontal();
             GUILayout.Space(5);
 
             int height = 0;
@@ -285,6 +348,26 @@ namespace GameFramework.Editor.Core.AssetBundle
                 return true;
             }
             return false;
+        }
+        
+        private static void GetVersion()
+        {
+
+            if (System.IO.File.Exists(Application.dataPath + "/" + AssetBundleBuildManager.VersionFile))
+            {
+                AssetBundleBuildManager.CurrentVersion = JsonUtility.FromJson<Version>(
+                    System.IO.File.ReadAllText(Application.dataPath + "/" + AssetBundleBuildManager.VersionFile));
+            }
+            else
+            {
+                AssetBundleBuildManager.CurrentVersion = new Version("0.0.1");
+            }
+          
+        }
+
+        private static void SaveVersion()
+        {
+            System.IO.File.WriteAllText(Application.dataPath + "/" + AssetBundleBuildManager.VersionFile,JsonUtility.ToJson(AssetBundleBuildManager.CurrentVersion));
         }
     }
 }
