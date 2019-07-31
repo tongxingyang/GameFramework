@@ -21,15 +21,7 @@ namespace GameFramework.Localization.Base
         public Language Language
         {
             get => language;
-            set
-            {
-                if (value == Language.Unspecified)
-                {
-                    language = Language.English;
-                    return;
-                }
-                language = value;
-            }
+            set => language = value;
         }
 
         public Language SystemLanguage
@@ -52,17 +44,6 @@ namespace GameFramework.Localization.Base
            languageDictionary = new Dictionary<enLanguageKey, string>();
            resourceManager = null;
            loadAssetCallBacks = new LoadAssetCallbacks(LoadLanguageSuccessCallback, LoadLanguageFailureCallback, LoadLanguageUpdateCallback,LoadLanguageDependencyAssetCallback);
-        }
-
-        public Language GetCurrentLanguage()
-        {
-            Language language = Singleton<GameEntry>.GetInstance().GetComponent<SettingComponent>().GetLanguage();
-            if (language == Language.Unspecified)
-            {
-                Singleton<GameEntry>.GetInstance().GetComponent<SettingComponent>().SetLanguage(SystemLanguage);
-            }
-            Language = language;
-            return language;
         }
         
         public void OnUpdate(float elapseSeconds, float realElapseSeconds)

@@ -6,7 +6,7 @@ using SevenZip.Compression.LZMA;
 
 namespace GameFramework.Utility.Compress
 {
-    public class LZMAUtility
+    public class LzmaUtility
     {
         static Decoder decoder = new Decoder();
         static Encoder encoder = new Encoder();

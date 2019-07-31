@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<UpdateConfig>
+    
+    <cn>
+        <UpdateServer1 url=""/>
+        <UpdateServer2 url=""/>
+        <UpdateServer3 url=""/>
+        <ClientServer url=""/>
+    </cn>
+    
+    <cn-deploy>
+        <UpdateServer1 url=""/>
+        <UpdateServer2 url=""/>
+        <UpdateServer3 url=""/>
+        <ClientServer url=""/>
+    </cn-deploy>
+
+    <cn-test>
+        <UpdateServer1 url=""/>
+        <UpdateServer2 url=""/>
+        <UpdateServer3 url=""/>
+        <ClientServer url=""/>
+    </cn-test>
+
+</UpdateConfig>

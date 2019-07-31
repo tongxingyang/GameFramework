@@ -13,12 +13,12 @@ namespace GameFramework.Localization
         public override int Priority => SingletonMono<GameFramework>.GetInstance().LocalizationPriority;
         private LocalizationManager localizationManager;
 
-        private Language Language
+        public Language Language
         {
             get => localizationManager.Language;
             set => localizationManager.Language = value;
         }
-        private Language SystemLanguage => localizationManager.SystemLanguage;
+        public Language SystemLanguage => localizationManager.SystemLanguage;
         
         public override void OnAwake()
         {

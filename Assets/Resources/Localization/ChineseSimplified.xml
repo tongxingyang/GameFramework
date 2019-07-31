@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<UpdateStringConfig>
+    <SystemRequireMemory text="系统的内存不足 {0} MB，可能无法正常运行，继续吗?" />
+    <SystemRequireSpace text="系统的空闲存储空间不足 {0} MB，游戏无法正常运行" />
+	<UpdateStateSuccess text="准备开始游戏, 请稍候..." />
+    <UpdateStateDiskSpaceFullErr text="没有足够的存储空间" />
+    <UpdateStateGetLocalVersionErr text="无法获取本地版本" />
+    <UpdateStateGetServerVersionErr text="无法获取服务器版本, 请检查网络连接" />
+    <UpdateStateNetworkErr text="网络错误" />
+    <UpdateStateNetConnectionErr text="网络无法连接" />
+    <UpdateStateNetUnstable text="网络下载状态异常，请稍后再试..." />
+    <UpdateStateStartUpdateInfo text="是否进行更新，预计资源下载大小为" />
+    <UpdateStateUnknownErr text="未知错误" />
+    <UpdateStateDownloadingErrAutoRetry text="下载错误，自动重试中..." />
+    <UpdateStatusStart text="检查更新..." />
+    <UpdateStatusTryGetLocalVersion text="获取本地版本..." />
+    <UpdateStatusTryCheckFreeSpace text="检查存储空间..." />
+    <UpdateStatusTryGetNewVersion text="获取服务器版本..." />
+    <UpdateStatusTryDnsResolving text="尝试连接服务器..." />
+    <UpdateStatusSuccessGetVersions text="获取版本成功" />
+    <UpdateStatusBeginUpdate text="更新提示" />
+    <UpdateStatusDownloading text="下载进度" />
+    <UpdateStatusDownloadingServerList text="下载服务器列表..." />
+    <UpdateStatusCompressPack text="准备解压文件，请稍候..." />
+    <UpdateStringCurrentVersion text="Ver." />
+    <UpdateStringServerVersion text="服务器版本：" />
+    <UpdateStringYes text="是" />
+    <UpdateStringNo text="否" />  
+    <UpdateStringOk text="确定" />
+    <UpdateStringCancel text="取消" />
+    <UpdateStringHasErrorNotWifi text="非Wi-Fi环境，继续下载吗？" />
+    <UpdateStringHasErrorRetry text="发生错误，重试?" />
+    <UpdateStringHasError text="错误" />
+    <UpdateStringHasFatalErrorNeedReinstall text="游戏版本过低，请前往应用商店下载最新游戏版本" />
+    <UpdateStringPrepareForFirstTimeUse text="正在为初次运行做准备..." />
+    <UpdateStringEnsureEnoughSpace text="请确保设备有足够的存储空间" />
+    <UpdateStringTextUpdate text="正在下载更新，请稍候..."/>
+    <UpdateStringFileSize text="文件大小:"/>
+    <UpdateStringDownloadSpeed text="下载速度:"/>
+    <UpdateStatusWifiTips text="建议使用Wi-Fi环境下载"/>
+</UpdateStringConfig>

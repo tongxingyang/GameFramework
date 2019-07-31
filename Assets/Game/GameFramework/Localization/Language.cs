@@ -2,9 +2,9 @@
 {
     public enum Language
     {
-        Unspecified = 1,
-        English = 2,
-        ChineseSimplified = 3,
-        ChineseTraditional = 4,
+        None = 0,
+        English = 1,
+        ChineseSimplified = 2,
+        ChineseTraditional = 3,
     }
 }

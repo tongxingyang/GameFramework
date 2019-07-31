@@ -1596,8 +1596,7 @@ namespace com.ootii.Input
             if (mUseGamepad)
             {
                 if (Application.platform == RuntimePlatform.WindowsPlayer ||
-                    Application.platform == RuntimePlatform.WindowsEditor ||
-                    Application.platform == RuntimePlatform.XBOX360)
+                    Application.platform == RuntimePlatform.WindowsEditor)
                 {
                     mState.Controls[EnumInput.GAMEPAD_LEFT_STICK_X].Value = UnityEngine.Input.GetAxis("WXLeftStickX");
                     mState.Controls[EnumInput.GAMEPAD_LEFT_STICK_Y].Value = UnityEngine.Input.GetAxis("WXLeftStickY");

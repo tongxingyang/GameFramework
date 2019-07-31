@@ -31,9 +31,9 @@ namespace GameFramework.Animation.Base
                     param.startColor.r + diffColor.r * param.colorCurveR.Evaluate(time), param.startColor.g + diffColor.g * param.colorCurveG.Evaluate(time),
                     param.startColor.b + diffColor.b * param.colorCurveB.Evaluate(time), param.startColor.a + diffColor.a * param.colorCurveA.Evaluate(time));
             }
-            else if (item.parameter.renderer != null)
+            else if (item.parameter.spriteRender != null)
             {
-                item.parameter.renderer.color = new Color(
+                item.parameter.spriteRender.color = new Color(
                     param.startColor.r + diffColor.r * param.colorCurveR.Evaluate(time), param.startColor.g + diffColor.g * param.colorCurveG.Evaluate(time),
                     param.startColor.b + diffColor.b * param.colorCurveB.Evaluate(time), param.startColor.a + diffColor.a * param.colorCurveA.Evaluate(time));
             }

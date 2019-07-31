@@ -31,7 +31,7 @@ namespace GameFramework.Web
 
             for (int i = 0; i < SingletonMono<GameFramework>.GetInstance().WebRequestCount; i++)
             {
-                WebAgent webAgent = new GameObject("Web Request "+i).AddComponent<WebAgent>();
+                WebAgent webAgent = new GameObject("WebRequest_"+(i+1)).AddComponent<WebAgent>();
                 webAgent.transform.SetParent(instanceRoot);
                 webAgent.transform.localPosition = Vector3.zero;
                 webAgent.transform.localScale = Vector3.one;

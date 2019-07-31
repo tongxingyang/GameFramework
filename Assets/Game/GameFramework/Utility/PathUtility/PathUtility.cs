@@ -10,12 +10,7 @@ namespace GameFramework.Utility.PathUtility
    {
         public static string GetRegularPath(string path)
         {
-            if (path == null)
-            {
-                return null;
-            }
-
-            return path.Replace('\\', '/');
+            return path?.Replace('\\', '/');
         }
 
         public static string GetCombinePath(params string[] path)
@@ -43,11 +38,6 @@ namespace GameFramework.Utility.PathUtility
             }
 
             return combinePath.Contains("://") ? combinePath : ("file:///" + combinePath).Replace("file:////", "file:///");
-        }
-
-        public static string GetResourceNameWithSuffix(string resourceName)
-        {
-            return StringUtility.Format("{0}.dat", resourceName);
         }
        
         public static bool RemoveEmptyDirectory(string directoryName)

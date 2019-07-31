@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using GameFramework.Utility.Compress;
 using GameFramework.Utility.File;
 using UnityEditor;
 using UnityEngine;
@@ -8,6 +10,12 @@ namespace GameFramework.Editor.Core.AssetBundle
 {
     public class AssetBundleEditor : EditorWindow
     {
+        [MenuItem("Tools/ClearProgress")]
+        public static void ClearProgress()
+        {
+            EditorUtility.ClearProgressBar();
+        }
+        
         [MenuItem("Tools/AssetBunle/Build AssetBundle设置")]
         public static void BuildAssetBundleEditor()
         {
@@ -166,6 +174,10 @@ namespace GameFramework.Editor.Core.AssetBundle
                         AssetBundleBuildManager.AssetBundleRule.ZipSelected =
                             EditorGUILayout.ToggleLeft("Zip 压缩 AssetBundle",
                                 AssetBundleBuildManager.AssetBundleRule.ZipSelected);
+
+                        AssetBundleBuildManager.AssetBundleRule.ZipPassWord = EditorGUILayout.TextField("Zip PassWord",
+                            AssetBundleBuildManager.AssetBundleRule.ZipPassWord);
+
                     }
                     EditorGUILayout.EndVertical();
                 }
@@ -246,9 +258,24 @@ namespace GameFramework.Editor.Core.AssetBundle
                 }
                 EditorGUILayout.EndHorizontal();
                 AssetBundleBuildManager.OutputDirectory = EditorGUILayout.TextField(AssetBundleBuildManager.OutputDirectory, GUILayout.Width(900));
-                EditorGUILayout.LabelField(AssetBundleBuildManager.WorkingDirectory, GUILayout.Width(900));
-                EditorGUILayout.LabelField(AssetBundleBuildManager.UpdateFullDirectory, GUILayout.Width(900));
-                EditorGUILayout.LabelField(AssetBundleBuildManager.PackageDirectory, GUILayout.Width(900));
+                EditorGUILayout.BeginHorizontal();
+                {
+                    EditorGUILayout.LabelField(AssetBundleBuildManager.WorkingDirectory, GUILayout.Width(600));
+                    EditorGUILayout.LabelField("用于增量打包的目录", GUILayout.Width(300));
+                }
+                EditorGUILayout.EndHorizontal();
+                EditorGUILayout.BeginHorizontal();
+                {
+                    EditorGUILayout.LabelField(AssetBundleBuildManager.UpdateFullDirectory, GUILayout.Width(600));
+                    EditorGUILayout.LabelField("用于上传资源服务器的目录", GUILayout.Width(300));
+                }
+                EditorGUILayout.EndHorizontal();
+                EditorGUILayout.BeginHorizontal();
+                {
+                    EditorGUILayout.LabelField(AssetBundleBuildManager.PackageDirectory, GUILayout.Width(600));
+                    EditorGUILayout.LabelField("用于整包发布拷贝到StreamingAsset的目录", GUILayout.Width(300));
+                }
+                EditorGUILayout.EndHorizontal();
             }
             EditorGUILayout.EndVertical();
             EditorGUILayout.BeginHorizontal();

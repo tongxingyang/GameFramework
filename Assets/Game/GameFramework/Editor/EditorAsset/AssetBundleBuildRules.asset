@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp-Editor:GameFramework.Editor.Core.AssetBundle:AssetBundleBuildManager/AssetBundleBuildRule
   AssetBundleBuildDatas: []
   ZipSelected: 1
+  ZipPassWord: 
   UncompressedAssetBundle: 0
   DisableWriteTypeTree: 0
   DeterministicAssetBundle: 1
@@ -21,3 +22,4 @@ MonoBehaviour:
   IgnoreTypeTreeChanges: 0
   ChunkBasedCompression: 1
   Platforms: 0
+  AssetBundleVariant: 

@@ -73,8 +73,8 @@ namespace Game.GameFramework.Editor.UIEditor
         {
             this.param.startColor = EditorGUILayout.ColorField(new GUIContent("开始颜色值"), param.startColor);
             this.param.targetColor = EditorGUILayout.ColorField(new GUIContent("结束颜色值"), param.targetColor);
-            this.param.renderer = EditorGUILayout.ObjectField(new GUIContent("SpriteRenderer", "The renderer of the object."),
-                this.param.renderer, typeof(SpriteRenderer), true) as SpriteRenderer;
+            this.param.spriteRender = EditorGUILayout.ObjectField(new GUIContent("SpriteRenderer", "The renderer of the object."),
+                this.param.GetComponent<Renderer>(), typeof(SpriteRenderer), true) as SpriteRenderer;
             this.param.image = EditorGUILayout.ObjectField(new GUIContent("Image", "The image of the object."),
                 this.param.image, typeof(Image), true) as Image;
             this.param.colorCurveR = EditorGUILayout.CurveField(new GUIContent("Color R"), this.param.colorCurveR);

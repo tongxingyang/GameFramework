@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<UpdateStringConfig>
+    <SystemRequireMemory text="System memory is less than {0} MB. Game may not work properly，Continue?" />
+    <SystemRequireSpace text="System free storage is less than {0} MB. Game may not work properly" />
+	<UpdateStateSuccess text="Starting Game, Please Wait..." />
+    <UpdateStateDiskSpaceFullErr text="Disk Space Not Enough" />
+    <UpdateStateGetLocalVersionErr text="Get Local Version Error" />
+    <UpdateStateGetServerVersionErr text="Can Not Get Server Version. Please Check Network Connection" />
+    <UpdateStateNetworkErr text="Network Error" />
+    <UpdateStateNetConnectionErr text="Network Connection Error" />
+    <UpdateStateNetUnstable text="Network Downloading is Unstable, Please Try Later..." />
+    <UpdateStateStartUpdateInfo text="Need Updating, estimated download size is " />
+    <UpdateStateUnknownErr text="Unknown Error" />
+    <UpdateStateDownloadingErrAutoRetry text="Downloading Error, AutoRetry Later..." />
+    <UpdateStatusStart text="Checking Update..." />
+    <UpdateStatusTryGetLocalVersion text="Getting Local Version..." />
+    <UpdateStatusTryCheckFreeSpace text="Checking Free Space..." />
+    <UpdateStatusTryGetNewVersion text="Getting Server Version..." />
+    <UpdateStatusTryDnsResolving text="Try Connecting..." />
+    <UpdateStatusSuccessGetVersions text="Get Versions Success" />
+    <UpdateStatusBeginUpdate text="Begin Update..." />
+    <UpdateStatusDownloading text="Downloading" />
+    <UpdateStatusDownloadingServerList text="Downloading ServerList" />
+    <UpdateStatusCompressPack text="Compress File..." />
+    <UpdateStringCurrentVersion text="Current Version" />
+    <UpdateStringServerVersion text="Server Version" />
+    <UpdateStringYes text="Yes" />
+    <UpdateStringNo text="No" />  
+    <UpdateStringOk text="Ok" />
+    <UpdateStringCancel text="Cancel" />
+    <UpdateStringHasErrorNotWifi text="No Wifi Network, Continue Downloading?" />
+    <UpdateStringHasErrorRetry text="Has Error, Retry?" />
+    <UpdateStringHasError text="Has Error" />
+    <UpdateStringHasFatalErrorNeedReinstall text="Has Fatal Error, App Needs Reinstall!" />
+    <UpdateStringPrepareForFirstTimeUse text="Prepare For The First Time Use..."/>
+    <UpdateStringEnsureEnoughSpace text="Please Ensure Device Has Enough Storage Space" />
+    <UpdateStringTextUpdate text="Updating，Please do not close..."/>
+    <UpdateStringFileSize text="File Size:"/>
+    <UpdateStringDownloadSpeed text="Download Speed:"/>
+    <UpdateStatusWifiTips text="Download In WIFI Environment Recommended"/>
+</UpdateStringConfig>

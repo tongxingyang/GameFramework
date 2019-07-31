@@ -53,7 +53,7 @@ namespace GameFramework.Sound
             soundManager.AddSoundGroup(soundGroup);
             for (int i = 0; i < info.SoundCount; i++)
             {
-                AddSound(name + "_" + i, soundGroup);
+                AddSound(name + "_" + (i+1), soundGroup);
             }
             return true;
 

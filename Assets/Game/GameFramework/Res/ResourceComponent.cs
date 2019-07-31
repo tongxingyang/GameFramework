@@ -1,7 +1,10 @@
-﻿using GameFramework.Base;
+﻿using System;
+using System.Collections;
+using GameFramework.Base;
 using GameFramework.Res.Base;
 using GameFramework.Utility.Singleton;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace GameFramework.Res
 {
@@ -9,6 +12,9 @@ namespace GameFramework.Res
     public class ResourceComponent : GameFrameworkComponent
     {
         public override int Priority => SingletonMono<GameFramework>.GetInstance().ResPriority;
+        
+        public string PlatformName = String.Empty;
+        public string AssetBundleVariant = String.Empty;
         
         private IResourceManager resourceManager;
 
@@ -35,7 +41,24 @@ namespace GameFramework.Res
         {
             return resourceManager;
         }
+
+        public void LoadBinaryFile(string fileUrl,Action<string,byte[],string> callBack)
+        {
+            StartCoroutine(LoadBinaryFileByCoroutine(fileUrl, callBack));
+        }
         
-        
+        private IEnumerator LoadBinaryFileByCoroutine(string fileUri, Action<string,byte[],string> callBack)
+        {
+            byte[] bytes = null;
+            string errorMessage = null;
+            bool isError = false;
+            UnityWebRequest unityWebRequest = UnityWebRequest.Get(fileUri);
+            yield return unityWebRequest.SendWebRequest();
+            isError = unityWebRequest.isNetworkError;
+            errorMessage = isError ? unityWebRequest.error : null;
+            bytes = unityWebRequest.downloadHandler.data;
+            unityWebRequest.Dispose();
+            callBack?.Invoke(fileUri, bytes, errorMessage);
+        }
     }
 }

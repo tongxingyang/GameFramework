@@ -1,6 +1,7 @@
 ﻿using GameFramework.Base;
 using GameFramework.UI.UIExtension;
 using GameFramework.Utility.Extension;
+using GameFramework.Utility.Singleton;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,7 +12,7 @@ namespace GameFramework.UI
     {
         public UIFont MainFont = null;
         private CanvasScaler canvasScaler;
-    
+        public override int Priority => SingletonMono<GameFramework>.GetInstance().UIPriority;
 #if UNITY_EDITOR
         private int resolutionWidth = 0;
         private int resolutionHeight = 0;
@@ -39,7 +40,7 @@ namespace GameFramework.UI
         private void MatchCanvas()
         {
             canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            canvasScaler.referenceResolution = AppConst.UIConfig.GameResolution;
+            canvasScaler.referenceResolution = AppConst.UiConfig.GameResolution;
             canvasScaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
             if (Screen.width / canvasScaler.referenceResolution.x > Screen.height / canvasScaler.referenceResolution.y)
             {

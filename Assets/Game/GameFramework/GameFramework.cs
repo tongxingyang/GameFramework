@@ -2,6 +2,7 @@
 using GameFramework.Debug;
 using GameFramework.DevelopTool;
 using GameFramework.Localization;
+using GameFramework.Setting;
 using GameFramework.Sound;
 using GameFramework.Utility.Extension;
 using GameFramework.Utility.Singleton;
@@ -12,6 +13,8 @@ namespace GameFramework
     [DisallowMultipleComponent]
     public class GameFramework:SingletonMono<GameFramework>
     {
+        #region 基础属性
+        
         [Header("基础属性")]
         private float gameSpeedBeforePause = 1f;
         [SerializeField]
@@ -31,6 +34,9 @@ namespace GameFramework
 
         [SerializeField] 
         private ThreadPriority threadPriority = ThreadPriority.High;
+
+        [SerializeField] 
+        private Language language = Language.None;
        
         [Header("Animation设置")] 
         public int AnimationPriority = 50;
@@ -74,6 +80,13 @@ namespace GameFramework
         [Header("Localization设置")] 
         public int LocalizationPriority = 50;
         
+        [Header("UI设置")] 
+        public int UIPriority = 50;
+        
+        #endregion
+        
+        
+         
         public bool EditorResourceMode
         {
             get => editorResourceMode;
@@ -109,11 +122,114 @@ namespace GameFramework
             get => threadPriority;
             set => threadPriority = value;
         }
+
+        public Language Language
+        {
+            get => language;
+            set
+            {
+                if (value == Language.None)
+                {
+                    return;
+                }
+                if (language != value)
+                {
+                    language = value;
+                    Singleton<GameEntry>.GetInstance().GetComponent<SettingComponent>().SetLanguage(language);
+                    Singleton<GameEntry>.GetInstance().GetComponent<LocalizationComponent>().Language = language;
+                }
+            }
+        }
         
         public bool IsGamePause => gameSpeed <= 0;
 
-        #region Unity Function
+        private GameObject gameSplash = null;
 
+        public GameObject GameSplash
+        {
+            get
+            {
+                if (gameSplash == null)
+                {
+                    GameObject prefab = Resources.Load<GameObject>("UI/PanelSplash");
+                    gameSplash = Instantiate(prefab);
+                    gameSplash.transform.SetParent(AppConst.GlobalCahce.PanelRoot);
+                    RectTransform rectTransform = gameSplash.GetComponent<RectTransform>();
+                    rectTransform.offsetMin = Vector2.zero;
+                    rectTransform.offsetMax = Vector2.zero;
+                    rectTransform.anchoredPosition3D = Vector3.zero;
+                    gameSplash.transform.localScale = Vector3.one;
+                    gameSplash.SetActive(false);
+                }
+                return gameSplash;
+            }
+        }
+        private GameObject gameMonition = null;
+
+        public GameObject GameMonition
+        {
+            get
+            {
+                if (gameMonition == null)
+                {
+                    GameObject prefab = Resources.Load<GameObject>("UI/PanelMonition");
+                    gameMonition = Instantiate(prefab);
+                    gameMonition.transform.SetParent(AppConst.GlobalCahce.PanelRoot);
+                    RectTransform rectTransform = gameMonition.GetComponent<RectTransform>();
+                    rectTransform.offsetMin = Vector2.zero;
+                    rectTransform.offsetMax = Vector2.zero;
+                    rectTransform.anchoredPosition3D = Vector3.zero;
+                    gameMonition.transform.localScale = Vector3.one;
+                    gameMonition.SetActive(false);
+                }
+                return gameMonition;
+            }
+        }
+        private GameObject gameLogo = null;
+
+        public GameObject GameLogo
+        {
+            get
+            {
+                if (gameLogo == null)
+                {
+                    GameObject prefab = Resources.Load<GameObject>("UI/PanelLogo");
+                    gameLogo = Instantiate(prefab);
+                    gameLogo.transform.SetParent(AppConst.GlobalCahce.PanelRoot);
+                    RectTransform rectTransform = gameLogo.GetComponent<RectTransform>();
+                    rectTransform.offsetMin = Vector2.zero;
+                    rectTransform.offsetMax = Vector2.zero;
+                    rectTransform.anchoredPosition3D = Vector3.zero;
+                    gameLogo.transform.localScale = Vector3.one;
+                    gameLogo.SetActive(false);
+                }
+                return gameLogo;
+            }
+        }
+
+        private void InitGlobalCahce()
+        {
+            GameObject go = GameObject.Find("UICamera");
+            if (go != null)
+            {
+                AppConst.GlobalCahce.UICamera = go.GetComponent<Camera>();
+            }
+            go = GameObject.Find("UIRootCanvas");
+            if (go != null)
+            {
+                AppConst.GlobalCahce.UIRootCanvas = go.transform;
+                AppConst.GlobalCahce.PanelRoot = go.transform.Find("PanelRoot");
+            }
+        }
+
+        private void InitLanguage()
+        {
+            Language system = Singleton<GameEntry>.GetInstance().GetComponent<LocalizationComponent>().SystemLanguage;
+            Language save = Singleton<GameEntry>.GetInstance().GetComponent<SettingComponent>().GetLanguage();
+            Language = save == Language.None ? system : save;
+        }
+        
+        #region Unity Function
 
         void Awake()
         {
@@ -121,6 +237,7 @@ namespace GameFramework
             {
                 this.gameObject.GetOrAddComponent<DevelopComponent>();
             }
+            InitGlobalCahce();
             Application.lowMemory += OnLowMemory;
             InitDebuger();
             Application.backgroundLoadingPriority = ThreadPriority;
@@ -130,6 +247,7 @@ namespace GameFramework
             Screen.sleepTimeout = NeverSleep ? SleepTimeout.NeverSleep : SleepTimeout.SystemSetting;
             Time.timeScale = GameSpeed;
             Singleton<GameEntry>.GetInstance().InitComponent(this.gameObject.transform);
+            InitLanguage();
             Singleton<GameEntry>.GetInstance().OnAwake();
         }
 

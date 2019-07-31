@@ -63,7 +63,7 @@ namespace GameFramework.Animation.Base
         #region Coloring
 
         [HideInInspector] public bool isColor;
-        [HideInInspector] public SpriteRenderer renderer;
+        [HideInInspector] public SpriteRenderer spriteRenderer;
         [HideInInspector] public Image image;
         [HideInInspector] public Color startColor;
         [HideInInspector] public Color targetColor;

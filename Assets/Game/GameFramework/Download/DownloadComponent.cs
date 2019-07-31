@@ -50,7 +50,7 @@ namespace GameFramework.Download
             }
             for (int i = 0; i < SingletonMono<GameFramework>.GetInstance().DownloadCount; i++)
             {
-                DownloadAgent downloadAgent = new GameObject("Download "+(i+1)).AddComponent<DownloadAgent>();
+                DownloadAgent downloadAgent = new GameObject("Download_"+(i+1)).AddComponent<DownloadAgent>();
                 downloadAgent.transform.SetParent(instanceRoot);
                 downloadAgent.transform.localPosition = Vector3.zero;
                 downloadAgent.transform.localScale = Vector3.one;

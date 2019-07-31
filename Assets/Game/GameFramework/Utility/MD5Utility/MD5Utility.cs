@@ -99,5 +99,20 @@ namespace GameFramework.Utility.MD5Utility
         {
             return ComputeHash(sm);
         }
+        
+        public static byte[] GetMd5Bytes(byte[] bytes)
+        {
+            return Md5.ComputeHash(bytes);
+        }
+
+        public static byte[] GetMd5Bytes(byte[] bytes, int offset, int length)
+        {
+            return Md5.ComputeHash(bytes, offset, length);
+        }
+
+        public static byte[] GetMd5Bytes(Stream stream)
+        {
+            return Md5.ComputeHash(stream);
+        }
     }
 }

@@ -2,7 +2,7 @@
 using ICSharpCode.SharpZipLib.GZip;
 namespace GameFramework.Utility.Compress
 {
-    public class GZIPUtility
+    public class GzipUtility
     {
         public static byte[] MBytesCache = new byte[1024 * 4];
         public static int CompressLevel = 9;

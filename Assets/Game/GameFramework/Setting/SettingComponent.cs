@@ -162,12 +162,12 @@ namespace GameFramework.Setting
 
         public Language GetLanguage()
         {
-            return (Language)PlayerPrefsUtility.GetInt("language", (int) Language.Unspecified);
+            return (Language)PlayerPrefsUtility.GetInt(PlayerPrefsKeys.Language, (int) Language.None);
         }
 
         public void SetLanguage(Language language)
         {
-            PlayerPrefsUtility.SetInt("language", (int) language);
+            PlayerPrefsUtility.SetInt(PlayerPrefsKeys.Language, (int) language);
         }
         
         public void Save()
