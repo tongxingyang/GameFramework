@@ -46,13 +46,15 @@ namespace GameFramework
         
         public static class AssetBundleConfig
         {
-            public static string BundleSuffix => "assetbundle";
-            public static string AssetBundlePackageFile => "AssetBundle.zip";
+            public static string BundleSuffix = "assetbundle";
+            public static string AssetBundlePackageFile = "AssetBundle.zip";
             public static bool LuaEncrypt = true;
-            public static string VersionFile => "version.dat";
-            public static string FileListFile => "filelist.dat";
+            public static string VersionFile = "version.dat";
+            public static string FileListFile = "filelist.dat";
             public static bool ResetAssetBundleName = true;
             public static bool EnableAssetBundleRedundance = true;
+            public static string IsInstanllDecompressFileName = "UpdateFirstDecompressVersion.txt";
+            public static string HasUpdateFileName = "HasUpdate.txt";
         }
 
         public static class UpdateConfig

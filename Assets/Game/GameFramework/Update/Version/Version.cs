@@ -5,7 +5,6 @@
         Greater,
         Less,
         Equal,
-        Error,
     }
     public class Version
     {
@@ -31,7 +30,13 @@
             return string.Format("{0}_{1}_{2}",MasterVersion,MinorVersion,RevisedVersion);
         }
 
-        public static VersionCompareResult CompareResult(Version a, Version b)
+        public static bool VersionEqual(Version a, Version b)
+        {
+            return a.MasterVersion == b.MasterVersion && a.MinorVersion == b.MinorVersion &&
+                   a.RevisedVersion == b.RevisedVersion;
+        }
+        
+        public static VersionCompareResult CompareResult(Version a, Version b,bool compareRevised)
         {
             if (a.MasterVersion > b.MasterVersion)
             {
@@ -49,13 +54,16 @@
             {
                 return VersionCompareResult.Less;
             }
-            if (a.RevisedVersion > b.RevisedVersion)
+            if (compareRevised)
             {
-                return VersionCompareResult.Greater;
-            }
-            if (a.RevisedVersion < b.RevisedVersion)
-            {
-                return VersionCompareResult.Less;
+                if (a.RevisedVersion > b.RevisedVersion)
+                {
+                    return VersionCompareResult.Greater;
+                }
+                if (a.RevisedVersion < b.RevisedVersion)
+                {
+                    return VersionCompareResult.Less;
+                }
             }
             return VersionCompareResult.Equal;
         }

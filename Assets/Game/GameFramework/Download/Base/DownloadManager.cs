@@ -8,8 +8,9 @@ namespace GameFramework.Download.Base
         
         private TaskPool<DownloadTask> taskPool;
         private int defaultTimeOut = 10000;
+        private bool isOpenbrokenpointdownload = false;
         private int retryCount = 3;
-        private bool isOpenMultiThread = false;
+        private int threadCount = 1;
         private float currentSpeed = 0;
         private int defaultPriority = 10;
         public int TotalAgentCount => taskPool.TotalAgentsCount;
@@ -29,11 +30,17 @@ namespace GameFramework.Download.Base
             get { return retryCount; }
             set { retryCount = value; }
         }
-
-        public bool IsOpenMultiThread
+        
+        public bool IsOpenbrokenpointdownload
         {
-            get { return isOpenMultiThread; }
-            set { isOpenMultiThread = value; }
+            get => isOpenbrokenpointdownload;
+            set => isOpenbrokenpointdownload = value;
+        }
+        
+        public int ThreadCount
+        {
+            get => threadCount;
+            set => threadCount = value;
         }
 
         public DownloadManager()
@@ -53,25 +60,28 @@ namespace GameFramework.Download.Base
         
         public void AddDownloadAgent(DownloadAgent downloadAgent)
         {
+            downloadAgent.RetryCount = RetryCount;
+            downloadAgent.IsOpenbrokenpointdownload = IsOpenbrokenpointdownload;
+            downloadAgent.ThreadCount = ThreadCount;
             taskPool.AddAgent(downloadAgent);
         }
 
-        public int AddDownload(string downloadPath, string downloadUri, Action<DownloadTask, ulong> doneCallback, Action<DownloadTask, ulong, float> updateCallback,
+        public int AddDownload(string fileName,string downloadPath, string downloadUri, Action<DownloadTask, ulong> doneCallback, Action<DownloadTask, ulong,uint, float> updateCallback,
             Action<DownloadTask, string> errorCallback)
         {
-            return AddDownload(downloadPath, downloadUri, doneCallback, updateCallback, errorCallback, defaultPriority, defaultTimeOut);
+            return AddDownload(fileName,downloadPath, downloadUri, doneCallback, updateCallback, errorCallback, defaultPriority, defaultTimeOut);
         }
 
-        public int AddDownload(string downloadPath, string downloadUri,Action<DownloadTask, ulong> doneCallback, Action<DownloadTask, ulong, float> updateCallback,
+        public int AddDownload(string fileName,string downloadPath, string downloadUri,Action<DownloadTask, ulong> doneCallback, Action<DownloadTask, ulong, uint,float> updateCallback,
             Action<DownloadTask, string> errorCallback,  int priority)
         {
-            return AddDownload(downloadPath, downloadUri, doneCallback, updateCallback, errorCallback, priority, defaultTimeOut);
+            return AddDownload(fileName,downloadPath, downloadUri, doneCallback, updateCallback, errorCallback, priority, defaultTimeOut);
         }
 
-        public int AddDownload(string downloadPath, string downloadUrl, Action<DownloadTask, ulong> doneCallback, Action<DownloadTask, ulong, float> updateCallback,
+        public int AddDownload(string fileName,string downloadPath, string downloadUrl, Action<DownloadTask, ulong> doneCallback, Action<DownloadTask, ulong,uint, float> updateCallback,
             Action<DownloadTask, string> errorCallback, int priority, int timeout, ulong filelength = 0)
         {
-            DownloadTask downloadTask = new DownloadTask(downloadPath, downloadUrl, doneCallback, updateCallback,
+            DownloadTask downloadTask = new DownloadTask(fileName,downloadPath, downloadUrl, doneCallback, updateCallback,
                 errorCallback, priority, timeout, filelength);
             taskPool.AddTask(downloadTask);
             return downloadTask.SerialId;

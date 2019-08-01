@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Security;
 using Mono.Xml;
 
@@ -196,9 +197,7 @@ namespace GameFramework.Update
 
     public class UpdateConfig
     {
-        public string UpdateServerUrl1;
-        public string UpdateServerUrl2;
-        public string UpdateServerUrl3;
+        public List<string> UpdateServerUrls = new List<string>();
         public string ClientServerUrl;
 
         public bool ParseFromXmlString(string content ,string channel)
@@ -225,13 +224,13 @@ namespace GameFramework.Update
                                 switch (ele.Tag)
                                 {
                                     case "UpdateServer1":
-                                        UpdateServerUrl1 = ele.Attribute("url");
+                                        UpdateServerUrls.Add(ele.Attribute("url"));
                                         break;
                                     case "UpdateServer2":
-                                        UpdateServerUrl2 = ele.Attribute("url");
+                                        UpdateServerUrls.Add(ele.Attribute("url"));
                                         break;
                                     case "UpdateServer3":
-                                        UpdateServerUrl3 = ele.Attribute("url");
+                                        UpdateServerUrls.Add(ele.Attribute("url"));
                                         break;
                                     case "ClientServer":
                                         ClientServerUrl = ele.Attribute("url");

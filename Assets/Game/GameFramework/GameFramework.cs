@@ -329,6 +329,10 @@ namespace GameFramework
         
         #endregion
 
+        public string GetAppId()
+        {
+            return "";
+        }
         
     }
 }

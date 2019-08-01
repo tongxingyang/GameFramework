@@ -16,14 +16,14 @@ namespace GameFramework.Download.Base
         private string downloadUrl = String.Empty;
         private Action<DownloadTask,ulong> downloadDoneAction = null;
         private Action<DownloadTask,string> downloadErrorAction = null;
-        private Action<DownloadTask,ulong,float> downloadUpdateAction = null;
+        private Action<DownloadTask,ulong,uint,float> downloadUpdateAction = null;
         private int timeOut;
         public int SerialId => serialid;
         public string DownloadPath => downloadPath;
         public string DownloadUrl => downloadUrl;
         public ulong FileLength => fileLength;
         public Action<DownloadTask,ulong> DownloadDoneAction => downloadDoneAction;
-        public Action<DownloadTask,ulong,float> DownLoadUpdateAction => downloadUpdateAction;
+        public Action<DownloadTask,ulong,uint,float> DownLoadUpdateAction => downloadUpdateAction;
         public Action<DownloadTask,string> DownloadErrorAction => downloadErrorAction;
         public int TimeOut => timeOut;
         public bool Done
@@ -42,9 +42,12 @@ namespace GameFramework.Download.Base
             get { return downloadState; }
             set { downloadState = value; }
         }
-        public DownloadTask(string downloadPath, string downloadUrl, Action<DownloadTask,ulong>  doneCallback, Action<DownloadTask,ulong,float> updateCallback,
+
+        public string FileName;
+        public DownloadTask(string fileName,string downloadPath, string downloadUrl, Action<DownloadTask,ulong>  doneCallback, Action<DownloadTask,ulong,uint,float> updateCallback,
             Action<DownloadTask,string> errorCallback, int priority, int timeout,ulong filelength = 0)
         {
+            FileName = fileName;
             serialid = Serial++;
             this.downloadPath = downloadPath;
             this.downloadUrl = downloadUrl;

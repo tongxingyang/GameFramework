@@ -11,21 +11,34 @@ namespace GameFramework.Download.Base
     
     public class DownloadAgent : MonoBehaviour,ITaskAgent<DownloadTask>
     {
-        private uint threadCount = 1;
+        private int threadCount = 1;
+        private int retryCount = 1;
+        private bool isOpenbrokenpointdownload = false;
+
         private ulong fileLength = 0;
-        private int retryCount = 3;
         private DownloadTask task;
         private ulong alreadyDownloadLength = 0;
         private HttpMultiThreadDownload[] httpMultiThreadDownloads;
         private string extension = "download";
-        
-        public uint ThreadCount => threadCount;
-        public DownloadTask Task => task;
-     
-        void Awake()
+
+        public bool IsOpenbrokenpointdownload
         {
-            
+            get => isOpenbrokenpointdownload;
+            set => isOpenbrokenpointdownload = value;
         }
+        
+        public int RetryCount
+        {
+            get => retryCount;
+            set => retryCount = value;
+        }
+        
+        public int ThreadCount
+        {
+            get => threadCount;
+            set => threadCount = value;
+        }
+        public DownloadTask Task => task;
         
         public void Initialize()
         {
@@ -75,8 +88,13 @@ namespace GameFramework.Download.Base
             {
                 FileUtility.CreateDirectory(dir);
             }
-            uint fileDataThread = (uint)fileLength / threadCount;
+            if (!isOpenbrokenpointdownload)
+            {
+                DeleCacheFiles();
+            }
+            uint fileDataThread = (uint)fileLength / (uint)threadCount;
             var isDone = true;
+            
             for (int i = 0; i < threadCount; i++)
             {
                 uint start = (uint)i * fileDataThread;
@@ -178,7 +196,7 @@ namespace GameFramework.Download.Base
         private void DownloadPartUpdate(int id, uint currentAdd)
         {
             alreadyDownloadLength += currentAdd;
-            DownloadUpdate();
+            DownloadUpdate(currentAdd);
         }
         
         private void MergeData()
@@ -245,7 +263,6 @@ namespace GameFramework.Download.Base
         
         private void DownloadError(string error)
         {
-            UnityEngine.Debug.LogError("下載 出錯 錯誤信息  "+error);
             retryCount--;
             if (retryCount > 0)
             {
@@ -256,12 +273,10 @@ namespace GameFramework.Download.Base
                 }
                 fileLength = 0;
                 alreadyDownloadLength = 0;
-                UnityEngine.Debug.LogError("重新下載文件。。。。");
                 OnStart(this.task);
             }
             else
             {
-                UnityEngine.Debug.LogError("次數用光  刪除chahefile");
                 DeleCacheFiles();
                 task.DownloadErrorAction?.Invoke(task, error);
                 task.DownloadState = enDownloadState.Error;
@@ -269,10 +284,10 @@ namespace GameFramework.Download.Base
             }
         }
 
-        private void DownloadUpdate()
+        private void DownloadUpdate(uint currentAdd)
         {
             var process = (float)alreadyDownloadLength/fileLength;
-            task.DownLoadUpdateAction?.Invoke(task,alreadyDownloadLength,process);
+            task.DownLoadUpdateAction?.Invoke(task,alreadyDownloadLength,currentAdd,process);
         }
         
         public void OnReset()

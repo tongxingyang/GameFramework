@@ -1,9 +1,22 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace GameFramework.Update
 {
     public class UpdatePanel
     {
+        public enum enMessageBoxType
+        {
+            Ok,
+            YesNo,
+            CancelOk
+        }
+        private Button btnYes;
+        private Button btnNo;
+        
         private GameObject gameHotUpdate = null;
         public GameObject GameHotUpdate
         {
@@ -68,6 +81,14 @@ namespace GameFramework.Update
         }
         public void InitPanel()
         {
+        }
+        
+        public void ShowMessageBox(enMessageBoxType type, string title, string content, UnityAction yesCallback ,UnityAction noCallback ,string tip = "", string num = "")
+        {
+            btnYes.onClick.RemoveAllListeners();
+            btnNo.onClick.RemoveAllListeners();
+            btnYes.onClick.AddListener(yesCallback);
+            btnNo.onClick.AddListener(noCallback);
         }
     }
 }
