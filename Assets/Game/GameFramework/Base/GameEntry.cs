@@ -5,6 +5,7 @@ using GameFramework.DataTable;
 using GameFramework.Debug;
 using GameFramework.Download;
 using GameFramework.FSM;
+using GameFramework.Localization;
 using GameFramework.Pool.ReferencePool;
 using GameFramework.Res;
 using GameFramework.Setting;
@@ -27,6 +28,7 @@ namespace GameFramework.Base
         public SoundComponent SoundComponent;
         public TimerComponent TimerComponent;
         public WebComponent WebComponent;
+        public LocalizationComponent LocalizationComponent;
 
         private readonly LinkedList<GameFrameworkComponent> GameFrameworkComponents =
             new LinkedList<GameFrameworkComponent>();
@@ -45,6 +47,7 @@ namespace GameFramework.Base
             SoundComponent = FindAndRegisterComponent<SoundComponent>();
             TimerComponent = FindAndRegisterComponent<TimerComponent>();
             WebComponent = FindAndRegisterComponent<WebComponent>();
+            LocalizationComponent = FindAndRegisterComponent<LocalizationComponent>();
         }
 
         private T FindAndRegisterComponent<T>() where T : GameFrameworkComponent

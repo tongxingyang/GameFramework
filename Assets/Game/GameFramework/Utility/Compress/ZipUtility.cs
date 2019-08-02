@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 using ICSharpCode.SharpZipLib.Core;
 using ICSharpCode.SharpZipLib.Zip;
@@ -8,141 +9,148 @@ namespace GameFramework.Utility.Compress
 {
     public class ZipUtility
     {
-        static ZipUtility()
-        {
-            ZipConstants.DefaultCodePage = Encoding.UTF8.CodePage;
-        }
-	    
+       
 	    public static byte[] MBytesCache = new byte[1024 * 4];
         
-        public static byte[] Compress(byte[] input, int level = Deflater.BEST_COMPRESSION)
+	    public static void CompressFolder(string zipPath, string dirPath, string searchPattern = "*.*",string passworld = "", int compressLevel = 6)
+	    {
+		    try
+		    {
+				string outputDir = Path.GetDirectoryName(zipPath);
+			    if (!dirPath.EndsWith("/"))
+			    {
+				    dirPath += "/";
+			    }
+				if (!string.IsNullOrEmpty(outputDir)) Directory.CreateDirectory(outputDir);
+			    
+			    using (ZipOutputStream stream = new ZipOutputStream(System.IO.File.Create(zipPath)))
+			    {
+				    stream.SetLevel(compressLevel);
+				    stream.Password = passworld;
+				    
+				    foreach (string file in Directory.GetFiles(dirPath, searchPattern, SearchOption.AllDirectories))
+				    {
+					    var entry = new ZipEntry(file.Replace(dirPath, ""));
+					    stream.PutNextEntry(entry);
+					    using (FileStream fs = System.IO.File.OpenRead(file))
+					    {
+						    int sourceBytes;
+						    do
+						    {
+							    sourceBytes = fs.Read(MBytesCache, 0, MBytesCache.Length);
+							    stream.Write(MBytesCache, 0, sourceBytes);
+
+						    } while (sourceBytes > 0);
+					    }
+				    }
+				    stream.Finish();
+				    stream.Close();
+			    }
+		    } catch (Exception e) {
+				UnityEngine.Debug.Log ("压缩出错：" + e);
+		    }
+
+	    }
+	    
+		public static void CompressFile(string zipPath, string filePath, string entryName, string password = "", int compressLevel = 6)
 		{
-			if (input == null || input.Length == 0)
-			{
-				UnityEngine.Debug.LogError("Compress error inputBytes Len = 0");
-				return input;
-			}
-
-			Deflater compressor = new Deflater(level);
-			compressor.SetInput(input);
-			compressor.Finish();
-			MemoryStream result = new MemoryStream(input.Length);
-			while (!compressor.IsFinished)
-			{
-				int count = compressor.Deflate(MBytesCache);
-				result.Write(MBytesCache, 0, count);
-			}
-
-			return result.ToArray();
-		}
-
-		public static byte[] Decompress(byte[] input)
-		{
-			if (input == null || input.Length == 0)
-			{
-				UnityEngine.Debug.LogError("Uncompress error inputBytes Len = 0");
-				return input;
-			}
-
-			Inflater decompressor = new Inflater();
-			decompressor.SetInput(input);
-			MemoryStream result = new MemoryStream(input.Length);
-			while (!decompressor.IsFinished)
-			{
-				int count = decompressor.Inflate(MBytesCache);
-				result.Write(MBytesCache, 0, count);
-			}
-
-			return result.ToArray();
-		}
-
-		public static void DecompressFile(string zipFile, string targetDir, string password = null)
-		{
-			ZipFile zf = null;
 			try
 			{
-				FileStream fs = System.IO.File.OpenRead(zipFile);
-				zf = new ZipFile(fs);
-				if (!string.IsNullOrEmpty(password))
+				string outputDir = Path.GetDirectoryName(zipPath);
+				if (!string.IsNullOrEmpty(outputDir)) Directory.CreateDirectory(outputDir);
+				using (ZipOutputStream stream = new ZipOutputStream(System.IO.File.Create(zipPath)))
 				{
-					zf.Password = password;
-				}
-				foreach (ZipEntry zipEntry in zf)
-				{
-					if (!zipEntry.IsFile)
+					stream.SetLevel(compressLevel);
+					stream.Password = password;
+					var entry = new ZipEntry(entryName);
+					stream.PutNextEntry(entry);
+					using (FileStream fs = System.IO.File.OpenRead(filePath))
 					{
-						continue;
+						int sourceBytes;
+						do
+						{
+							sourceBytes = fs.Read(MBytesCache, 0, MBytesCache.Length);
+							stream.Write(MBytesCache, 0, sourceBytes);
+
+						} while (sourceBytes > 0);
 					}
-					string entryFileName = zipEntry.Name;
-					Stream zipStream = zf.GetInputStream(zipEntry);
-
-					string fullZipToPath = Path.Combine(targetDir, entryFileName);
-					string outputDir = Path.GetDirectoryName(fullZipToPath);
-					if (!string.IsNullOrEmpty(outputDir))
-						Directory.CreateDirectory(outputDir);
-
-					using (FileStream streamWriter = System.IO.File.Create(fullZipToPath))
-					{
-						StreamUtils.Copy(zipStream, streamWriter, MBytesCache);
-					}
+					stream.Finish();
+					stream.Close();
 				}
-			}
-			finally
-			{
-				if (zf != null)
-				{
-					zf.IsStreamOwner = true; 
-					zf.Close(); 
-				}
+			} catch (Exception e) {
+				UnityEngine.Debug.Log ("压缩出错：" + e);
 			}
 		}
-
-		public static void CompressFile(string zipPath, string filePath, string entryName, string password = "")
-		{
-			string outputDir = Path.GetDirectoryName(zipPath);
-			if (!string.IsNullOrEmpty(outputDir)) Directory.CreateDirectory(outputDir);
-
-			using (var zipFile = ZipFile.Create(zipPath))
-			{
-				zipFile.Password = password;
-				zipFile.BeginUpdate();
-				zipFile.Add(filePath,entryName);
-				zipFile.CommitUpdate();
-			}
-		}
-
-		public static void CompressFiles(string zipPath, string[] files, string password = "")
-		{
-			string outputDir = Path.GetDirectoryName(zipPath);
-			if (!string.IsNullOrEmpty(outputDir)) Directory.CreateDirectory(outputDir);
-
-			using (var zipFile = ZipFile.Create(zipPath))
-			{
-				zipFile.Password = password;
-				zipFile.BeginUpdate();
-				foreach (string file in files)
-				{
-					zipFile.Add(file);
-				}
-				zipFile.CommitUpdate();
-			}
-		}
-
-		public static void CompressFolder(string zipPath, string dirPath, string searchPattern = "*.*", string password = "")
-		{
-			string outputDir = Path.GetDirectoryName(zipPath);
-			if (!string.IsNullOrEmpty(outputDir)) Directory.CreateDirectory(outputDir);
-
-			using (var zipFile = ZipFile.Create(zipPath))
-			{
-				zipFile.Password = password;
-				zipFile.BeginUpdate();
-				foreach (string file in Directory.GetFiles(dirPath, searchPattern, SearchOption.AllDirectories))
-				{
-					zipFile.Add(file, file.Replace(dirPath, ""));
-				}
-				zipFile.CommitUpdate();
-			}
-        }
+	    
+	    public static void DeCompressionFile(string zipPath, string outPath,string password)
+	    {
+		    if (System.IO.File.Exists(zipPath))
+		    {
+			    if (!outPath.EndsWith("/"))
+			    {
+				    outPath += "/";
+			    }
+			    using (ZipInputStream stream = new ZipInputStream(System.IO.File.OpenRead(zipPath)))
+			    {
+				    ZipEntry theEntry;
+				    stream.Password = password;
+				    while ((theEntry = stream.GetNextEntry()) != null)
+				    {
+					    string fileName = Path.GetFileName(theEntry.Name);
+					    string filePath = PathUtility.PathUtility.GetCombinePath(outPath, theEntry.Name);
+					    string directoryName = Path.GetDirectoryName(filePath);
+					   
+					    if (directoryName.Length > 0)
+						    Directory.CreateDirectory(directoryName);
+					    if (fileName != String.Empty)
+					    {
+						    using (FileStream streamWriter = System.IO.File.Create(filePath))
+						    {
+							    while (true)
+							    {
+								    var size = stream.Read(MBytesCache, 0, MBytesCache.Length);
+								    if (size > 0)
+									    streamWriter.Write(MBytesCache, 0, size);
+								    else
+									    break;
+							    }
+						    }
+					    }
+				    }
+			    }
+		    }
+	    }
+	    
+	    public static void DeCompressionFileInSamePath(string zipPath,string password)
+	    {
+		    if (System.IO.File.Exists(zipPath))
+		    {
+			    using (ZipInputStream stream = new ZipInputStream(System.IO.File.OpenRead(zipPath)))
+			    {
+				    ZipEntry theEntry;
+				    stream.Password = password;
+				    while ((theEntry = stream.GetNextEntry()) != null)
+				    {
+					    string fileName = Path.GetFileName(theEntry.Name);
+					    string filePath = zipPath.Replace(".zip", "");
+					 	
+					    if (fileName != String.Empty)
+					    {
+						    using (FileStream streamWriter = System.IO.File.Create(filePath))
+						    {
+							    while (true)
+							    {
+								    var size = stream.Read(MBytesCache, 0, MBytesCache.Length);
+								    if (size > 0)
+									    streamWriter.Write(MBytesCache, 0, size);
+								    else
+									    break;
+							    }
+						    }
+					    }
+				    }
+			    }
+		    }
+	    }
     }
 }

@@ -55,7 +55,6 @@ namespace GameFramework.Tool.NativeCall
 #endif
             return ret;
         }
-        
     }
 }
 //http://www.voidcn.com/article/p-kouehjlp-pm.html

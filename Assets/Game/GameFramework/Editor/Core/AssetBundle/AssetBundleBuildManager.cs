@@ -184,8 +184,8 @@ namespace GameFramework.Editor.Core.AssetBundle
 
         public static bool BuildAssetBundle()
         {
-            Reset();
-            SetAllAssetBundleName(AppConst.AssetBundleConfig.EnableAssetBundleRedundance);
+//            Reset();
+//            SetAllAssetBundleName(AppConst.AssetBundleConfig.EnableAssetBundleRedundance);
             if (Directory.Exists(PackageDirectory))
             {
                 Directory.Delete(PackageDirectory, true);
@@ -291,7 +291,7 @@ namespace GameFramework.Editor.Core.AssetBundle
                     continue;
                 }
                 var strPath = fileName.Replace(workingPath, "");
-                if (!assetBundles.Contains(strPath))
+                if (strPath != platform.ToString() && !assetBundles.Contains(strPath))
                 {
                     FileUtility.DeleteFile(fileName);
                 }
@@ -448,6 +448,7 @@ namespace GameFramework.Editor.Core.AssetBundle
                 ValueParse.WriteValue(buffer, CurrentVersion.MasterVersion, ValueParse.IntParse);
                 ValueParse.WriteValue(buffer, CurrentVersion.MinorVersion, ValueParse.IntParse);
                 ValueParse.WriteValue(buffer, CurrentVersion.RevisedVersion, ValueParse.IntParse);
+                ValueParse.WriteValue(buffer, allAssetBundleFiles.Count, ValueParse.IntParse);
                 ValueParse.WriteValue(buffer, sizeCount, ValueParse.LongParse);
                 ValueParse.WriteValue(buffer,
                     string.IsNullOrEmpty(AssetBundleRule.AssetBundleVariant) ? "" : AssetBundleRule.AssetBundleVariant,

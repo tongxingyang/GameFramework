@@ -3,9 +3,9 @@
 <UpdateConfig>
     
     <cn>
-        <UpdateServer1 url=""/>
-        <UpdateServer2 url=""/>
-        <UpdateServer3 url=""/>
+        <UpdateServer1 url="http://127.0.0.1"/>
+        <UpdateServer2 url="http://127.0.0.1"/>
+        <UpdateServer3 url="http://127.0.0.1"/>
         <ClientServer url=""/>
     </cn>
     

@@ -4,6 +4,7 @@ using GameFramework.DevelopTool;
 using GameFramework.Localization;
 using GameFramework.Setting;
 using GameFramework.Sound;
+using GameFramework.Update;
 using GameFramework.Utility.Extension;
 using GameFramework.Utility.Singleton;
 using UnityEngine;
@@ -247,13 +248,19 @@ namespace GameFramework
             Screen.sleepTimeout = NeverSleep ? SleepTimeout.NeverSleep : SleepTimeout.SystemSetting;
             Time.timeScale = GameSpeed;
             Singleton<GameEntry>.GetInstance().InitComponent(this.gameObject.transform);
+            Singleton<GameEntry>.GetInstance().OnAwake();     
             InitLanguage();
-            Singleton<GameEntry>.GetInstance().OnAwake();
         }
 
+        private UpdateComponent _updateComponent = null;
         void Start()
         {
             Singleton<GameEntry>.GetInstance().OnStart();
+            if (AppConst.UpdateConfig.OpenHotUpdate)
+            {
+                _updateComponent = Singleton<GameEntry>.GetInstance().GetComponent<UpdateComponent>();
+                _updateComponent.Init();
+            }
         }
 
         void Update()

@@ -14,7 +14,7 @@ namespace GameFramework.Editor.Core.AssetBundle
         public static void ClearProgress()
         {
             EditorUtility.ClearProgressBar();
-        }
+        }   
         
         [MenuItem("Tools/AssetBunle/Build AssetBundle设置")]
         public static void BuildAssetBundleEditor()
@@ -290,6 +290,7 @@ namespace GameFramework.Editor.Core.AssetBundle
                 } 
                 if (GUILayout.Button("构建AssetBundle",GUILayout.Width(320)))
                 {
+                    SaveVersion();
                     AssetBundleBuildManager.BuildAssetBundle();
                 }
                 if (GUILayout.Button("分析AssetBundle",GUILayout.Width(320)))
