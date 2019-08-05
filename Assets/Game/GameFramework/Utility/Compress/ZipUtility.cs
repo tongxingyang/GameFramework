@@ -121,8 +121,9 @@ namespace GameFramework.Utility.Compress
 		    }
 	    }
 	    
-	    public static void DeCompressionFileInSamePath(string zipPath,string password)
+	    public static int DeCompressionFileInSamePath(string zipPath,string password)
 	    {
+		    var decompressSize = 0;
 		    if (System.IO.File.Exists(zipPath))
 		    {
 			    using (ZipInputStream stream = new ZipInputStream(System.IO.File.OpenRead(zipPath)))
@@ -142,15 +143,24 @@ namespace GameFramework.Utility.Compress
 							    {
 								    var size = stream.Read(MBytesCache, 0, MBytesCache.Length);
 								    if (size > 0)
-									    streamWriter.Write(MBytesCache, 0, size);
+								    {
+									    decompressSize += size;
+										    streamWriter.Write(MBytesCache, 0, size);
+								    }
 								    else
+								    {
 									    break;
+								    }
 							    }
+							    streamWriter.Dispose();
+							    streamWriter.Close();
 						    }
 					    }
 				    }
 			    }
 		    }
+		    return decompressSize;
 	    }
+	   
     }
 }

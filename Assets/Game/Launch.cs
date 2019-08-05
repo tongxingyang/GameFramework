@@ -71,14 +71,23 @@ public class Launch:MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.S))
         {
-            Time.timeScale = 1;
+                        {
+                string old = AssetBundle.LoadFromFile(Application.persistentDataPath+"/test.asset").LoadAsset<TextAsset>("version 1.json").text;
+                UnityEngine.Debug.LogError("old   "+old);
+            }
+//            {
+//                string news = AssetBundle.LoadFromFile(Application.streamingAssetsPath+"/xx/test.asset").LoadAsset<TextAsset>("version 1.json").text;
+//                UnityEngine.Debug.LogError("new   "+news);
+//            }
+            //
+            return;
         }
         if (Input.GetKeyDown(KeyCode.D))
         {
             Time.timeScale = 2;
         }
         
-        Debug.Log(Time.time+"    "+Time.unscaledTime+"         "+Time.realtimeSinceStartup+"   "+Time.deltaTime+"         "+Time.unscaledDeltaTime+"       ");
+//        Debug.Log(Time.time+"    "+Time.unscaledTime+"         "+Time.realtimeSinceStartup+"   "+Time.deltaTime+"         "+Time.unscaledDeltaTime+"       ");
         
        
 

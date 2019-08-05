@@ -20,6 +20,7 @@ namespace GameFramework
             public static readonly string ProfilerLogFilePath = "";
             public static readonly string InstallDataPath = Application.streamingAssetsPath;
             public static readonly string PresistentDataPath = Application.persistentDataPath;
+            public static readonly string HotUpdateDownloadDataPath = Application.temporaryCachePath;
         }
         
         public class GameConfig

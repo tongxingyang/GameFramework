@@ -1,12 +1,13 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using GameFramework.Debug;
 using GameFramework.Utility.File;
 using UnityEditor;
 
 namespace GameFramework.Utility.PathUtility
 {
-    public class PathUtility
+   public class PathUtility
    {
         public static string GetRegularPath(string path)
         {

@@ -12,10 +12,10 @@ namespace GameFramework.Download.Base
         private int threadId;
         private string url;
         private bool isDone = false;
-        private FileStream fileStream;
         private object lockObj = new object();
         private uint startPos;
         private uint endPos;
+        private FileStream fileStream;
         private HttpWebRequest httpWebRequest;
         private HttpWebResponse httpWebResponse;
         private Stream httpwebStream;
@@ -82,19 +82,20 @@ namespace GameFramework.Download.Base
             isDone = true;
             startPos = 0;
             endPos = 0;
-            fileStream?.Close();
             fileStream?.Dispose();
+            fileStream?.Close();
             fileStream = null;
-            httpwebStream?.Close();
             httpwebStream?.Dispose();
+            httpwebStream?.Close();
             httpwebStream = null;
-            httpWebResponse?.Close();
             httpWebResponse?.Dispose();
+            httpWebResponse?.Close();
             httpWebResponse = null;
             httpWebRequest?.Abort();
+            httpWebRequest = null;
+
             CurrentThread?.Abort();
             CurrentThread = null;
-            httpWebRequest = null;
             ErrorCallback = null;
             SucceseCallback = null;
             UpdateCallback = null;
@@ -102,10 +103,15 @@ namespace GameFramework.Download.Base
             waitHandle = null;
             buffer = null;
         }
+
+        public void StopThread()
+        {
+            CurrentThread?.Abort();
+            CurrentThread = null;
+        }
         
         public void Download()
         {
-            UnityEngine.Debug.LogError(startPos+":"+endPos+"  id "+threadId);
             try
             {
                 httpWebRequest?.Abort();

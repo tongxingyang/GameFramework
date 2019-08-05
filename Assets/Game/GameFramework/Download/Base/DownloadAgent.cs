@@ -88,10 +88,7 @@ namespace GameFramework.Download.Base
             {
                 FileUtility.CreateDirectory(dir);
             }
-            if (!isOpenbrokenpointdownload)
-            {
-                DeleCacheFiles();
-            }
+            
             uint fileDataThread = (uint)fileLength / (uint)threadCount;
             var isDone = true;
             
@@ -111,20 +108,31 @@ namespace GameFramework.Download.Base
                 httpMultiThreadDownloads[i].TimeOut = task.TimeOut;
                 string downloafFile = string.Format("{0}.{1}.{2}", task.DownloadPath, extension,i);
                 httpMultiThreadDownloads[i].FileName = downloafFile;
+
                 if (FileUtility.IsFileExist(downloafFile))
                 {
-                    httpMultiThreadDownloads[i].FileStream = new FileStream(downloafFile,FileMode.Open,FileAccess.ReadWrite);
-                    httpMultiThreadDownloads[i].FileStream.Seek(0, SeekOrigin.End);
-                    uint alreadyLength = (uint) httpMultiThreadDownloads[i].FileStream.Length;
-                    httpMultiThreadDownloads[i].StartPos = httpMultiThreadDownloads[i].StartPos + alreadyLength;
-                    alreadyDownloadLength += alreadyLength;
-                    if (httpMultiThreadDownloads[i].EndPos - httpMultiThreadDownloads[i].StartPos == alreadyLength)
+                    if (!isOpenbrokenpointdownload)
                     {
-                        httpMultiThreadDownloads[i].IsDone = true;
+                        FileUtility.DeleteFile(downloafFile);
+                        httpMultiThreadDownloads[i].FileStream =
+                            new FileStream(downloafFile, FileMode.Create, FileAccess.ReadWrite);
+                        isDone = false;
                     }
                     else
                     {
-                        isDone = false;
+                        httpMultiThreadDownloads[i].FileStream = new FileStream(downloafFile,FileMode.Open,FileAccess.ReadWrite);
+                        httpMultiThreadDownloads[i].FileStream.Seek(0, SeekOrigin.End);
+                        uint alreadyLength = (uint) httpMultiThreadDownloads[i].FileStream.Length;
+                        httpMultiThreadDownloads[i].StartPos = httpMultiThreadDownloads[i].StartPos + alreadyLength;
+                        alreadyDownloadLength += alreadyLength;
+                        if (httpMultiThreadDownloads[i].EndPos - httpMultiThreadDownloads[i].StartPos == alreadyLength)
+                        {
+                            httpMultiThreadDownloads[i].IsDone = true;
+                        }
+                        else
+                        {
+                            isDone = false;
+                        }
                     }
                 }
                 else
@@ -171,7 +179,6 @@ namespace GameFramework.Download.Base
 
         private void DownloadPartDone(int id)
         {
-            UnityEngine.Debug.LogError("threadid  "+id+" download sucess");
             var isalready = true;
             foreach (HttpMultiThreadDownload httpMultiThreadDownload in httpMultiThreadDownloads)
             {
@@ -209,6 +216,7 @@ namespace GameFramework.Download.Base
             if (threadCount == 1)
             {
                 httpMultiThreadDownloads[0].FileStream.Dispose();
+                httpMultiThreadDownloads[0].FileStream.Close();
                 FileUtility.Move(httpMultiThreadDownloads[0].FileName, task.DownloadPath);
                 DownloadDone();
             }
@@ -232,12 +240,10 @@ namespace GameFramework.Download.Base
                                 break;
                             }
                         }
-                        httpMultiThreadDownloads[i].FileStream.Close();
                         httpMultiThreadDownloads[i].FileStream.Dispose();
+                        httpMultiThreadDownloads[i].FileStream.Close();
                         FileUtility.DeleteFile(httpMultiThreadDownloads[i].FileName);
                     }
-                    fileStream.Close();
-                    fileStream.Dispose();
                     DownloadDone();
                 }
             }
@@ -246,9 +252,17 @@ namespace GameFramework.Download.Base
         
         private void DownloadDone()
         {
+            if (httpMultiThreadDownloads != null)
+            {
+                foreach (var threadDownload in httpMultiThreadDownloads)
+                {
+                    threadDownload.StopThread();
+                }
+            }
             task.DownloadDoneAction?.Invoke(task,fileLength);
             task.DownloadState = enDownloadState.Done;
             task.Done = true;
+            
         }
 
         private void DeleCacheFiles()
@@ -264,6 +278,7 @@ namespace GameFramework.Download.Base
         private void DownloadError(string error)
         {
             retryCount--;
+            
             if (retryCount > 0)
             {
                 DeleCacheFiles();
@@ -282,6 +297,7 @@ namespace GameFramework.Download.Base
                 task.DownloadState = enDownloadState.Error;
                 task.Done = true;;
             }
+            
         }
 
         private void DownloadUpdate(uint currentAdd)

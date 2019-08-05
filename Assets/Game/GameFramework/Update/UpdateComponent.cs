@@ -12,6 +12,7 @@ using GameFramework.Update.Version;
 using GameFramework.Utility;
 using GameFramework.Utility.Compress;
 using GameFramework.Utility.File;
+using GameFramework.Utility.MD5Utility;
 using GameFramework.Utility.PathUtility;
 using GameFramework.Utility.Singleton;
 using UnityEngine;
@@ -23,7 +24,8 @@ namespace GameFramework.Update
     {
         public override int Priority => 50;
         private UpdateStringConfig updateStringConfig = null;
-
+        private byte[] updateFileCache;
+        private int OneMegaBytes = 1024 * 1024;
         public UpdateStringConfig UpdateStringConfig
         {
             get
@@ -434,26 +436,47 @@ namespace GameFramework.Update
                 GetDownloadFileList();
                 if (!isUpdateDone)
                 {
-                    //运营商网络
-                    if (MobileSystemInfo.NetAvailable)
+                    BeginDownFile();
+                    return;
+                    //检查磁盘空间是否满足大小 todo
+                    if ((long) Math.Ceiling(totalDownloadSize * 1.1f) > MobileSystemInfo.GetFreeDiskSpace())
                     {
-                        if (MobileSystemInfo.IsCarrier)
+                        //磁盘空间不足
+                    }
+                    else 
+                    {
+                        if (MobileSystemInfo.NetAvailable)
                         {
-                            updatePanel.ShowMessageBox(UpdatePanel.enMessageBoxType.CancelOk,
-                                UpdateStringConfig.UpdateStatusBeginUpdate, UpdateStringConfig.UpdateStringHasErrorNotWifi,
-                                BeginDownFile, () =>
-                                {
-                                    if (Application.isPlaying)
+                            //运营商网络
+                            if (MobileSystemInfo.IsCarrier)
+                            {
+                                updatePanel.ShowMessageBox(UpdatePanel.enMessageBoxType.CancelOk,
+                                    UpdateStringConfig.UpdateStatusBeginUpdate, UpdateStringConfig.UpdateStringHasErrorNotWifi,
+                                    BeginDownFile, () =>
                                     {
-                                        Application.Quit();
-                                    }
-                                }, UpdateStringConfig.UpdateStatusWifiTips, FormatDownloadSize(totalDownloadSize));
-                        }
-                        else if (MobileSystemInfo.IsWifi)
-                        {
-                            //弹出提示框询问是否下载
+                                        if (Application.isPlaying)
+                                        {
+                                            Application.Quit();
+                                        }
+                                    }, UpdateStringConfig.UpdateStatusWifiTips, FormatDownloadSize(totalDownloadSize));
+                            }
+                            // wi-fi 网络
+                            else if (MobileSystemInfo.IsWifi)
+                            {
+                                //弹出提示框询问是否下载
+                                updatePanel.ShowMessageBox(UpdatePanel.enMessageBoxType.CancelOk,
+                                    UpdateStringConfig.UpdateStatusBeginUpdate, UpdateStringConfig.UpdateStateStartUpdateInfo,
+                                    BeginDownFile, () =>
+                                    {
+                                        if (Application.isPlaying)
+                                        {
+                                            Application.Quit();
+                                        }
+                                    }, UpdateStringConfig.UpdateStatusWifiTips, FormatDownloadSize(totalDownloadSize));
+                            }
                         }
                     }
+
                 }
             }
             else
@@ -469,11 +492,11 @@ namespace GameFramework.Update
             {
                 string fileName = serverBundleIsZip ? file + ".zip" : file;
                 string fileUrl = PathUtility.GetCombinePath(UpdateConfig.UpdateServerUrls[updateUrlIsDoneIndex], platform, fileName);
-                string savePath =
-                    Path.GetDirectoryName(PathUtility.GetCombinePath(AppConst.Path.PresistentDataPath, fileName));
-                if (!Directory.Exists(savePath))
+                string savePath = PathUtility.GetCombinePath(AppConst.Path.HotUpdateDownloadDataPath, fileName);
+                string saveDir = Path.GetDirectoryName(savePath);
+                if (!Directory.Exists(saveDir))
                 {
-                    Directory.CreateDirectory(savePath);
+                    Directory.CreateDirectory(saveDir);
                 }
                 Singleton<GameEntry>.GetInstance().GetComponent<DownloadComponent>().AddDownload(file,savePath, fileUrl,
                     DownloadDoneCallbcak, DownloadUpdateCallbcak, DownloadErrorCallbcak);
@@ -482,16 +505,25 @@ namespace GameFramework.Update
 
         private void DownloadDoneCallbcak(DownloadTask downloadTask, ulong size)
         {
-            alreadyDownloadSuccessCount++;
-            UpdateFileInfo updateFileInfo = null;
-            newFileInfoTable.TryGetValue(downloadTask.FileName, out updateFileInfo);
-            AppendHasUpdateFile(updateFileInfo);
+            UpdateFileInfo updateFileInfo = newFileInfoTable[downloadTask.FileName];
+            if (VerificationFile(updateFileInfo,downloadTask.DownloadPath))
+            {
+                alreadyDownloadSuccessCount++;
+                AppendHasUpdateFile(updateFileInfo);
+                RefreshDownloadState();
+            }
+            else
+            {
+                DownloadErrorCallbcak(downloadTask,String.Empty);
+            }
         }
         
         private void DownloadErrorCallbcak(DownloadTask downloadTask, string message)
         {
             alreadyDownloadErrorCount++;
-            downloadErrorList.Add(downloadTask.DownloadPath.Replace(".zip",""));
+            UpdateFileInfo updateFileInfo = newFileInfoTable[downloadTask.FileName];
+            downloadErrorList.Add(updateFileInfo.AssetBundleName);
+            RefreshDownloadState();
         }
         
         private void DownloadUpdateCallbcak(DownloadTask downloadTask, ulong size, uint currentAdd ,float progress)
@@ -499,17 +531,96 @@ namespace GameFramework.Update
             alreadyDownloadSize += currentAdd;
         }
 
+        private bool VerificationFile(UpdateFileInfo updateFileInfo ,string filePath)
+        {
+            var length = 0;
+            using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite))
+            {
+                length = (int)fileStream.Length;
+                if (length != updateFileInfo.ZipLength)
+                {
+                    FileUtility.DeleteFile(filePath);
+                    return false;
+                }
+                if (updateFileCache == null || updateFileCache.Length < length)
+                {
+                    updateFileCache = new byte[(length / OneMegaBytes + 1) * OneMegaBytes];
+                }
+                int offset = 0;
+                int count = length;
+                while (count > 0)
+                {
+                    int bytesRead = fileStream.Read(updateFileCache, offset, count);
+                    offset += bytesRead;
+                    count -= bytesRead;
+                }
+            }
+            
+            if (serverBundleIsZip)
+            {
+                byte[] zipMd5Bytes = MD5Utility.GetMd5Bytes(updateFileCache,0,length);
+                int zipMd5Code = BitConverter.ToInt32(zipMd5Bytes, 0);
+                if (zipMd5Code != updateFileInfo.ZipMd5Code)
+                {
+                    FileUtility.DeleteFile(filePath);
+                    return false;
+                }
+                int decompressSize = ZipUtility.DeCompressionFileInSamePath(filePath, serverBundleZipPassword);
+                if (decompressSize != updateFileInfo.Length)
+                {
+                    FileUtility.DeleteFile(filePath);
+                    return false;
+                }
+            }
+            else
+            {
+                byte[] md5Bytes = MD5Utility.GetMd5Bytes(updateFileCache,0,length);
+                int md5Code = BitConverter.ToInt32(md5Bytes, 0);
+                if (md5Code != updateFileInfo.Md5Code)
+                {
+                    FileUtility.DeleteFile(filePath);
+                    return false;
+                }
+            }
+            string srcPath = PathUtility.GetCombinePath(AppConst.Path.HotUpdateDownloadDataPath,
+                updateFileInfo.AssetBundleName);
+            string desPath = PathUtility.GetCombinePath(AppConst.Path.PresistentDataPath,
+                updateFileInfo.AssetBundleName);
+            
+            if(FileUtility.IsFileExist(desPath))
+            {
+                FileUtility.DeleteFile(desPath);
+            }
+            FileUtility.Move(srcPath,desPath);
+            if (FileUtility.IsFileExist(filePath))
+            {
+                FileUtility.DeleteFile(filePath);
+            }
+            return true;
+        }
+        
         private void RefreshDownloadState()
         {
-            if (alreadyDownloadSuccessCount == downloadErrorList.Count)
+            if(alreadyDownloadSuccessCount + alreadyDownloadErrorCount == downloadList.Count)
             {
-                //下载成功
-                SaveServerVersionToPersistent();
-                SaveServerFileListToPersistent();
-            }
-            else if(alreadyDownloadSuccessCount+ alreadyDownloadErrorCount == downloadErrorList.Count)
-            {
-                //下载完成但是有失败的文件
+                if (alreadyDownloadSuccessCount == downloadList.Count)
+                {
+                    UnityEngine.Debug.LogError("下载成功 没有失败的文件");
+                    SaveServerVersionToPersistent();
+                    SaveServerFileListToPersistent();
+                    ClearHasUpdateInfo();
+                    FileUtility.DeleteDirectory(AppConst.Path.HotUpdateDownloadDataPath);
+                    isUpdateDone = true;
+                }
+                else
+                {
+                    UnityEngine.Debug.LogError("下载成功 但是有失败的文件");
+                    foreach (string s in downloadErrorList)
+                    {
+                        UnityEngine.Debug.LogError("出错的文件  "+s);
+                    }
+                }
+               
             }
         }
         
@@ -572,7 +683,6 @@ namespace GameFramework.Update
             {
                 FileUtility.DeleteFile(filePath);
             }
-            FileUtility.CreateFile(filePath);
         }
         
         public void AppendHasUpdateFile(UpdateFileInfo updateFileInfo)
