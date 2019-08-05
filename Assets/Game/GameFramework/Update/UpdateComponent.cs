@@ -26,6 +26,8 @@ namespace GameFramework.Update
         private UpdateStringConfig updateStringConfig = null;
         private byte[] updateFileCache;
         private int OneMegaBytes = 1024 * 1024;
+        private Action updateSucces;
+        private Action<string> updateError;
         public UpdateStringConfig UpdateStringConfig
         {
             get
@@ -88,8 +90,10 @@ namespace GameFramework.Update
 
         private bool isUpdateDone = false;
         
-        public void Init()
+        public void Init(Action success ,Action<string> error)
         {
+            updateSucces = success;
+            updateError = error;
             updatePanel = new UpdatePanel();
             updatePanel.InitPanel();
             installVersionIsDone = false;
@@ -250,6 +254,7 @@ namespace GameFramework.Update
             if (!isCorruption && !isVersionUpdate)
             {
                 isUpdateDone = true;
+                updateSucces();
                 return;
             }
             GetServerGameFileList();
@@ -267,7 +272,9 @@ namespace GameFramework.Update
             byte[] bytes = FileUtility.ReadAllBytes(filePath);
             if (bytes == null || bytes.Length == 0)
             {
-                throw new Exception("local version.dat file is invalid");
+                isUpdateDone = true;
+                updateError("获取当前客户端的文件列表信息失败");
+                return;
             }
 
             using (ByteBuffer buffer = new ByteBuffer(bytes))
@@ -376,6 +383,8 @@ namespace GameFramework.Update
             {
                 //更新结束
                 isUpdateDone = true;
+                updateSucces();
+                return;
             }
         }
 
@@ -482,6 +491,8 @@ namespace GameFramework.Update
             else
             {
                 //获取服务器的FileList失败
+                isUpdateDone = true;
+                updateError("获取服务器最新版本的文件列表信息失败");
             }
         }
 
@@ -611,16 +622,14 @@ namespace GameFramework.Update
                     ClearHasUpdateInfo();
                     FileUtility.DeleteDirectory(AppConst.Path.HotUpdateDownloadDataPath);
                     isUpdateDone = true;
+                    updateSucces();
                 }
                 else
                 {
                     UnityEngine.Debug.LogError("下载成功 但是有失败的文件");
-                    foreach (string s in downloadErrorList)
-                    {
-                        UnityEngine.Debug.LogError("出错的文件  "+s);
-                    }
+                    isUpdateDone = true;
+                    updateError("下载更新文件出现异常");
                 }
-               
             }
         }
         
@@ -793,6 +802,8 @@ namespace GameFramework.Update
             else
             {
                 //获取服务器的版本信息失败
+                isUpdateDone = true;
+                updateError("获取服务器的版本信息失败");
             }
         }
 
@@ -865,6 +876,11 @@ namespace GameFramework.Update
                 {
                     throw e;
                 }
+            }
+            else
+            {
+                isUpdateDone = true;
+                updateError("获取获取当前客户端版本信息失败");
             }
         }
 
