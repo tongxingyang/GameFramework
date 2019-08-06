@@ -6,42 +6,16 @@ namespace GameFramework.Download.Base
     public class DownloadManager : IDownloadManager
     {
         
-        private TaskPool<DownloadTask> taskPool;
-        private int defaultTimeOut = 10000;
-        private bool isOpenbrokenpointdownload = false;
-        private int retryCount = 3;
-        private int threadCount = 1;
-        private float currentSpeed = 0;
+        private readonly TaskPool<DownloadTask> taskPool;
         private int defaultPriority = 10;
         public int TotalAgentCount => taskPool.TotalAgentsCount;
         public int FreeAgentCount => taskPool.FreeAgentsCount;
         public int WorkingAgentCount => taskPool.WorkingAgentsCount;
         public int WaitingTaskCount => taskPool.WaitAgentsCount;
-        public float CurrentSpeed => currentSpeed;
-
-        public int DefaultTimeout
-        {
-            get { return defaultTimeOut; }
-            set { defaultTimeOut = value; }
-        }
-
-        public int RetryCount
-        {
-            get { return retryCount; }
-            set { retryCount = value; }
-        }
-        
-        public bool IsOpenbrokenpointdownload
-        {
-            get => isOpenbrokenpointdownload;
-            set => isOpenbrokenpointdownload = value;
-        }
-        
-        public int ThreadCount
-        {
-            get => threadCount;
-            set => threadCount = value;
-        }
+        public float CurrentSpeed { get; } = 0;
+        public int DefaultTimeout { get; set; }
+        public bool IsOpenbrokenpointdownload { get; set; }
+        public int ThreadCount { get; set; }
 
         public DownloadManager()
         {
@@ -58,9 +32,8 @@ namespace GameFramework.Download.Base
             taskPool.ShotDown();
         }
         
-        public void AddDownloadAgent(DownloadAgent downloadAgent)
+        public void AddHttpWebDownloadAgent(HttpWebDownloadAgent downloadAgent)
         {
-            downloadAgent.RetryCount = RetryCount;
             downloadAgent.IsOpenbrokenpointdownload = IsOpenbrokenpointdownload;
             downloadAgent.ThreadCount = ThreadCount;
             taskPool.AddAgent(downloadAgent);
@@ -69,13 +42,13 @@ namespace GameFramework.Download.Base
         public int AddDownload(string fileName,string downloadPath, string downloadUri, Action<DownloadTask, ulong> doneCallback, Action<DownloadTask, ulong,uint, float> updateCallback,
             Action<DownloadTask, string> errorCallback)
         {
-            return AddDownload(fileName,downloadPath, downloadUri, doneCallback, updateCallback, errorCallback, defaultPriority, defaultTimeOut);
+            return AddDownload(fileName,downloadPath, downloadUri, doneCallback, updateCallback, errorCallback, defaultPriority, DefaultTimeout);
         }
 
         public int AddDownload(string fileName,string downloadPath, string downloadUri,Action<DownloadTask, ulong> doneCallback, Action<DownloadTask, ulong, uint,float> updateCallback,
             Action<DownloadTask, string> errorCallback,  int priority)
         {
-            return AddDownload(fileName,downloadPath, downloadUri, doneCallback, updateCallback, errorCallback, priority, defaultTimeOut);
+            return AddDownload(fileName,downloadPath, downloadUri, doneCallback, updateCallback, errorCallback, priority, DefaultTimeout);
         }
 
         public int AddDownload(string fileName,string downloadPath, string downloadUrl, Action<DownloadTask, ulong> doneCallback, Action<DownloadTask, ulong,uint, float> updateCallback,

@@ -6,70 +6,50 @@ namespace GameFramework.Download.Base
     public class DownloadTask : ITask
     {
         private static int Serial = 0;
-        
-        private int serialid = -1;
-        private bool done = false;
-        private int priority = 0;
-        private ulong fileLength;
-        private enDownloadState downloadState = enDownloadState.Todo;
-        private string downloadPath = string.Empty;
-        private string downloadUrl = String.Empty;
-        private Action<DownloadTask,ulong> downloadDoneAction = null;
-        private Action<DownloadTask,string> downloadErrorAction = null;
-        private Action<DownloadTask,ulong,uint,float> downloadUpdateAction = null;
-        private int timeOut;
-        public int SerialId => serialid;
-        public string DownloadPath => downloadPath;
-        public string DownloadUrl => downloadUrl;
-        public ulong FileLength => fileLength;
-        public Action<DownloadTask,ulong> DownloadDoneAction => downloadDoneAction;
-        public Action<DownloadTask,ulong,uint,float> DownLoadUpdateAction => downloadUpdateAction;
-        public Action<DownloadTask,string> DownloadErrorAction => downloadErrorAction;
-        public int TimeOut => timeOut;
-        public bool Done
-        {
-            get { return done; }
-            set { done = value; }
-        }
 
-        public int Priority
-        {
-            get { return priority; }
-            set { priority = value; }
-        }
-        public enDownloadState DownloadState
-        {
-            get { return downloadState; }
-            set { downloadState = value; }
-        }
-
-        public string FileName;
+        public int SerialId { get; set; }
+        public bool Done { get; set; } = false;
+        public int Priority { get; set; }
+        public ulong FileLength { get; set; }
+        public enDownloadState DownloadState { get; set; } = enDownloadState.Todo;
+        public string DownloadPath { get; set; }
+        public string DownloadUrl { get; set; }
+        public Action<DownloadTask,ulong> DownloadDoneAction { get; set; }
+        public Action<DownloadTask,ulong,uint,float> DownLoadUpdateAction { get; set; }
+        public Action<DownloadTask,string> DownloadErrorAction { get; set; }
+        public int TimeOut { get; set; }
+        public string FileName { get; set; }
         public DownloadTask(string fileName,string downloadPath, string downloadUrl, Action<DownloadTask,ulong>  doneCallback, Action<DownloadTask,ulong,uint,float> updateCallback,
             Action<DownloadTask,string> errorCallback, int priority, int timeout,ulong filelength = 0)
         {
             FileName = fileName;
-            serialid = Serial++;
-            this.downloadPath = downloadPath;
-            this.downloadUrl = downloadUrl;
-            downloadDoneAction = doneCallback;
-            downloadUpdateAction = updateCallback;
-            downloadErrorAction = errorCallback;
-            this.priority = priority;
-            this.timeOut = timeout;
-            this.fileLength = filelength;
-            downloadState = enDownloadState.Todo;
-            this.done = false;
+            SerialId = Serial++;
+            DownloadPath = downloadPath;
+            DownloadUrl = downloadUrl;
+            DownloadDoneAction = doneCallback;
+            DownLoadUpdateAction = updateCallback;
+            DownloadErrorAction = errorCallback;
+            Priority = priority;
+            TimeOut = timeout;
+            FileLength = filelength;
+            DownloadState = enDownloadState.Todo;
+            Done = false;
         }
 
         public void Clear()
         {
-            downloadPath = string.Empty;
-            downloadUrl = String.Empty;
-            downloadDoneAction = null;
-            downloadUpdateAction = null;
-            downloadErrorAction = null;
-            fileLength = 0;
-            done = true;
+            FileName = String.Empty;
+            SerialId = -1;
+            DownloadPath = String.Empty;
+            DownloadUrl = String.Empty;
+            DownloadDoneAction = null;
+            DownLoadUpdateAction = null;
+            DownloadErrorAction = null;
+            Priority = 0;
+            TimeOut = 0;
+            FileLength = 0;
+            DownloadState = enDownloadState.Todo;
+            Done = false;
         }
 
     }

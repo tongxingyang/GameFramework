@@ -10,7 +10,6 @@ namespace GameFramework.Download
     public class DownloadComponent : GameFrameworkComponent
     {
         private DownloadManager downloadManager;
-
         private Transform instanceRoot;
         public override int Priority => SingletonMono<GameFramework>.GetInstance().DownloadPriority;
 
@@ -23,12 +22,6 @@ namespace GameFramework.Download
         {
             get => downloadManager.DefaultTimeout;
             set => downloadManager.DefaultTimeout = value;
-        }
-
-        public int RetryCount
-        {
-            get => downloadManager.RetryCount;
-            set => downloadManager.RetryCount = value;
         }
 
         public bool IsOpenbrokenpointdownload
@@ -49,7 +42,6 @@ namespace GameFramework.Download
             downloadManager = new DownloadManager();
             IsOpenbrokenpointdownload = false;
             ThreadCount = 1;
-            RetryCount = 1;
             DefaultTimeout = 10000;
             if (instanceRoot == null)
             {
@@ -60,11 +52,11 @@ namespace GameFramework.Download
             }
             for (int i = 0; i < SingletonMono<GameFramework>.GetInstance().DownloadCount; i++)
             {
-                DownloadAgent downloadAgent = new GameObject("Download_"+(i+1)).AddComponent<DownloadAgent>();
+                HttpWebDownloadAgent downloadAgent = new GameObject("Download_"+(i+1)).AddComponent<HttpWebDownloadAgent>();
                 downloadAgent.transform.SetParent(instanceRoot);
                 downloadAgent.transform.localPosition = Vector3.zero;
                 downloadAgent.transform.localScale = Vector3.one;
-                downloadManager.AddDownloadAgent(downloadAgent);
+                downloadManager.AddHttpWebDownloadAgent(downloadAgent);
             }
         }
 

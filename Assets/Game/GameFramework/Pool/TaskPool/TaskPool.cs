@@ -87,7 +87,7 @@ namespace GameFramework.Pool.TaskPool
                 current = current.Next;
             }
             waitAgents.Clear();
-
+            isPause = true;
         }
 
         public void AddAgent(ITaskAgent<T> agent)

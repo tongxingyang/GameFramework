@@ -9,11 +9,9 @@ namespace GameFramework.Download.Base
         int WorkingAgentCount{ get; }
         int WaitingTaskCount{ get; }
         int DefaultTimeout{ get; set;}
-        int RetryCount{ get; set;}
         int ThreadCount{ get; set;}
         bool IsOpenbrokenpointdownload { get; set; }
         float CurrentSpeed{ get; }
-        void AddDownloadAgent(DownloadAgent downloadAgent);
         int AddDownload(string fileName,string downloadPath, string downloadUri, Action<DownloadTask, ulong> doneCallback,
             Action<DownloadTask, ulong,uint, float> updateCallback,
             Action<DownloadTask, string> errorCallback);

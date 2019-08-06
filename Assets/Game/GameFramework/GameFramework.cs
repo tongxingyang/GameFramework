@@ -259,10 +259,10 @@ namespace GameFramework
             if (AppConst.UpdateConfig.OpenHotUpdate)
             {
                 _updateComponent = Singleton<GameEntry>.GetInstance().GetComponent<UpdateComponent>();
-                _updateComponent.Init();
+                _updateComponent.Init(HotUpdateSuccess,HotUpdateError);
             }
         }
-
+        
         void Update()
         {
             Singleton<GameEntry>.GetInstance().OnUpdate(Time.deltaTime, Time.unscaledDeltaTime);
@@ -297,6 +297,16 @@ namespace GameFramework
 
         #region Custom Function
 
+        private void HotUpdateSuccess()
+        {
+            
+        }
+
+        private void HotUpdateError(string messahe)
+        {
+            
+        }
+        
         private void InitDebuger()
         {
 //            Debuger.Init(AppConst.Path.DebugerLogFilePath);

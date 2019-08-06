@@ -28,6 +28,8 @@ namespace GameFramework.Update
         private int OneMegaBytes = 1024 * 1024;
         private Action updateSucces;
         private Action<string> updateError;
+        private object lockObj = new object();
+
         public UpdateStringConfig UpdateStringConfig
         {
             get
@@ -89,8 +91,8 @@ namespace GameFramework.Update
         private int updateUrlIsDoneIndex = -1;
 
         private bool isUpdateDone = false;
-        
-        public void Init(Action success ,Action<string> error)
+
+        public void Init(Action success, Action<string> error)
         {
             updateSucces = success;
             updateError = error;
@@ -127,7 +129,7 @@ namespace GameFramework.Update
                         MinorVersion = ValueParse.ReadValue(buffer, ValueParse.IntParse),
                         RevisedVersion = ValueParse.ReadValue(buffer, ValueParse.IntParse)
                     };
-                
+
                 installZipDecompressFileCount = ValueParse.ReadValue(buffer, ValueParse.IntParse);
                 installZipDecompressSize = ValueParse.ReadValue(buffer, ValueParse.LongParse);
                 Singleton<GameEntry>.GetInstance().GetComponent<ResourceComponent>().AssetBundleVariant =
@@ -225,12 +227,13 @@ namespace GameFramework.Update
             }
             else
             {
-                ZipUtility.DeCompressionFile(PathUtility.GetCombinePath(AppConst.Path.InstallDataPath,AppConst.AssetBundleConfig.AssetBundlePackageFile),AppConst.Path.PresistentDataPath,installZipDecompressPassword);
+                ZipUtility.DeCompressionFile(
+                    PathUtility.GetCombinePath(AppConst.Path.InstallDataPath,
+                        AppConst.AssetBundleConfig.AssetBundlePackageFile), AppConst.Path.PresistentDataPath,
+                    installZipDecompressPassword);
             }
         }
-        
-        
-        
+
 
         /// <summary>
         /// 获取沙河目录下的版本与文件列表
@@ -368,7 +371,7 @@ namespace GameFramework.Update
             alreadyDownloadSize = 0;
             alreadyDownloadSuccessCount = 0;
             alreadyDownloadErrorCount = 0;
-            foreach (KeyValuePair<string,UpdateFileInfo> updateFileInfo in newFileInfoTable)
+            foreach (KeyValuePair<string, UpdateFileInfo> updateFileInfo in newFileInfoTable)
             {
                 UpdateFileInfo fileInfo = null;
                 oldFileInfoTable.TryGetValue(updateFileInfo.Key, out fileInfo);
@@ -393,9 +396,9 @@ namespace GameFramework.Update
         /// </summary>
         private void DeleteUselessFiles()
         {
-            if(newFileInfoTable.Count==0) return;
+            if (newFileInfoTable.Count == 0) return;
             List<string> deleteFiles = new List<string>();
-            foreach (KeyValuePair<string,UpdateFileInfo> updateFileInfo in oldFileInfoTable)
+            foreach (KeyValuePair<string, UpdateFileInfo> updateFileInfo in oldFileInfoTable)
             {
                 if (newFileInfoTable.ContainsKey(updateFileInfo.Key))
                 {
@@ -413,7 +416,7 @@ namespace GameFramework.Update
                 }
             }
         }
-        
+
         /// <summary>
         /// 加载server上的filelist callback
         /// </summary>
@@ -452,7 +455,7 @@ namespace GameFramework.Update
                     {
                         //磁盘空间不足
                     }
-                    else 
+                    else
                     {
                         if (MobileSystemInfo.NetAvailable)
                         {
@@ -460,7 +463,8 @@ namespace GameFramework.Update
                             if (MobileSystemInfo.IsCarrier)
                             {
                                 updatePanel.ShowMessageBox(UpdatePanel.enMessageBoxType.CancelOk,
-                                    UpdateStringConfig.UpdateStatusBeginUpdate, UpdateStringConfig.UpdateStringHasErrorNotWifi,
+                                    UpdateStringConfig.UpdateStatusBeginUpdate,
+                                    UpdateStringConfig.UpdateStringHasErrorNotWifi,
                                     BeginDownFile, () =>
                                     {
                                         if (Application.isPlaying)
@@ -474,7 +478,8 @@ namespace GameFramework.Update
                             {
                                 //弹出提示框询问是否下载
                                 updatePanel.ShowMessageBox(UpdatePanel.enMessageBoxType.CancelOk,
-                                    UpdateStringConfig.UpdateStatusBeginUpdate, UpdateStringConfig.UpdateStateStartUpdateInfo,
+                                    UpdateStringConfig.UpdateStatusBeginUpdate,
+                                    UpdateStringConfig.UpdateStateStartUpdateInfo,
                                     BeginDownFile, () =>
                                     {
                                         if (Application.isPlaying)
@@ -485,7 +490,6 @@ namespace GameFramework.Update
                             }
                         }
                     }
-
                 }
             }
             else
@@ -502,14 +506,16 @@ namespace GameFramework.Update
             foreach (string file in downloadList)
             {
                 string fileName = serverBundleIsZip ? file + ".zip" : file;
-                string fileUrl = PathUtility.GetCombinePath(UpdateConfig.UpdateServerUrls[updateUrlIsDoneIndex], platform, fileName);
+                string fileUrl = PathUtility.GetCombinePath(UpdateConfig.UpdateServerUrls[updateUrlIsDoneIndex],
+                    platform, fileName);
                 string savePath = PathUtility.GetCombinePath(AppConst.Path.HotUpdateDownloadDataPath, fileName);
                 string saveDir = Path.GetDirectoryName(savePath);
                 if (!Directory.Exists(saveDir))
                 {
                     Directory.CreateDirectory(saveDir);
                 }
-                Singleton<GameEntry>.GetInstance().GetComponent<DownloadComponent>().AddDownload(file,savePath, fileUrl,
+                Singleton<GameEntry>.GetInstance().GetComponent<DownloadComponent>().AddDownload(file, savePath,
+                    fileUrl,
                     DownloadDoneCallbcak, DownloadUpdateCallbcak, DownloadErrorCallbcak);
             }
         }
@@ -517,18 +523,21 @@ namespace GameFramework.Update
         private void DownloadDoneCallbcak(DownloadTask downloadTask, ulong size)
         {
             UpdateFileInfo updateFileInfo = newFileInfoTable[downloadTask.FileName];
-            if (VerificationFile(updateFileInfo,downloadTask.DownloadPath))
+            lock (lockObj)
             {
-                alreadyDownloadSuccessCount++;
-                AppendHasUpdateFile(updateFileInfo);
-                RefreshDownloadState();
-            }
-            else
-            {
-                DownloadErrorCallbcak(downloadTask,String.Empty);
+                if (VerificationFile(updateFileInfo, downloadTask.DownloadPath))
+                {
+                    alreadyDownloadSuccessCount++;
+                    AppendHasUpdateFile(updateFileInfo);
+                    RefreshDownloadState();
+                }
+                else
+                {
+                    DownloadErrorCallbcak(downloadTask, String.Empty);
+                }
             }
         }
-        
+
         private void DownloadErrorCallbcak(DownloadTask downloadTask, string message)
         {
             alreadyDownloadErrorCount++;
@@ -536,18 +545,19 @@ namespace GameFramework.Update
             downloadErrorList.Add(updateFileInfo.AssetBundleName);
             RefreshDownloadState();
         }
-        
-        private void DownloadUpdateCallbcak(DownloadTask downloadTask, ulong size, uint currentAdd ,float progress)
+
+        private void DownloadUpdateCallbcak(DownloadTask downloadTask, ulong size, uint currentAdd, float progress)
         {
             alreadyDownloadSize += currentAdd;
         }
 
-        private bool VerificationFile(UpdateFileInfo updateFileInfo ,string filePath)
+        private bool VerificationFile(UpdateFileInfo updateFileInfo, string filePath)
         {
+//            return true;
             var length = 0;
             using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite))
             {
-                length = (int)fileStream.Length;
+                length = (int) fileStream.Length;
                 if (length != updateFileInfo.ZipLength)
                 {
                     FileUtility.DeleteFile(filePath);
@@ -566,10 +576,10 @@ namespace GameFramework.Update
                     count -= bytesRead;
                 }
             }
-            
+
             if (serverBundleIsZip)
             {
-                byte[] zipMd5Bytes = MD5Utility.GetMd5Bytes(updateFileCache,0,length);
+                byte[] zipMd5Bytes = MD5Utility.GetMd5Bytes(updateFileCache, 0, length);
                 int zipMd5Code = BitConverter.ToInt32(zipMd5Bytes, 0);
                 if (zipMd5Code != updateFileInfo.ZipMd5Code)
                 {
@@ -585,7 +595,7 @@ namespace GameFramework.Update
             }
             else
             {
-                byte[] md5Bytes = MD5Utility.GetMd5Bytes(updateFileCache,0,length);
+                byte[] md5Bytes = MD5Utility.GetMd5Bytes(updateFileCache, 0, length);
                 int md5Code = BitConverter.ToInt32(md5Bytes, 0);
                 if (md5Code != updateFileInfo.Md5Code)
                 {
@@ -597,7 +607,6 @@ namespace GameFramework.Update
                 updateFileInfo.AssetBundleName);
             string desPath = PathUtility.GetCombinePath(AppConst.Path.PresistentDataPath,
                 updateFileInfo.AssetBundleName);
-            
             if(FileUtility.IsFileExist(desPath))
             {
                 FileUtility.DeleteFile(desPath);
@@ -609,10 +618,10 @@ namespace GameFramework.Update
             }
             return true;
         }
-        
+
         private void RefreshDownloadState()
         {
-            if(alreadyDownloadSuccessCount + alreadyDownloadErrorCount == downloadList.Count)
+            if (alreadyDownloadSuccessCount + alreadyDownloadErrorCount == downloadList.Count)
             {
                 if (alreadyDownloadSuccessCount == downloadList.Count)
                 {
@@ -632,11 +641,11 @@ namespace GameFramework.Update
                 }
             }
         }
-        
+
         private void SaveServerVersionToPersistent()
         {
             string filePath = PathUtility.GetCombinePath(AppConst.Path.PresistentDataPath,
-                AppConst.AssetBundleConfig.VersionFile); 
+                AppConst.AssetBundleConfig.VersionFile);
             using (ByteBuffer buffer = new ByteBuffer())
             {
                 ValueParse.WriteValue(buffer, platform.ToString(), ValueParse.StringParse);
@@ -646,10 +655,13 @@ namespace GameFramework.Update
                 ValueParse.WriteValue(buffer, 0, ValueParse.IntParse);
                 ValueParse.WriteValue(buffer, 0, ValueParse.LongParse);
                 ValueParse.WriteValue(buffer,
-                    string.IsNullOrEmpty(Singleton<GameEntry>.GetInstance().GetComponent<ResourceComponent>().AssetBundleVariant) ? "" : Singleton<GameEntry>.GetInstance().GetComponent<ResourceComponent>().AssetBundleVariant,
+                    string.IsNullOrEmpty(Singleton<GameEntry>.GetInstance().GetComponent<ResourceComponent>()
+                        .AssetBundleVariant)
+                        ? ""
+                        : Singleton<GameEntry>.GetInstance().GetComponent<ResourceComponent>().AssetBundleVariant,
                     ValueParse.StringParse);
                 ValueParse.WriteValue(buffer, true, ValueParse.BoolParse);
-                ValueParse.WriteValue(buffer,"",ValueParse.StringParse);
+                ValueParse.WriteValue(buffer, "", ValueParse.StringParse);
                 if (FileUtility.IsFileExist(filePath))
                 {
                     FileUtility.DeleteFile(filePath);
@@ -667,7 +679,7 @@ namespace GameFramework.Update
                 using (ByteBuffer buffer = new ByteBuffer())
                 {
                     ValueParse.WriteValue(buffer, newFileInfoTable.Count, ValueParse.IntParse);
-                    foreach (KeyValuePair<string,UpdateFileInfo> updateFileInfo in newFileInfoTable)
+                    foreach (KeyValuePair<string, UpdateFileInfo> updateFileInfo in newFileInfoTable)
                     {
                         ValueParse.WriteValue(buffer, updateFileInfo.Value.AssetBundleName, ValueParse.StringParse);
                         ValueParse.WriteValue(buffer, updateFileInfo.Value.Length, ValueParse.IntParse);
@@ -693,24 +705,29 @@ namespace GameFramework.Update
                 FileUtility.DeleteFile(filePath);
             }
         }
-        
+
         public void AppendHasUpdateFile(UpdateFileInfo updateFileInfo)
         {
             string filePath = PathUtility.GetCombinePath(AppConst.Path.PresistentDataPath,
                 AppConst.AssetBundleConfig.HasUpdateFileName);
             try
             {
-                using (var write = new StreamWriter(new FileStream(filePath,FileMode.Append)))
+                using (FileStream fileStream = new FileStream(filePath, FileMode.Append))
                 {
-                    write.WriteLine(updateFileInfo.AssetBundleName+","+updateFileInfo.Length+","+updateFileInfo.Md5Code+","+updateFileInfo.ZipLength+","+updateFileInfo.ZipMd5Code);
+                    using (var write = new StreamWriter(fileStream))
+                    {
+                        write.WriteLine(updateFileInfo.AssetBundleName + "," + updateFileInfo.Length + "," +
+                                        updateFileInfo.Md5Code + "," + updateFileInfo.ZipLength + "," +
+                                        updateFileInfo.ZipMd5Code);
+                    }
                 }
             }
             catch (Exception e)
             {
-                throw e;
+                UnityEngine.Debug.LogError(e);
             }
         }
-        
+
         private string FormatDownloadSize(long size)
         {
             string num = String.Empty;
@@ -727,7 +744,7 @@ namespace GameFramework.Update
             }
             return num;
         }
-        
+
         /// <summary>
         /// 获取server上的FileList
         /// </summary>
@@ -750,7 +767,7 @@ namespace GameFramework.Update
             unityWebRequest.Dispose();
             callBack?.Invoke(!isError, bytes, errorMessage);
         }
-        
+
         private void LoadServerVersionCallback(bool isOk, byte[] datas, string errorMessage)
         {
             if (isOk && datas != null && datas.Length > 0)
@@ -820,7 +837,7 @@ namespace GameFramework.Update
             {
                 string url = PathUtility.GetCombinePath(UpdateConfig.UpdateServerUrls[urlIndex], platform,
                     AppConst.AssetBundleConfig.VersionFile);
-                
+
                 byte[] bytes = null;
                 bool isError = false;
                 UnityWebRequest unityWebRequest = UnityWebRequest.Get(url);
@@ -935,7 +952,7 @@ namespace GameFramework.Update
                 catch (Exception e)
                 {
                     throw e;
-                } 
+                }
             }
             return false;
         }
