@@ -2,6 +2,7 @@
 using GameFramework.Base;
 using GameFramework.Utility.Singleton;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace GameFramework.Input
 {
@@ -89,6 +90,20 @@ namespace GameFramework.Input
         public  bool IsJustDoubleReleased(string strAlias)
         {
             return InputManager.IsJustDoubleReleased(strAlias);
+        }
+
+        public bool HasTouch()
+        {
+            if (EventSystem.current.currentSelectedGameObject != null)
+                return false;
+#if UNITY_IPHONE || UNITY_ANDROID
+            int count = Input.touchCount;
+            return count > 0;
+#else
+            if (UnityEngine.Input.GetMouseButtonUp(0) || UnityEngine.Input.GetMouseButtonUp(1))
+                return true;
+#endif
+            return false;
         }
     }
 }

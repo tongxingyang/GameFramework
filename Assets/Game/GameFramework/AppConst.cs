@@ -14,6 +14,14 @@ namespace GameFramework
             public static Transform PanelRoot;
         }
         
+        public class LaunchConfig
+        {
+            public static bool IsShowGameSplash = true;
+            public static bool IsShowGameMonition = true;
+            public static bool IsPlayGameSplashVideo = true;
+            public static string GameSplashVideoName = String.Empty;
+        }
+        
         public class Path
         {
             public static readonly string DebugerLogFilePath = Application.dataPath+"/Log/";
@@ -35,6 +43,15 @@ namespace GameFramework
         public class UiConfig
         {
             public static readonly Vector2 GameResolution = new Vector2(1136, 640);
+        }
+        
+        
+        public class VideoConfig
+        {
+            public static int CGVideoWidth = 1280;
+            public static int CGVideoHeight = 720;
+            public static int UIVideoWidth = 1280;
+            public static int UIVideoHeight = 960;
         }
 
         public class PlayerPrefsConfig

@@ -5,13 +5,16 @@ using GameFramework.DataTable;
 using GameFramework.Debug;
 using GameFramework.Download;
 using GameFramework.FSM;
+using GameFramework.Input;
 using GameFramework.Localization;
 using GameFramework.Pool.ReferencePool;
 using GameFramework.Res;
 using GameFramework.Setting;
 using GameFramework.Sound;
 using GameFramework.Timer;
+using GameFramework.Update;
 using GameFramework.Utility.Singleton;
+using GameFramework.Video;
 using GameFramework.Web;
 using UnityEngine;
 
@@ -28,7 +31,10 @@ namespace GameFramework.Base
         public SoundComponent SoundComponent;
         public TimerComponent TimerComponent;
         public WebComponent WebComponent;
+        public UpdateComponent UpdateComponent;
         public LocalizationComponent LocalizationComponent;
+        public VideoComponent VideoComponent;
+        public InputComponent InputComponent;
 
         private readonly LinkedList<GameFrameworkComponent> GameFrameworkComponents =
             new LinkedList<GameFrameworkComponent>();
@@ -47,7 +53,10 @@ namespace GameFramework.Base
             SoundComponent = FindAndRegisterComponent<SoundComponent>();
             TimerComponent = FindAndRegisterComponent<TimerComponent>();
             WebComponent = FindAndRegisterComponent<WebComponent>();
+            UpdateComponent = FindAndRegisterComponent<UpdateComponent>();
             LocalizationComponent = FindAndRegisterComponent<LocalizationComponent>();
+            VideoComponent = FindAndRegisterComponent<VideoComponent>();
+            InputComponent = FindAndRegisterComponent<InputComponent>();
         }
 
         private T FindAndRegisterComponent<T>() where T : GameFrameworkComponent
@@ -55,9 +64,12 @@ namespace GameFramework.Base
             T t = this.ComponentRoot.GetComponentInChildren<T>();
             if (t == null)
             {
-                UnityEngine.Debug.LogError("不能获取Component : "+typeof(T));
+                t = GetComponent<T>();
             }
-            RegisterComponent(t);
+            else
+            {
+                RegisterComponent(t);
+            }
             return t;
         }
         
@@ -78,7 +90,7 @@ namespace GameFramework.Base
         private T AddComponent<T>() where T : GameFrameworkComponent
         {
             Type type = typeof(T);
-            GameObject newComponent = new GameObject(typeof(T).FullName);
+            GameObject newComponent = new GameObject(typeof(T).Name);
             GameFrameworkComponent component = newComponent.AddComponent<T>();
             if (component == null)
             {

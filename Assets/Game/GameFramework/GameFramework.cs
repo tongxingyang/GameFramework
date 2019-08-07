@@ -1,11 +1,15 @@
-﻿using GameFramework.Base;
+﻿using System;
+using System.Collections;
+using GameFramework.Base;
 using GameFramework.Debug;
 using GameFramework.DevelopTool;
 using GameFramework.Localization;
 using GameFramework.Setting;
 using GameFramework.Sound;
+using GameFramework.Tool;
 using GameFramework.Update;
 using GameFramework.Utility.Extension;
+using GameFramework.Utility.PathUtility;
 using GameFramework.Utility.Singleton;
 using UnityEngine;
 
@@ -251,16 +255,21 @@ namespace GameFramework
             Singleton<GameEntry>.GetInstance().OnAwake();     
             InitLanguage();
         }
-
-        private UpdateComponent _updateComponent = null;
         void Start()
         {
             Singleton<GameEntry>.GetInstance().OnStart();
-            if (AppConst.UpdateConfig.OpenHotUpdate)
+            Singleton<GameEntry>.GetInstance().VideoComponent.InitVideoComponent();
+            StartCoroutine(Launch(() =>
             {
-                _updateComponent = Singleton<GameEntry>.GetInstance().GetComponent<UpdateComponent>();
-                _updateComponent.Init(HotUpdateSuccess,HotUpdateError);
-            }
+                if (AppConst.UpdateConfig.OpenHotUpdate)
+                {
+                    Singleton<GameEntry>.GetInstance().UpdateComponent.Init(HotUpdateSuccess, HotUpdateError);
+                }
+                else
+                {
+                    HotUpdateSuccess();
+                }
+            }));
         }
         
         void Update()
@@ -297,9 +306,58 @@ namespace GameFramework
 
         #region Custom Function
 
+        private IEnumerator Launch(Action doneCallback)
+        {
+            if (AppConst.LaunchConfig.IsShowGameSplash)
+            {
+                yield return StartCoroutine(ShowGameSplash());
+            }
+            if (AppConst.LaunchConfig.IsShowGameMonition)
+            {
+                yield return StartCoroutine(ShowGameMonition());
+            }
+            if (AppConst.LaunchConfig.IsPlayGameSplashVideo)
+            {
+                yield return StartCoroutine(PlayGameSplashVideo());
+            }
+            yield return null;
+            doneCallback.Invoke();
+        }
+        
+        private IEnumerator ShowGameSplash()
+        {
+            GameSplash.SetActive(true);
+            GameSplash.FindChild("Image_GameSplash").SetActive(true);
+            yield return Yielders.GetWaitForSeconds(1f);
+            GameSplash.SetActive(false);
+            yield return null;
+        }
+        
+        private IEnumerator ShowGameMonition()
+        {
+            GameMonition.SetActive(true);
+            Yielders.GetWaitForSeconds(2f);
+            GameMonition.SetActive(false);
+            yield return null;
+        }
+        
+        private IEnumerator PlayGameSplashVideo()
+        {
+            bool isPlayFinish = false;
+            Singleton<GameEntry>.GetInstance().VideoComponent.PlayVideo(PathUtility.GetCombinePath(AppConst.Path.InstallDataPath,AppConst.LaunchConfig.GameSplashVideoName),null,null,
+                () =>
+                {
+                    isPlayFinish = true;
+                },false,false,true);
+            while (!isPlayFinish)
+            {
+                yield return null;
+            }
+        }
+        
         private void HotUpdateSuccess()
         {
-            
+            UnityEngine.Debug.LogError("开始进入游戏.....");
         }
 
         private void HotUpdateError(string messahe)

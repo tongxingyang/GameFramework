@@ -90,5 +90,10 @@ namespace GameFramework.Update
             btnYes.onClick.AddListener(yesCallback);
             btnNo.onClick.AddListener(noCallback);
         }
+
+        public void ClearResource()
+        {
+            
+        }
     }
 }

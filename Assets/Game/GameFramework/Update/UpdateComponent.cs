@@ -961,13 +961,30 @@ namespace GameFramework.Update
         /// 打开应用商店
         /// </summary>
         /// <param name="appId"></param>
-        public static void OpenAppStore(string appId)
+        public void OpenAppStore(string appId)
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
             Application.OpenURL("market://details?id=" + appId);
 #elif UNITY_IOS && !UNITY_EDITOR
             Application.OpenURL("itms-apps://itunes.apple.com/app/id" + appId);
 #endif
+        }
+
+        private void ClearHotUpdate()
+        {
+            oldFileInfoTable.Clear();
+            newFileInfoTable.Clear();
+            downloadList.Clear();
+            downloadErrorList.Clear();
+            updateStringConfig = null;
+            updateConfig = null;
+            updateFileCache = null;
+            installVersion = null;
+            firstDecompressVersion = null;
+            currentVersion = null;
+            serverVersion = null;
+            updatePanel.ClearResource();
+            updatePanel = null;
         }
     }
 }

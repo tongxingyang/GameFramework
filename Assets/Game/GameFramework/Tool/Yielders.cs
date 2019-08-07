@@ -15,7 +15,7 @@ namespace GameFramework.Tool
     public static class Yielders
     {
         public static bool Enable = true;
-        public static int internalCounter = 0;// counts how many times the app yields
+        public static uint internalCounter = 0;// counts how many times the app yields
         static Dictionary<float,WaitForSeconds> waitForSecondses = new Dictionary<float, WaitForSeconds>(100, new FloatComparer());
         static WaitForEndOfFrame endOfFrame = new WaitForEndOfFrame();
         public static WaitForEndOfFrame EndOfFrame
