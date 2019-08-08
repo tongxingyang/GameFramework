@@ -1,4 +1,5 @@
-﻿using GameFramework.Base;
+﻿using System.Collections.Generic;
+using GameFramework.Base;
 using GameFramework.UI.UIExtension;
 using GameFramework.Utility.Extension;
 using GameFramework.Utility.Singleton;
@@ -24,7 +25,15 @@ namespace GameFramework.UI
             canvasScaler = gameObject.GetOrAddComponent<CanvasScaler>();
             MatchCanvas();
         }
-        
+
+        public override void OnStart()
+        {
+            base.OnStart();
+            Font.textureRebuilt += OnFontTextureRebuilt;
+            System.Type fontUpdateTrackerType = typeof(UnityEngine.UI.FontUpdateTracker);
+            rebuildForFont = fontUpdateTrackerType.GetMethod("RebuildForFont", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+        }
+
         public override void OnUpdate(float elapseSeconds, float realElapseSeconds)
         {
 #if UNITY_EDITOR
@@ -36,7 +45,22 @@ namespace GameFramework.UI
             }
 #endif
         }
-        
+
+        public override void OnLateUpdate()
+        {
+            base.OnLateUpdate();
+            if(rebuildForFont == null) return;
+            foreach (FontNode fontNode in fontUpdateList)
+            {
+                if (fontNode.IsNeedRebuild)
+                {
+                    Font font = fontNode.RebuildFont;
+                    rebuildForFont.Invoke(null, new object[] {font});
+                    fontNode.IsNeedRebuild = false;
+                }
+            }
+        }
+
         private void MatchCanvas()
         {
             canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
@@ -51,5 +75,56 @@ namespace GameFramework.UI
                 canvasScaler.matchWidthOrHeight = 0;
             }
         }
+
+        public override void Shutdown()
+        {
+            base.Shutdown();
+            Font.textureRebuilt -= OnFontTextureRebuilt;
+            fontUpdateList.Clear();
+        }
+
+        #region DynamicFontRebuild
+
+        private class FontNode
+        {
+            private bool isNeedRebuild = false;
+            public Font RebuildFont { get; set; }
+
+            public bool IsNeedRebuild
+            {
+                get => RebuildFont != null && isNeedRebuild;
+                set => isNeedRebuild = value;
+            }
+            
+            public FontNode(Font font)
+            {
+                RebuildFont = font;
+            }
+        }
+        
+        private System.Reflection.MethodInfo rebuildForFont = null;
+        private List<FontNode> fontUpdateList = new List<FontNode>();
+
+        private void OnFontTextureRebuilt(Font font)
+        {
+            bool findThisFont = false;
+            foreach (FontNode node in fontUpdateList)
+            {
+                if (node.RebuildFont == font)
+                {
+                    node.IsNeedRebuild = true;
+                    findThisFont = true;
+                    break;
+                }
+            }
+
+            if (!findThisFont)
+            {
+                FontNode fontNode = new FontNode(font) {IsNeedRebuild = true};
+                fontUpdateList.Add(fontNode);
+            }
+        }
+        
+        #endregion
     }
 }
