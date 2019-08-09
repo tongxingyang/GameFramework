@@ -150,8 +150,7 @@ namespace GameFramework.Utility
 
         public void WriteDataTime(DateTime v)
         {
-            TimeSpan span = ( v - new DateTime(1970, 1, 1, 0, 0, 0, 0).ToLocalTime());  
-            WriteLong(span.Ticks);
+            WriteLong(v.Ticks);
         }
 
         public void WriteRect(Rect v)
@@ -210,7 +209,7 @@ namespace GameFramework.Utility
         
         public ushort ReadUShort()
         {
-            return (ushort) reader.ReadInt16();
+            return reader.ReadUInt16();
         }
         
         public int ReadInt()
@@ -220,7 +219,7 @@ namespace GameFramework.Utility
                
         public uint ReadUInt()
         {
-            return (uint) reader.ReadInt32();
+            return reader.ReadUInt32();
         }
 
         public long ReadLong()
@@ -230,7 +229,7 @@ namespace GameFramework.Utility
 
         public ulong ReadULong()
         {
-            return (ulong)reader.ReadInt64();
+            return reader.ReadUInt64();
         }
         
         public float ReadFloat()
