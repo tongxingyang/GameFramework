@@ -438,6 +438,28 @@ namespace GameFramework.Editor.Core.DataTableEditor
             }
         }
 
+        private static void WriteGetKeyValue(StreamWriter cswrite ,string id)
+        {
+            cswrite.WriteLine("        public int GetKeyValue()");
+            cswrite.WriteLine("        {");
+            cswrite.WriteLine($"            return {id} ;");
+            cswrite.WriteLine("        }");
+            cswrite.WriteLine("");
+            cswrite.WriteLine("");
+        }
+        
+
+        private static void WriteClear(StreamWriter cswrite,string[] titles,string[] types)
+        {
+            cswrite.WriteLine("        public int Clear()");
+            cswrite.WriteLine("        {");
+            for (int i = 0; i < titles.Length; i++)
+            {
+                SetDataTypeDefaultClear(cswrite,titles[i],types[i]);
+            }
+            cswrite.WriteLine("        }");
+        }
+        
         private static void WriteCsCode(FileInfo fileInfo, string destName, Encoding encoding)
         {
             using (StreamReader streamReader = new StreamReader(fileInfo.FullName, encoding))
@@ -476,46 +498,40 @@ namespace GameFramework.Editor.Core.DataTableEditor
                     cswrite.WriteLine($"    public class {csFileName} : IDataRow");
                     cswrite.WriteLine("    {");
 
-                    for (int i = 0; i < title.Length; i++)
+                    for (int i = 0; i < titles.Length; i++)
                     {
-                        cswrite.WriteLine(GetDataTypeWithStr);
+                        cswrite.WriteLine(GetDataTypeWithStr(titles[i],comments[i], types[i]));
                     }
+                    
+                    cswrite.WriteLine("");
+                    cswrite.WriteLine("");
+
+                    WriteGetKeyValue(cswrite, titles[0]);
+                    
+                    cswrite.WriteLine("");
+                    cswrite.WriteLine("");
+
+                    WriteClear(cswrite, titles, types);
+                    
+                    cswrite.WriteLine("");
+                    cswrite.WriteLine("");
+
+                    cswrite.WriteLine("        public void Parse(string str)");
+                    cswrite.WriteLine("        {");
+                    cswrite.WriteLine("            string[] cols = DataTableTool.SplitLine(str);");
+//                    WriteParseStringWithStr(cswrite,)
+                    cswrite.WriteLine("         }");
+                    
+                    
                     
                     cswrite.WriteLine("    }");
                     cswrite.WriteLine("}");
                 }
-               
-                
-                using (ByteBuffer buffer = new ByteBuffer())
-                {
-                    int lineCount = 0;
-                    buffer.Seek(4, SeekOrigin.Begin);
-                    while (true)
-                    {
-                        string line = streamReader.ReadLine();
-                        if (string.IsNullOrEmpty(line)) break;
-                        if (line.StartsWith("#")) continue;
-                        string[] colums = RemoveUnuse(SplitLine(line.TrimEnd(eof)), useIndex);
 
-                        for (int i = 0; i < colums.Length; i++)
-                        {
-                            AddParseValue(buffer, types[i], colums[i]);
-                        }
-                        lineCount++;
-                    }
-                    buffer.Seek(0, SeekOrigin.Begin);
-                    ValueParse.WriteValue(buffer, lineCount, ValueParse.IntParse);
-
-                    if (FileUtility.IsFileExist(destName))
-                    {
-                        FileUtility.DeleteFile(destName);
-                    }
-                    FileUtility.WriteBytesToFile(destName, buffer.ToBytes());
-                }
             }
         }
 
-        public string GetDataTypeWithStr(string title , string comment, string type)
+        public static string GetDataTypeWithStr(string title , string comment, string type)
         {
             string ret = String.Empty;
             if (type == "byte")
@@ -620,8 +636,138 @@ namespace GameFramework.Editor.Core.DataTableEditor
             }
             return ret;
         }
-
-        private string GetBaseType(string type)
+        
+        public static void WriteParseStringWithStr(StreamWriter cswrite,string title ,string type,int index)
+        {
+            if (type == "byte")
+            {
+                cswrite.WriteLine($"            {title} = Convert.ToByte(cols[{index}]);");
+            }
+            else if (type == "sbyte")
+            {
+                cswrite.WriteLine($"            {title} = Convert.ToSByte(cols[{index}]);");
+            }
+            else if (type == "bool")
+            {
+                cswrite.WriteLine($"            {title} = Convert.ToBoolean(cols[{index}]);");
+            }
+            else if (type == "char")
+            {
+                cswrite.WriteLine($"            {title} = Convert.ToChar(cols[{index}]);");
+            }
+            else if (type == "short")
+            {
+                cswrite.WriteLine($"            {title} = Convert.ToInt16(cols[{index}]);");
+            }
+            else if (type == "ushort")
+            {
+                cswrite.WriteLine($"            {title} = Convert.ToUInt16(cols[{index}]);");
+            }
+            else if (type == "uint")
+            {
+                cswrite.WriteLine($"            {title} = Convert.ToUInt32(cols[{index}]);");
+            }
+            else if (type == "int")
+            {
+                cswrite.WriteLine($"            {title} = Convert.ToInt32(cols[{index}]);");
+            }
+            else if (type == "ulong")
+            {
+                cswrite.WriteLine($"            {title} = Convert.ToUInt64(cols[{index}]);");
+            }
+            else if (type == "long")
+            {
+                cswrite.WriteLine($"            {title} = Convert.ToInt64(cols[{index}]);");
+            }
+            else if (type == "float")
+            {
+                cswrite.WriteLine($"            {title} = Convert.ToSingle(cols[{index}]);");
+            }
+            else if (type == "double")
+            {
+                cswrite.WriteLine($"            {title} = Convert.ToDouble(cols[{index}]);");
+            }
+            else if (type == "string")
+            {
+                cswrite.WriteLine($"            {title} = Convert.ToString(cols[{index}]);");
+            }
+            else if (type == "vector2")
+            {
+                cswrite.WriteLine($"            {title} = new Vector2(Convert.ToSingle(cols[{index}].Split('@')[0]),Convert.ToSingle(cols[{index}].Split('@')[1]));");
+            }
+            else if (type == "vector3")
+            {
+                cswrite.WriteLine($"            {title} = new Vector3(Convert.ToSingle(cols[{index}].Split('@')[0]),Convert.ToSingle(cols[{index}].Split('@')[1]),Convert.ToSingle(cols[{index}].Split('@')[2]));");
+            }
+            else if (type == "vector4")
+            {
+                cswrite.WriteLine($"            {title} = new Vector4(Convert.ToSingle(cols[{index}].Split('@')[0]),Convert.ToSingle(cols[{index}].Split('@')[1]),Convert.ToSingle(cols[{index}].Split('@')[2]),Convert.ToSingle(cols[{index}].Split('@')[3]));");
+            }
+            else if (type == "color32")
+            {
+                cswrite.WriteLine($"            {title} = new Color32(Convert.ToByte(cols[{index}].Split('@')[0]),Convert.ToByte(cols[{index}].Split('@')[1]),Convert.ToByte(cols[{index}].Split('@')[2]),Convert.ToByte(cols[{index}].Split('@')[3]));");
+            }
+            else if (type == "color")
+            {
+                cswrite.WriteLine($"            {title} = new Color(Convert.ToSingle(cols[{index}].Split('@')[0]),Convert.ToSingle(cols[{index}].Split('@')[1]),Convert.ToSingle(cols[{index}].Split('@')[2]),Convert.ToSingle(cols[{index}].Split('@')[3]));");
+            }
+            else if (type == "datetime")
+            {
+                cswrite.WriteLine($"            {title} = Convert.ToDateTime(Convert.ToInt64(cols[{index}]));");
+            }
+            else if (type == "rect")
+            {
+                cswrite.WriteLine($"            {title} = new Rect(Convert.ToSingle(cols[{index}].Split('@')[0]),Convert.ToSingle(cols[{index}].Split('@')[1]),Convert.ToSingle(cols[{index}].Split('@')[2]),Convert.ToSingle(cols[{index}].Split('@')[3]));");
+            }
+            else if (type == "quaternion")
+            {
+                cswrite.WriteLine($"            {title} = new Quaternion(Convert.ToSingle(cols[{index}].Split('@')[0]),Convert.ToSingle(cols[{index}].Split('@')[1]),Convert.ToSingle(cols[{index}].Split('@')[2]),Convert.ToSingle(cols[{index}].Split('@')[3]));");
+            }
+            else if (type.StartsWith("list"))
+            {
+                string listType = type.Split('|')[1];
+                cswrite.WriteLine($"            string[] item{index} = cols[{index}].Split('|');");
+                cswrite.WriteLine($"            for (int i = 0; i < item{index}.Length; i++)");
+                cswrite.WriteLine("            {");
+                GetParseType(cswrite, listType, title, $"item{index}");
+                cswrite.WriteLine("             }");
+            }
+            else if (type.StartsWith("dirc"))
+            {
+                string ktype = type.Split('|')[1];
+                string vtype = type.Split('|')[2];
+//                ret =
+//                    $"        private Dictionary<{GetBaseType(ktype)},{GetBaseType(vtype)}> {title} = new Dictionary<{GetBaseType(ktype)},{GetBaseType(vtype)}>() ; // {comment}";
+            }
+            else
+            {
+                UnityEngine.Debug.LogError("error 不支持的数据类型   "+type);
+            }
+        }
+   
+        public static void SetDataTypeDefaultClear(StreamWriter cswrite ,string title , string type)
+        {
+            if (type == "string")
+            {
+                cswrite.WriteLine( $"            {title} = string.Empty;");
+            }
+            else if (type.StartsWith("list"))
+            {
+                cswrite.WriteLine( $"            {title}.Clear();");
+                cswrite.WriteLine( $"            {title} = null;");
+            }
+            else if (type.StartsWith("dirc"))
+            {
+                cswrite.WriteLine( $"            {title}.Clear();");
+                cswrite.WriteLine( $"            {title} = null;");
+            }
+            else
+            {
+                UnityEngine.Debug.LogError("error 不支持的数据类型   "+type);
+            }
+        }
+        
+        private static string GetBaseType(string type)
         {
             string ret = String.Empty;
             if (type == "byte")
@@ -711,5 +857,92 @@ namespace GameFramework.Editor.Core.DataTableEditor
             return ret;
         }
         
+        private static void GetParseType(StreamWriter cswrite ,string type ,string titile,string value)
+        {
+             if (type == "byte")
+            {
+                cswrite.WriteLine($"                {titile}.Add(Convert.ToByte({value}));");
+            }
+            else if (type == "sbyte")
+            {
+                cswrite.WriteLine($"                {titile}.Add(Convert.ToSByte({value}));");
+            }
+            else if (type == "bool")
+            {
+                cswrite.WriteLine($"                {titile}.Add(Convert.ToBoolean({value}));");
+            }
+            else if (type == "char")
+            {
+                cswrite.WriteLine($"                {titile}.Add(Convert.ToChar({value}));");
+            }
+            else if (type == "short")
+            {
+                cswrite.WriteLine($"                {titile}.Add(Convert.ToInt16({value}));");
+            }
+            else if (type == "ushort")
+            {
+                cswrite.WriteLine($"                {titile}.Add(Convert.ToUInt16({value}));");
+            }
+            else if (type == "uint")
+            {
+                cswrite.WriteLine($"                {titile}.Add(Convert.ToUInt32({value}));");
+            }
+            else if (type == "int")
+            {
+                cswrite.WriteLine($"                {titile}.Add(Convert.ToInt32({value}));");
+            }
+            else if (type == "ulong")
+            {
+                cswrite.WriteLine($"                {titile}.Add(Convert.ToUInt64({value}));");
+            }
+            else if (type == "long")
+            {
+                cswrite.WriteLine($"                {titile}.Add(Convert.ToInt64({value}));");
+            }
+            else if (type == "float")
+            {
+                cswrite.WriteLine($"                {titile}.Add(Convert.ToSingle({value}));");
+            }
+            else if (type == "double")
+            {
+                cswrite.WriteLine($"                {titile}.Add(Convert.ToDouble({value}));");
+            }
+            else if (type == "string")
+            {
+                cswrite.WriteLine($"                {titile}.Add(Convert.ToString({value}));");
+            }
+            else if (type == "vector2")
+            {
+                cswrite.WriteLine($"                {titile}.Add(new Vector2(Convert.ToSingle({value}.Split('@')[0]),Convert.ToSingle({value}.Split('@')[1]));");
+            }
+            else if (type == "vector3")
+            {
+                cswrite.WriteLine($"                {titile}.Add(new Vector3(Convert.ToSingle({value}.Split('@')[0]),Convert.ToSingle({value}.Split('@')[1]),Convert.ToSingle({value}.Split('@')[2]));");
+            }
+            else if (type == "vector4")
+            {
+                cswrite.WriteLine($"                {titile}.Add(new Vector4(Convert.ToSingle({value}.Split('@')[0]),Convert.ToSingle({value}.Split('@')[1]),Convert.ToSingle({value}.Split('@')[2]),Convert.ToSingle({value}.Split('@')[3]));");
+            }
+            else if (type == "color32")
+            {
+                cswrite.WriteLine($"                {titile}.Add(new Color32(Convert.ToByte({value}.Split('@')[0]),Convert.ToByte({value}.Split('@')[1]),Convert.ToByte({value}.Split('@')[2]),Convert.ToByte({value}.Split('@')[3]));");
+            }
+            else if (type == "color")
+            {
+                cswrite.WriteLine($"                {titile}.Add(new Color(Convert.ToSingle({value}.Split('@')[0]),Convert.ToSingle({value}.Split('@')[1]),Convert.ToSingle({value}.Split('@')[2]),Convert.ToSingle({value}.Split('@')[3]));");
+            }
+            else if (type == "datetime")
+            {
+                cswrite.WriteLine($"                {titile}.Add(Convert.ToDateTime(Convert.ToInt64({value})));");
+            }
+            else if (type == "rect")
+            {
+                cswrite.WriteLine($"                {titile}.Add(new Rect(Convert.ToSingle({value}.Split('@')[0]),Convert.ToSingle({value}.Split('@')[1]),Convert.ToSingle({value}.Split('@')[2]),Convert.ToSingle({value}.Split('@')[3]));");
+            }
+            else if (type == "quaternion")
+            {
+                cswrite.WriteLine($"                {titile}.Add(new Quaternion(Convert.ToSingle({value}.Split('@')[0]),Convert.ToSingle({value}.Split('@')[1]),Convert.ToSingle({value}.Split('@')[2]),Convert.ToSingle({value}.Split('@')[3]));");
+            }
+        }
     }
 }

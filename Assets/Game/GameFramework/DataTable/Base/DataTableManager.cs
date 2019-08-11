@@ -100,12 +100,12 @@ namespace GameFramework.DataTable.Base
             }
         }
 
-        private IDataTable CreateDataTable(Type dataRowType,Type keyType, string data)
+        private IDataTable CreateDataTable(Type dataRowType, string data)
         {
-            return CreateDataTable(dataRowType,keyType,String.Empty, data);
+            return CreateDataTable(dataRowType,String.Empty, data);
         }
 
-        private IDataTable CreateDataTable(Type dataRowType,Type keyType, string name, string data)
+        private IDataTable CreateDataTable(Type dataRowType, string name, string data)
         {
             if (!typeof(IDataRow).IsAssignableFrom(dataRowType))
             {
@@ -118,19 +118,19 @@ namespace GameFramework.DataTable.Base
                 Debuger.LogError(StringUtility.Format("DataTable is realdy , please check {0}:{1}",dataRowType,name));
                 return null;
             }
-            Type dataTableType = typeof(DataTable<,>).MakeGenericType(dataRowType,keyType);
+            Type dataTableType = typeof(DataTable<>).MakeGenericType(dataRowType);
             IDataTable dataTable = (IDataTable)Activator.CreateInstance(dataTableType, name);
             dataTable.LoadData(data);
             dataTables.Add(tableName,dataTable);
             return dataTable;
         }
 
-        private IDataTable CreateDataTable(Type dataRowType,Type keyType, byte[] data)
+        private IDataTable CreateDataTable(Type dataRowType, byte[] data)
         {
-            return CreateDataTable(dataRowType,keyType,String.Empty, data);
+            return CreateDataTable(dataRowType,String.Empty, data);
         }
 
-        private IDataTable CreateDataTable(Type dataRowType,Type keyType, string name, byte[] data)
+        private IDataTable CreateDataTable(Type dataRowType, string name, byte[] data)
         {
             if (!typeof(IDataRow).IsAssignableFrom(dataRowType))
             {
@@ -143,7 +143,7 @@ namespace GameFramework.DataTable.Base
                 Debuger.LogError(StringUtility.Format("DataTable is realdy , please check {0}:{1}",dataRowType,name));
                 return null;
             }
-            Type dataTableType = typeof(DataTable<,>).MakeGenericType(dataRowType,keyType);
+            Type dataTableType = typeof(DataTable<>).MakeGenericType(dataRowType);
             IDataTable dataTable = (IDataTable)Activator.CreateInstance(dataTableType, name);
             dataTable.LoadData(data);
             dataTables.Add(tableName,dataTable);

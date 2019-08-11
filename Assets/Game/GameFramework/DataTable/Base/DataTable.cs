@@ -6,40 +6,36 @@ using GameFramework.Utility;
 namespace GameFramework.DataTable.Base
 {
 
-    public class DataTable<TKeyType,TValue> : IEnumerable<TValue> ,IDataTable where TValue : class, IDataRow ,new() where TKeyType : IComparable<TKeyType>
+    public class DataTable<TValue> : IEnumerable<TValue> ,IDataTable where TValue : class, IDataRow ,new()
     {
-        private Dictionary<TKeyType, TValue> dataSet = null;
+        private Dictionary<int, TValue> dataSet = null;
         public Type RowType => typeof(TValue);
-        public Type KeyType => typeof(TKeyType);
-        private string name;
-        public string Name => name;
+        public string Name { get; }
         public int Count => dataSet?.Count ?? 0;
-        private TKeyType minIndex = default(TKeyType);
-        private TValue minData = null;
-        public TValue MinData => minData;
-        private TKeyType maxIndex = default(TKeyType);
-        private TValue maxData = null;
-        public TValue MaxData => maxData;
-        public TValue this[TKeyType key] => GetDataRow(key);
-        private List<TValue> listCache = new List<TValue>();
+        public int MinIndex { get; set; }
+        public int MaxIndex { get; set; }
+        public TValue MinData { get; set; }
+        public TValue MaxData { get; set; }
+        public TValue this[int key] => GetDataRow(key);
+        private readonly List<TValue> listCache = new List<TValue>();
         public DataTable(string name)
         {
-            this.name = name;
-            minData = null;
-            maxData = null;
-            dataSet = new Dictionary<TKeyType, TValue>();
-            minIndex = default(TKeyType);
-            maxIndex = default(TKeyType);
+            Name = name;
+            MinData = null;
+            MaxData = null;
+            dataSet = new Dictionary<int, TValue>();
+            MinIndex = -1;
+            MaxIndex = -1;
         }
         
-        public bool HasDataRow(TKeyType key)
+        public bool HasDataRow(int key)
         {
             return dataSet.ContainsKey(key);
         }
         
         public bool HasDataRow(Predicate<TValue> condition)
         {
-            foreach (KeyValuePair<TKeyType,TValue> valuePair in dataSet)
+            foreach (KeyValuePair<int,TValue> valuePair in dataSet)
             {
                 if (condition(valuePair.Value))
                 {
@@ -49,10 +45,9 @@ namespace GameFramework.DataTable.Base
             return false;
         }
 
-        public TValue GetDataRow(TKeyType key)
+        public TValue GetDataRow(int key)
         {
-            TValue dataRow = null;
-            if (dataSet.TryGetValue(key, out dataRow))
+            if (dataSet.TryGetValue(key, out var dataRow))
             {
                 return dataRow;
             }
@@ -61,7 +56,7 @@ namespace GameFramework.DataTable.Base
         
         public TValue GetDataRow(Predicate<TValue> condition)
         {
-            foreach (KeyValuePair<TKeyType,TValue> valuePair in dataSet)
+            foreach (KeyValuePair<int,TValue> valuePair in dataSet)
             {
                 if (condition(valuePair.Value))
                 {
@@ -74,7 +69,7 @@ namespace GameFramework.DataTable.Base
         public TValue[] GetDataRows(Predicate<TValue> condition)
         {
             listCache.Clear();
-            foreach (KeyValuePair<TKeyType,TValue> valuePair in dataSet)
+            foreach (KeyValuePair<int,TValue> valuePair in dataSet)
             {
                 if (condition(valuePair.Value))
                 {
@@ -87,7 +82,7 @@ namespace GameFramework.DataTable.Base
         public void GetDataRows(Predicate<TValue> condition, List<TValue> results)
         {
             results.Clear();
-            foreach (KeyValuePair<TKeyType,TValue> valuePair in dataSet)
+            foreach (KeyValuePair<int,TValue> valuePair in dataSet)
             {
                 if (condition(valuePair.Value))
                 {
@@ -99,7 +94,7 @@ namespace GameFramework.DataTable.Base
         public TValue[] GetDataRows(Comparison<TValue> comparison)
         {
             listCache.Clear();
-            foreach (KeyValuePair<TKeyType,TValue> valuePair in dataSet)
+            foreach (KeyValuePair<int,TValue> valuePair in dataSet)
             {
                 listCache.Add(valuePair.Value);
             }
@@ -110,7 +105,7 @@ namespace GameFramework.DataTable.Base
         public void GetDataRows(Comparison<TValue> comparison, List<TValue> results)
         {
             results.Clear();
-            foreach (KeyValuePair<TKeyType,TValue> valuePair in dataSet)
+            foreach (KeyValuePair<int,TValue> valuePair in dataSet)
             {
                 results.Add(valuePair.Value);
             }
@@ -120,7 +115,7 @@ namespace GameFramework.DataTable.Base
         public TValue[] GetDataRows(Predicate<TValue> condition, Comparison<TValue> comparison)
         {
             listCache.Clear();
-            foreach (KeyValuePair<TKeyType,TValue> dataRow in dataSet)
+            foreach (KeyValuePair<int,TValue> dataRow in dataSet)
             {
                 if (condition(dataRow.Value))
                 {
@@ -134,7 +129,7 @@ namespace GameFramework.DataTable.Base
         public void GetDataRows(Predicate<TValue> condition, Comparison<TValue> comparison, List<TValue> results)
         {
             results.Clear();
-            foreach (KeyValuePair<TKeyType,TValue> dataRow in dataSet)
+            foreach (KeyValuePair<int,TValue> dataRow in dataSet)
             {
                 if (condition(dataRow.Value))
                 {
@@ -148,7 +143,7 @@ namespace GameFramework.DataTable.Base
         {
             int index = 0;
             TValue[] results = new TValue[dataSet.Count];
-            foreach (KeyValuePair<TKeyType, TValue> dataRow in dataSet)
+            foreach (KeyValuePair<int, TValue> dataRow in dataSet)
             {
                 results[index++] = dataRow.Value;
             }
@@ -158,35 +153,35 @@ namespace GameFramework.DataTable.Base
         public void GetAllDataRows(List<TValue> results)
         {
             results.Clear();
-            foreach (KeyValuePair<TKeyType,TValue> dataRow in dataSet)
+            foreach (KeyValuePair<int,TValue> dataRow in dataSet)
             {
                 results.Add(dataRow.Value);
             }
         }
 
-        private bool AddDataRow(TKeyType key,TValue val)
+        private bool AddDataRow(int key,TValue val)
         {
             if (HasDataRow(key))
             {
                 return false;
             }
             dataSet.Add(key,val);
-            if (minData == null || minIndex.CompareTo(key) > 0)
+            if (MinData == null || MinIndex.CompareTo(key) > 0)
             {
-                minData = val;
-                minIndex = key;
+                MinData = val;
+                MinIndex = key;
             }
-            if (maxData == null || maxIndex.CompareTo(key) < 0)
+            if (MaxData == null || MaxIndex.CompareTo(key) < 0)
             {
-                maxData = val;
-                maxIndex = key;
+                MaxData = val;
+                MaxIndex = key;
             }
             return true;
         }
         
         public void Shutdown()
         {
-            foreach (KeyValuePair<TKeyType,TValue> dataRow in dataSet)
+            foreach (KeyValuePair<int,TValue> dataRow in dataSet)
             {
                 dataRow.Value.Clear();
             }
@@ -208,7 +203,7 @@ namespace GameFramework.DataTable.Base
                 {
                     TValue value = new TValue();
                     value.Parse(buffer);
-                    AddDataRow(value.GetKeyValue<TKeyType>(), value);
+                    AddDataRow(value.GetKeyValue(), value);
                 }
             }
         }
@@ -229,7 +224,7 @@ namespace GameFramework.DataTable.Base
                 }
                 TValue value = new TValue();
                 value.Parse(lines[i]);
-                AddDataRow(value.GetKeyValue<TKeyType>(), value);
+                AddDataRow(value.GetKeyValue(), value);
             }
         }
         

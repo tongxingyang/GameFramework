@@ -5,7 +5,7 @@ namespace GameFramework.DataTable.Base
 {
     public interface IDataRow
     {
-        T GetKeyValue<T>();
+        int GetKeyValue();
         void Parse(ByteBuffer buffer);
         void Parse(string str);
         void Clear();
