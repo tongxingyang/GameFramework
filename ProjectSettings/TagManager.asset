@@ -41,3 +41,30 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: BottomB
+    uniqueID: 3719706475
+    locked: 0
+  - name: BottomM
+    uniqueID: 281704959
+    locked: 0
+  - name: BottomT
+    uniqueID: 971385603
+    locked: 0
+  - name: MiddleB
+    uniqueID: 3433929451
+    locked: 0
+  - name: MiddleM
+    uniqueID: 2061057501
+    locked: 0
+  - name: MiddleT
+    uniqueID: 122537663
+    locked: 0
+  - name: TopB
+    uniqueID: 842864643
+    locked: 0
+  - name: TopM
+    uniqueID: 4148151833
+    locked: 0
+  - name: TopT
+    uniqueID: 467747487
+    locked: 0
