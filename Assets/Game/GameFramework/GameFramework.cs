@@ -238,10 +238,6 @@ namespace GameFramework
 
         void Awake()
         {
-            if (AppConst.GameConfig.IsShowDevelopInfo)
-            {
-                this.gameObject.GetOrAddComponent<DevelopComponent>();
-            }
             InitGlobalCahce();
             Application.lowMemory += OnLowMemory;
             InitDebuger();
@@ -252,24 +248,29 @@ namespace GameFramework
             Screen.sleepTimeout = NeverSleep ? SleepTimeout.NeverSleep : SleepTimeout.SystemSetting;
             Time.timeScale = GameSpeed;
             Singleton<GameEntry>.GetInstance().InitComponent(this.gameObject.transform);
-            Singleton<GameEntry>.GetInstance().OnAwake();     
+            Singleton<GameEntry>.GetInstance().OnAwake();    
+            if (AppConst.GameConfig.IsShowDevelopInfo)
+            {
+                this.gameObject.GetOrAddComponent<DevelopComponent>();
+            }
             InitLanguage();
         }
         void Start()
         {
             Singleton<GameEntry>.GetInstance().OnStart();
-            Singleton<GameEntry>.GetInstance().VideoComponent.InitVideoComponent();
-            StartCoroutine(Launch(() =>
-            {
-                if (AppConst.UpdateConfig.OpenHotUpdate)
-                {
-                    Singleton<GameEntry>.GetInstance().UpdateComponent.Init(HotUpdateSuccess, HotUpdateError);
-                }
-                else
-                {
-                    HotUpdateSuccess();
-                }
-            }));
+            HotUpdateSuccess();
+//            Singleton<GameEntry>.GetInstance().VideoComponent.InitVideoComponent();
+//            StartCoroutine(Launch(() =>
+//            {
+//                if (AppConst.UpdateConfig.OpenHotUpdate)
+//                {
+//                    Singleton<GameEntry>.GetInstance().UpdateComponent.Init(HotUpdateSuccess, HotUpdateError);
+//                }
+//                else
+//                {
+//                    HotUpdateSuccess();
+//                }
+//            }));
         }
         
         void Update()

@@ -58,8 +58,8 @@ namespace GameFramework
         {
             public static bool UseSecure = true;
             public static int Iterations = 555;
-            public static string Password = "txy!123";
-            public static string Salt = "txy";
+            public static string Password = "txy!1234";
+            public static string Salt = "txy!1234";
         }
         
         public static class AssetBundleConfig
@@ -78,6 +78,12 @@ namespace GameFramework
         public static class UpdateConfig
         {
             public static bool OpenHotUpdate = true;
+        }
+        
+        public static class ResourceConfig
+        {
+            public static bool IsUseAssetBundle = false;
+            public static int AssetDatabaseDelayFrame = 10;
         }
     }
 }

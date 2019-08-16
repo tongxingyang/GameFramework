@@ -16,7 +16,7 @@ namespace GameFramework.UI.Base
         private readonly List<string> uiWindowAssetNamesBeingLoaded;
         private readonly HashSet<int> uiWindowsToReleaseOnLoad;
         private readonly LinkedList<UIWindow> recycleQueue;
-        private readonly LoadAssetCallbacks loadAssetCallbacks;
+        private readonly LoadCallback loadCallback;
         private IResourceManager resourceManager;
         private IObjectPoolManager objectPoolManager;
         private IObjectPool uiObjectPool;
@@ -55,7 +55,7 @@ namespace GameFramework.UI.Base
             uiWindowAssetNamesBeingLoaded = new List<string>();
             uiWindowsToReleaseOnLoad = new HashSet<int>();
             recycleQueue = new LinkedList<UIWindow>();
-            loadAssetCallbacks = new LoadAssetCallbacks(LoadUIWindowSuccessCallback, LoadUIWindowFailureCallback, LoadUIWindowUpdateCallback, LoadUIWindowDependencyAssetCallback);
+            loadCallback = new LoadCallback(LoadUIWindowSuccessCallback, LoadUIWindowFailureCallback);
         }
         
         public void OnUpdate(float elapseSeconds, float realElapseSeconds)
@@ -282,7 +282,7 @@ namespace GameFramework.UI.Base
                 uiWindowBeingLoaded.Add(serialID);
                 uiWindowAssetNamesBeingLoaded.Add(resourceLoadInfo.AssetName);
                 OpenUIWindowInfo openUiWindowInfo = new OpenUIWindowInfo(serialID,windowGroup,pauseCovered,uiWindowContext);
-                resourceManager.LoadAsset<GameObject>(resourceLoadInfo, loadAssetCallbacks, openUiWindowInfo);
+                resourceManager.LoadAsset<GameObject>(resourceLoadInfo, loadCallback, openUiWindowInfo);
             }
             else
             {
@@ -396,16 +396,6 @@ namespace GameFramework.UI.Base
             
         }
 
-        private void LoadUIWindowUpdateCallback(string soundAssetName, float progress, object userData)
-        {
-
-        }
-
-        private void LoadUIWindowDependencyAssetCallback(string soundAssetName, string dependencyAssetName,int loadedCount, int totalCount, object userData)
-        {
- 
-        }
-        
         private void OpenUIWindow(int serialId, string uiAssetName, UIWindowGroup uiGroup, object uiWindowInstance, bool pauseCovered, bool isInit, UIWindowContext uiWindowContext)
         {
             GameObject obj = uiWindowInstance as GameObject;

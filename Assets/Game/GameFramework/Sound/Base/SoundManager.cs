@@ -15,7 +15,7 @@ namespace GameFramework.Sound.Base
         private List<int> soundBeingLoaded;
         private List<int> soundToReleaseOnLoad;
         private IResourceManager resourceManager;
-        private LoadAssetCallbacks loadAssetCallBacks;
+        private LoadCallback loadCallback;
         public float DefaultSoundDuration = 1f;
         private int musicSerialId = -1;
 
@@ -27,7 +27,7 @@ namespace GameFramework.Sound.Base
             soundBeingLoaded = new List<int>();
             soundToReleaseOnLoad = new List<int>();
             resourceManager = null;
-            loadAssetCallBacks = new LoadAssetCallbacks(LoadSoundSuccessCallback, LoadSoundFailureCallback, LoadSoundUpdateCallback,LoadSoundDependencyAssetCallback);
+            loadCallback = new LoadCallback(LoadSoundSuccessCallback, LoadSoundFailureCallback);
 
         }
 
@@ -137,7 +137,7 @@ namespace GameFramework.Sound.Base
           
             playSoundParams.SerialId = serialId;
             soundBeingLoaded.Add(serialId);
-            resourceManager.LoadAsset<AudioClip>(resourceLoadInfo,loadAssetCallBacks,playSoundParams);// todo txy
+            resourceManager.LoadAsset<AudioClip>(resourceLoadInfo,loadCallback,playSoundParams);// todo txy
             return serialId;
             
         }
@@ -356,27 +356,6 @@ namespace GameFramework.Sound.Base
             soundBeingLoaded.Remove(playSoundParams.SerialId);
             soundToReleaseOnLoad.Remove(playSoundParams.SerialId);
             Debuger.LogError(Utility.StringUtility.Format("Load sound failure, asset name '{0}', error message '{1}'.",soundAssetName,errorMessage));
-
-        }
-
-        private void LoadSoundUpdateCallback(string soundAssetName, float progress, object userData)
-        {
-            PlaySoundParams playSoundParams = (PlaySoundParams) userData;
-            if (playSoundParams == null)
-            {
-                Debuger.LogError("Play sound info is invalid.");
-                return;
-            }
-        }
-
-        private void LoadSoundDependencyAssetCallback(string soundAssetName, string dependencyAssetName,int loadedCount, int totalCount, object userData)
-        {
-            PlaySoundParams playSoundInfo = (PlaySoundParams) userData;
-            if (playSoundInfo == null)
-            {
-                Debuger.LogError("Play sound info is invalid.");
-                return;
-            }
 
         }
     }

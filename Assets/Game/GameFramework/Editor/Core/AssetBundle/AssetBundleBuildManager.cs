@@ -21,6 +21,7 @@ namespace GameFramework.Editor.Core.AssetBundle
             "Assets/Game/GameFramework/Editor/EditorAsset/AssetBundleBuildRules.asset";
 
         public static string VersionFile = "version.json";
+        public static string AssetToBundleMapFile = "asset2bundle.json";
 
         public static string OutputDirectory = "";
         public static string WorkingDirectory => $"{OutputDirectory}/Working/";

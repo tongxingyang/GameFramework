@@ -61,11 +61,18 @@ public class Launch:MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
-//            Debug.LogError(Application.persistentDataPath); // 22 - 33
-//            downloadAgent.OnStart(new DownloadTask(Application.persistentDataPath + "/testdown.pdf",
-//                "http://127.0.0.1/shuxue.pdf", (a, b) => { }, (a, b, c) => { }, (a, b) => { }, 100, 50000));
-//            Debug.LogError("kaishi   "+DateTime.Now);
-            Time.timeScale = 0;
+//            AssetBundle assetBundle = AssetBundle.LoadFromFile(Application.streamingAssetsPath+"/test.asset");
+//            
+////            Debug.LogError(Application.persistentDataPath); // 22 - 33
+////            downloadAgent.OnStart(new DownloadTask(Application.persistentDataPath + "/testdown.pdf",
+////                "http://127.0.0.1/shuxue.pdf", (a, b) => { }, (a, b, c) => { }, (a, b) => { }, 100, 50000));
+////            Debug.LogError("kaishi   "+DateTime.Now);
+//            Time.timeScale = 0;
+            Debug.LogError("-------------11");
+            AssetBundle.LoadFromFileAsync(Application.streamingAssetsPath + "/test.asset");
+
+             AssetBundle.LoadFromFile(Application.streamingAssetsPath + "/test.asset");
+            
         }
         if (Input.GetKeyDown(KeyCode.S))
         {

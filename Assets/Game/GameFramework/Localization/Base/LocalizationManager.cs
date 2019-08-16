@@ -13,8 +13,7 @@ namespace GameFramework.Localization.Base
         private IResourceManager resourceManager;
         private Language language;
         private readonly Dictionary<enLanguageKey, string> languageDictionary;
-        private LoadAssetCallbacks loadAssetCallBacks;
-
+        private LoadCallback loadCallback;
         public delegate void LocalizeDelegate();
         public static LocalizeDelegate RefreshLanguage;
         
@@ -43,7 +42,7 @@ namespace GameFramework.Localization.Base
         {
            languageDictionary = new Dictionary<enLanguageKey, string>();
            resourceManager = null;
-           loadAssetCallBacks = new LoadAssetCallbacks(LoadLanguageSuccessCallback, LoadLanguageFailureCallback, LoadLanguageUpdateCallback,LoadLanguageDependencyAssetCallback);
+            loadCallback = new LoadCallback(LoadLanguageSuccessCallback, LoadLanguageFailureCallback);
         }
         
         public void OnUpdate(float elapseSeconds, float realElapseSeconds)
@@ -64,7 +63,7 @@ namespace GameFramework.Localization.Base
 
         private void LoadLanguage(ResourceLoadInfo resourceLoadInfo)
         {
-            resourceManager.LoadAsset<TextAsset>(resourceLoadInfo,loadAssetCallBacks);
+            resourceManager.LoadAsset<TextAsset>(resourceLoadInfo,loadCallback);
         }
 
         public void ParseLanguage(string text)
@@ -150,17 +149,6 @@ namespace GameFramework.Localization.Base
 
         private void LoadLanguageFailureCallback(string languageAssetName, string errorMessage,
             object userData)
-        {
-           
-        }
-
-        private void LoadLanguageUpdateCallback(string languageAssetName, float progress, object userData)
-        {
-           
-        }
-
-        private void LoadLanguageDependencyAssetCallback(string languageAssetName, string dependencyAssetName,
-            int loadedCount, int totalCount, object userData)
         {
            
         }

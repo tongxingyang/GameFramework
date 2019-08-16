@@ -79,6 +79,11 @@ namespace GameFramework.Utility.File
             return System.IO.File.OpenWrite(fileName);
         }
         
+        public static FileStream Open(string fileName)
+        {
+            return System.IO.File.Open(fileName,FileMode.Open);
+        }
+        
         public static void CreateFile(string filePath)
         {
             System.IO.File.Create(filePath);

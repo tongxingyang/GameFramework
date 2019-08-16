@@ -1519,7 +1519,7 @@ namespace com.ootii.Input
                     {
                         mState.Controls[i].Value = (UnityEngine.Input.GetKey((KeyCode)i) ? 1 : 0);
                     }
-                    UnityEngine.Debug.Log("UnityEngine.InputGetKey:" + UnityEngine.Input.GetKey(KeyCode.A) + " mState.Controls[A]:" + mState.Controls[EnumInput.A].Value);
+//                    UnityEngine.Debug.Log("UnityEngine.InputGetKey:" + UnityEngine.Input.GetKey(KeyCode.A) + " mState.Controls[A]:" + mState.Controls[EnumInput.A].Value);
 
                     mState.Controls[EnumInput.DELETE].Value = (UnityEngine.Input.GetKey(KeyCode.Delete) ? 1 : 0);             // Unity doesn't have a percent?
 

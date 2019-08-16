@@ -11,14 +11,14 @@ namespace GameFramework.DataTable.Base
     {
         private Dictionary<string, IDataTable> dataTables;
         private IResourceManager resourceManager;
-        private readonly LoadAssetCallbacks loadAssetCallBacks;
+        private readonly LoadCallback loadCallback;
         public int Count => dataTables?.Count ?? 0;
         
         public DataTableManager()
         {
             dataTables = new Dictionary<string, IDataTable>();
             resourceManager = null;
-            loadAssetCallBacks = new LoadAssetCallbacks(LoadDataTableSuccessCallback, LoadDataTableFailureCallback, LoadDataTableUpdateCallback,LoadDataTableDependencyAssetCallback);
+            loadCallback = new LoadCallback(LoadDataTableSuccessCallback, LoadDataTableFailureCallback);
         }
         
         public void OnUpdate(float elapseSeconds, float realElapseSeconds)
@@ -43,7 +43,7 @@ namespace GameFramework.DataTable.Base
 
         public void LoadDataTable(ResourceLoadInfo resourceLoadInfo,LoadDataTableInfo loadDataTableInfo)
         {
-            resourceManager.LoadAsset<TextAsset>(resourceLoadInfo,loadAssetCallBacks,loadDataTableInfo);
+            resourceManager.LoadAsset<TextAsset>(resourceLoadInfo,loadCallback,loadDataTableInfo);
         }
         
         public bool HasDataTable<T>() where T : class, IDataRow, new()
@@ -177,16 +177,6 @@ namespace GameFramework.DataTable.Base
         }
 
         private void LoadDataTableFailureCallback(string soundAssetName, string errorMessage,object userData)
-        {
-          
-        }
-
-        private void LoadDataTableUpdateCallback(string soundAssetName, float progress, object userData)
-        {
-           
-        }
-
-        private void LoadDataTableDependencyAssetCallback(string soundAssetName, string dependencyAssetName,int loadedCount, int totalCount, object userData)
         {
           
         }

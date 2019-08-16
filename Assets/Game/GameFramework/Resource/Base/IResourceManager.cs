@@ -2,6 +2,6 @@
 {
     public interface IResourceManager
     {
-        void LoadAsset<T>(ResourceLoadInfo resourceLoadInfo, LoadAssetCallbacks loadAssetCallbacks,object userData = null);
+        void LoadAsset<T>(ResourceLoadInfo resourceLoadInfo, LoadCallback loadAssetCallbacks,object userData = null);
     }
 }
