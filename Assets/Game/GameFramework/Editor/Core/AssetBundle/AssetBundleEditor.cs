@@ -15,14 +15,6 @@ namespace GameFramework.Editor.Core.AssetBundle
         public static void ClearProgress()
         {
             EditorUtility.ClearProgressBar();
-            AssetToBundleMap assetToBundleMap = new AssetToBundleMap();
-            assetToBundleMap.AssetToBundleNameMap.Add("1111","1");
-            assetToBundleMap.AssetToBundleNameMap.Add("111","1");
-            assetToBundleMap.AssetToBundleNameMap.Add("11111","1");
-            assetToBundleMap.AssetToBundleNameMap.Add("11","1");
-            assetToBundleMap.AssetToBundleNameMap.Add("1","1");
-            string json = JsonUtility.ToJson(assetToBundleMap);
-            File.WriteAllText(Application.dataPath+"/test.json",json);
         }   
         
         [MenuItem("Tools/AssetBunle/Build AssetBundle设置")]

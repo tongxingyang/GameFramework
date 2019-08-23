@@ -145,7 +145,7 @@ namespace GameFramework.Utility.Extension
         private static readonly Dictionary<string, List<MeshRenderer>> batchDictionary =
             new Dictionary<string, List<MeshRenderer>>();
 
-        public static void StaticBatching(GameObject gameObject)
+        public static void StaticBatching(this GameObject gameObject)
         {
             batchDictionary.Clear();
             MeshRenderer[] meshRenderers = gameObject.GetComponentsInChildren<MeshRenderer>();

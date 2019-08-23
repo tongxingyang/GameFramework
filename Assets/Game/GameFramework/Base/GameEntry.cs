@@ -9,6 +9,7 @@ using GameFramework.Input;
 using GameFramework.Localization;
 using GameFramework.Pool.ReferencePool;
 using GameFramework.Res;
+using GameFramework.Scene;
 using GameFramework.Setting;
 using GameFramework.Sound;
 using GameFramework.Timer;
@@ -35,6 +36,7 @@ namespace GameFramework.Base
         public LocalizationComponent LocalizationComponent;
         public VideoComponent VideoComponent;
         public InputComponent InputComponent;
+        public SceneComponent SceneComponent;
 
         private readonly LinkedList<GameFrameworkComponent> GameFrameworkComponents =
             new LinkedList<GameFrameworkComponent>();
@@ -57,6 +59,7 @@ namespace GameFramework.Base
             LocalizationComponent = FindAndRegisterComponent<LocalizationComponent>();
             VideoComponent = FindAndRegisterComponent<VideoComponent>();
             InputComponent = FindAndRegisterComponent<InputComponent>();
+            SceneComponent = FindAndRegisterComponent<SceneComponent>();
         }
 
         private T FindAndRegisterComponent<T>() where T : GameFrameworkComponent

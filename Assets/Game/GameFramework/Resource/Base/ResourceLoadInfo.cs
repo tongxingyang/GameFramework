@@ -3,23 +3,23 @@ namespace GameFramework.Res.Base
     public sealed class ResourceLoadInfo
     {
         private string assetName;
-        private int priority;
-        private enResouceLoadType resouceLoadType;
+        private string assetBundleName;
         private enResourceLoadMode resourceLoadMode;
         private enResourceLoadMethod resourceLoadMethod;
+        private enResourceLoadCache resourceLoadCache;
 
         public string AssetName => assetName;
-        public int Priority => priority;
-        public enResouceLoadType ResouceLoadType => resouceLoadType;
+        public string AssetBundleName => assetBundleName;
         public enResourceLoadMode ResourceLoadMode => resourceLoadMode;
         public enResourceLoadMethod ResourceLoadMethod => resourceLoadMethod;
-        public ResourceLoadInfo(string assetName,int priority,enResouceLoadType resouceLoadType,enResourceLoadMode resourceLoadMode,enResourceLoadMethod resourceLoadMethod)
+        public enResourceLoadCache ResourceLoadCache => resourceLoadCache;
+        public ResourceLoadInfo(string assetName,string assetBundleName ,enResourceLoadCache resourceLoadCache,enResourceLoadMode resourceLoadMode,enResourceLoadMethod resourceLoadMethod)
         {
             this.assetName = assetName;
-            this.priority = priority;
-            this.resouceLoadType = resouceLoadType;
+            this.assetBundleName = assetBundleName;
             this.resourceLoadMode = resourceLoadMode;
             this.resourceLoadMethod = resourceLoadMethod;
+            this.resourceLoadCache = resourceLoadCache;
         }
     }
 }

@@ -19,7 +19,7 @@ namespace GameFramework.Pool.TaskPool
             get => isPause;
             set
             {
-                if (isPause == value)
+                if (Equals(isPause, value))
                 {
                     return;
                 }

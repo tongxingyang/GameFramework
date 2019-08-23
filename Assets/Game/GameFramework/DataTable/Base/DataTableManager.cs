@@ -11,14 +11,12 @@ namespace GameFramework.DataTable.Base
     {
         private Dictionary<string, IDataTable> dataTables;
         private IResourceManager resourceManager;
-        private readonly LoadCallback loadCallback;
         public int Count => dataTables?.Count ?? 0;
         
         public DataTableManager()
         {
             dataTables = new Dictionary<string, IDataTable>();
             resourceManager = null;
-            loadCallback = new LoadCallback(LoadDataTableSuccessCallback, LoadDataTableFailureCallback);
         }
         
         public void OnUpdate(float elapseSeconds, float realElapseSeconds)
@@ -43,7 +41,9 @@ namespace GameFramework.DataTable.Base
 
         public void LoadDataTable(ResourceLoadInfo resourceLoadInfo,LoadDataTableInfo loadDataTableInfo)
         {
-            resourceManager.LoadAsset<TextAsset>(resourceLoadInfo,loadCallback,loadDataTableInfo);
+            resourceManager.RequestResource(resourceLoadInfo.AssetBundleName, LoadDataCallback,
+                resourceLoadInfo.ResourceLoadMode, resourceLoadInfo.ResourceLoadCache,
+                resourceLoadInfo.ResourceLoadMethod, loadDataTableInfo);
         }
         
         public bool HasDataTable<T>() where T : class, IDataRow, new()
@@ -171,15 +171,9 @@ namespace GameFramework.DataTable.Base
             return false;
         }
         
-        private void LoadDataTableSuccessCallback(string soundAssetName, object soundAsset, float duration, object userData)
+        private void LoadDataCallback(AbstractAssetInfo info, object userdata)
         {
            
         }
-
-        private void LoadDataTableFailureCallback(string soundAssetName, string errorMessage,object userData)
-        {
-          
-        }
-        
     }
 }

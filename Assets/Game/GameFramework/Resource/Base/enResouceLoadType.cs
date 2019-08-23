@@ -3,6 +3,7 @@
     public enum enResouceLoadType
     {
         AssetBundle,
-        Resources,
+        AssetDatabase,
+        Invalide,
     }
 }

@@ -16,7 +16,6 @@ namespace GameFramework.UI.Base
         private readonly List<string> uiWindowAssetNamesBeingLoaded;
         private readonly HashSet<int> uiWindowsToReleaseOnLoad;
         private readonly LinkedList<UIWindow> recycleQueue;
-        private readonly LoadCallback loadCallback;
         private IResourceManager resourceManager;
         private IObjectPoolManager objectPoolManager;
         private IObjectPool uiObjectPool;
@@ -55,7 +54,6 @@ namespace GameFramework.UI.Base
             uiWindowAssetNamesBeingLoaded = new List<string>();
             uiWindowsToReleaseOnLoad = new HashSet<int>();
             recycleQueue = new LinkedList<UIWindow>();
-            loadCallback = new LoadCallback(LoadUIWindowSuccessCallback, LoadUIWindowFailureCallback);
         }
         
         public void OnUpdate(float elapseSeconds, float realElapseSeconds)
@@ -282,7 +280,9 @@ namespace GameFramework.UI.Base
                 uiWindowBeingLoaded.Add(serialID);
                 uiWindowAssetNamesBeingLoaded.Add(resourceLoadInfo.AssetName);
                 OpenUIWindowInfo openUiWindowInfo = new OpenUIWindowInfo(serialID,windowGroup,pauseCovered,uiWindowContext);
-                resourceManager.LoadAsset<GameObject>(resourceLoadInfo, loadCallback, openUiWindowInfo);
+                resourceManager.RequestResource(resourceLoadInfo.AssetBundleName, LoadUIWindowCallback,
+                    resourceLoadInfo.ResourceLoadMode, resourceLoadInfo.ResourceLoadCache,
+                    resourceLoadInfo.ResourceLoadMethod,openUiWindowInfo);
             }
             else
             {
@@ -386,14 +386,9 @@ namespace GameFramework.UI.Base
         {
             throw new System.NotImplementedException();
         }
-        private void LoadUIWindowSuccessCallback(string soundAssetName, object soundAsset, float duration, object userData)
+        private void LoadUIWindowCallback(AbstractAssetInfo info, object userdata)
         {
            
-        }
-
-        private void LoadUIWindowFailureCallback(string soundAssetName, string errorMessage,object userData)
-        {
-            
         }
 
         private void OpenUIWindow(int serialId, string uiAssetName, UIWindowGroup uiGroup, object uiWindowInstance, bool pauseCovered, bool isInit, UIWindowContext uiWindowContext)

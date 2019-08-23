@@ -13,7 +13,6 @@ namespace GameFramework.Localization.Base
         private IResourceManager resourceManager;
         private Language language;
         private readonly Dictionary<enLanguageKey, string> languageDictionary;
-        private LoadCallback loadCallback;
         public delegate void LocalizeDelegate();
         public static LocalizeDelegate RefreshLanguage;
         
@@ -42,7 +41,6 @@ namespace GameFramework.Localization.Base
         {
            languageDictionary = new Dictionary<enLanguageKey, string>();
            resourceManager = null;
-            loadCallback = new LoadCallback(LoadLanguageSuccessCallback, LoadLanguageFailureCallback);
         }
         
         public void OnUpdate(float elapseSeconds, float realElapseSeconds)
@@ -63,7 +61,9 @@ namespace GameFramework.Localization.Base
 
         private void LoadLanguage(ResourceLoadInfo resourceLoadInfo)
         {
-            resourceManager.LoadAsset<TextAsset>(resourceLoadInfo,loadCallback);
+            resourceManager.RequestResource(resourceLoadInfo.AssetBundleName, LoadLanguageCallback,
+                resourceLoadInfo.ResourceLoadMode, resourceLoadInfo.ResourceLoadCache,
+                resourceLoadInfo.ResourceLoadMethod);
         }
 
         public void ParseLanguage(string text)
@@ -141,16 +141,10 @@ namespace GameFramework.Localization.Base
             LoadLanguage(resourceLoadInfo);
         }
         
-        private void LoadLanguageSuccessCallback(string languageAssetName, object languageAsset, float duration, object userData)
+        private void LoadLanguageCallback(AbstractAssetInfo info, object userdata)
         {
-            var textAsset = languageAsset as TextAsset;
-            if (textAsset != null) ParseLanguage(textAsset.text);
-        }
-
-        private void LoadLanguageFailureCallback(string languageAssetName, string errorMessage,
-            object userData)
-        {
-           
+//            var textAsset = languageAsset as TextAsset;
+//            if (textAsset != null) ParseLanguage(textAsset.text);
         }
 
     }

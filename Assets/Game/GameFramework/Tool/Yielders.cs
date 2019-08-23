@@ -45,7 +45,7 @@ namespace GameFramework.Tool
                 return new WaitForSeconds(time);
             }
             WaitForSeconds wfs;
-            if (waitForSecondses.TryGetValue(time, out wfs))
+            if (!waitForSecondses.TryGetValue(time, out wfs))
             {
                 waitForSecondses.Add(time, wfs = new WaitForSeconds(time));
             }

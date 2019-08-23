@@ -15,7 +15,6 @@ namespace GameFramework.Sound.Base
         private List<int> soundBeingLoaded;
         private List<int> soundToReleaseOnLoad;
         private IResourceManager resourceManager;
-        private LoadCallback loadCallback;
         public float DefaultSoundDuration = 1f;
         private int musicSerialId = -1;
 
@@ -27,7 +26,6 @@ namespace GameFramework.Sound.Base
             soundBeingLoaded = new List<int>();
             soundToReleaseOnLoad = new List<int>();
             resourceManager = null;
-            loadCallback = new LoadCallback(LoadSoundSuccessCallback, LoadSoundFailureCallback);
 
         }
 
@@ -137,7 +135,10 @@ namespace GameFramework.Sound.Base
           
             playSoundParams.SerialId = serialId;
             soundBeingLoaded.Add(serialId);
-            resourceManager.LoadAsset<AudioClip>(resourceLoadInfo,loadCallback,playSoundParams);// todo txy
+//            resourceManager.LoadAsset<AudioClip>(resourceLoadInfo,loadCallback,playSoundParams);// todo txy
+            resourceManager.RequestResource(resourceLoadInfo.AssetBundleName, LoadSoundCallback,
+                resourceLoadInfo.ResourceLoadMode, resourceLoadInfo.ResourceLoadCache,
+                resourceLoadInfo.ResourceLoadMethod,playSoundParams);
             return serialId;
             
         }
@@ -313,49 +314,49 @@ namespace GameFramework.Sound.Base
             return PlaySound(resourceLoadInfo, playSoundParams);
         }
 
-        private void LoadSoundSuccessCallback(string soundAssetName, object soundAsset, float duration, object userData)
+        private void LoadSoundCallback(AbstractAssetInfo info, object userData)
         {
-            PlaySoundParams playSoundParams = (PlaySoundParams) userData;
-            if (playSoundParams == null)
-            {
-                Debuger.LogError("Play sound info is invalid.");
-                return;
-            }
-
-            soundBeingLoaded.Remove(playSoundParams.SerialId);
-            if (soundToReleaseOnLoad.Contains(playSoundParams.SerialId))
-            {
-                Debuger.LogError(string.Format("Release sound '{0}' on loading success.", playSoundParams.SerialId.ToString()));
-                soundToReleaseOnLoad.Remove(playSoundParams.SerialId);
-                //resourceManager.ReleaseSoundAsset(soundAsset);   todo txy
-                return;
-            }
-
-            ISound soundAgent = GetSoundGroup(playSoundParams.SoundGroupName).PlaySound((AudioClip)soundAsset,
-                playSoundParams);
-            if (soundAgent != null)
-            {
-
-            }
-            else
-            {
-                //resourceManager.ReleaseSoundAsset(soundAsset);    todo txy
-                Debuger.LogError(Utility.StringUtility.Format("Sound group '{0}' play sound '{1}' failure.",playSoundParams.SoundGroupName, soundAssetName));
-            }
+//            PlaySoundParams playSoundParams = (PlaySoundParams) userData;
+//            if (playSoundParams == null)
+//            {
+//                Debuger.LogError("Play sound info is invalid.");
+//                return;
+//            }
+//
+//            soundBeingLoaded.Remove(playSoundParams.SerialId);
+//            if (soundToReleaseOnLoad.Contains(playSoundParams.SerialId))
+//            {
+//                Debuger.LogError(string.Format("Release sound '{0}' on loading success.", playSoundParams.SerialId.ToString()));
+//                soundToReleaseOnLoad.Remove(playSoundParams.SerialId);
+//                //resourceManager.ReleaseSoundAsset(soundAsset);   todo txy
+//                return;
+//            }
+//
+//            ISound soundAgent = GetSoundGroup(playSoundParams.SoundGroupName).PlaySound((AudioClip)soundAsset,
+//                playSoundParams);
+//            if (soundAgent != null)
+//            {
+//
+//            }
+//            else
+//            {
+//                //resourceManager.ReleaseSoundAsset(soundAsset);    todo txy
+//                Debuger.LogError(Utility.StringUtility.Format("Sound group '{0}' play sound '{1}' failure.",playSoundParams.SoundGroupName, soundAssetName));
+//            }
         }
 
         private void LoadSoundFailureCallback(string soundAssetName, string errorMessage,object userData)
         {
-            PlaySoundParams playSoundParams = (PlaySoundParams) userData;
-            if (playSoundParams == null)
-            {
-                Debuger.LogError("Play sound info is invalid.");
-                return;
-            }
-
-            soundBeingLoaded.Remove(playSoundParams.SerialId);
-            soundToReleaseOnLoad.Remove(playSoundParams.SerialId);
-            Debuger.LogError(Utility.StringUtility.Format("Load sound failure, asset name '{0}', error message '{1}'.",soundAssetName,errorMessage));
+//            PlaySoundParams playSoundParams = (PlaySoundParams) userData;
+//            if (playSoundParams == null)
+//            {
+//                Debuger.LogError("Play sound info is invalid.");
+//                return;
+//            }
+//
+//            soundBeingLoaded.Remove(playSoundParams.SerialId);
+//            soundToReleaseOnLoad.Remove(playSoundParams.SerialId);
+//            Debuger.LogError(Utility.StringUtility.Format("Load sound failure, asset name '{0}', error message '{1}'.",soundAssetName,errorMessage));
 
         }
     }

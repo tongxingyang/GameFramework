@@ -88,15 +88,10 @@ namespace GameFramework
         [Header("UI设置")] 
         public int UIPriority = 50;
         
+        [Header("Scene设置")] 
+        public int ScenePriority = 50;
+        
         #endregion
-        
-        
-         
-        public bool EditorResourceMode
-        {
-            get => editorResourceMode;
-            set => editorResourceMode = value;
-        }
 
         public int FrameRate
         {
@@ -156,7 +151,7 @@ namespace GameFramework
             {
                 if (gameSplash == null)
                 {
-                    GameObject prefab = Resources.Load<GameObject>("UI/PanelSplash");
+                    GameObject prefab = Resources.Load<GameObject>("UI/Panel_Splash");
                     gameSplash = Instantiate(prefab);
                     gameSplash.transform.SetParent(AppConst.GlobalCahce.PanelRoot);
                     RectTransform rectTransform = gameSplash.GetComponent<RectTransform>();
@@ -177,7 +172,7 @@ namespace GameFramework
             {
                 if (gameMonition == null)
                 {
-                    GameObject prefab = Resources.Load<GameObject>("UI/PanelMonition");
+                    GameObject prefab = Resources.Load<GameObject>("UI/Panel_Monition");
                     gameMonition = Instantiate(prefab);
                     gameMonition.transform.SetParent(AppConst.GlobalCahce.PanelRoot);
                     RectTransform rectTransform = gameMonition.GetComponent<RectTransform>();
@@ -198,7 +193,7 @@ namespace GameFramework
             {
                 if (gameLogo == null)
                 {
-                    GameObject prefab = Resources.Load<GameObject>("UI/PanelLogo");
+                    GameObject prefab = Resources.Load<GameObject>("UI/Panel_Logo");
                     gameLogo = Instantiate(prefab);
                     gameLogo.transform.SetParent(AppConst.GlobalCahce.PanelRoot);
                     RectTransform rectTransform = gameLogo.GetComponent<RectTransform>();
@@ -258,19 +253,18 @@ namespace GameFramework
         void Start()
         {
             Singleton<GameEntry>.GetInstance().OnStart();
-            HotUpdateSuccess();
-//            Singleton<GameEntry>.GetInstance().VideoComponent.InitVideoComponent();
-//            StartCoroutine(Launch(() =>
-//            {
-//                if (AppConst.UpdateConfig.OpenHotUpdate)
-//                {
-//                    Singleton<GameEntry>.GetInstance().UpdateComponent.Init(HotUpdateSuccess, HotUpdateError);
-//                }
-//                else
-//                {
-//                    HotUpdateSuccess();
-//                }
-//            }));
+            Singleton<GameEntry>.GetInstance().VideoComponent.InitVideoComponent();
+            StartCoroutine(Launch(() =>
+            {
+                if (AppConst.UpdateConfig.OpenHotUpdate)
+                {
+                    Singleton<GameEntry>.GetInstance().UpdateComponent.Init(HotUpdateSuccess, HotUpdateError);
+                }
+                else
+                {
+                    HotUpdateSuccess();
+                }
+            }));
         }
         
         void Update()
@@ -328,8 +322,8 @@ namespace GameFramework
         private IEnumerator ShowGameSplash()
         {
             GameSplash.SetActive(true);
-            GameSplash.FindChild("Image_GameSplash").SetActive(true);
-            yield return Yielders.GetWaitForSeconds(1f);
+            GameSplash.FindChild("Image_Splash").SetActive(true);
+            yield return Yielders.GetWaitForSeconds(10f);
             GameSplash.SetActive(false);
             yield return null;
         }
@@ -337,7 +331,7 @@ namespace GameFramework
         private IEnumerator ShowGameMonition()
         {
             GameMonition.SetActive(true);
-            Yielders.GetWaitForSeconds(2f);
+            yield return Yielders.GetWaitForSeconds(20f);
             GameMonition.SetActive(false);
             yield return null;
         }

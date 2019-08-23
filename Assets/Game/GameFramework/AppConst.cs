@@ -18,7 +18,7 @@ namespace GameFramework
         {
             public static bool IsShowGameSplash = true;
             public static bool IsShowGameMonition = true;
-            public static bool IsPlayGameSplashVideo = true;
+            public static bool IsPlayGameSplashVideo = false;
             public static string GameSplashVideoName = String.Empty;
         }
         
@@ -77,13 +77,12 @@ namespace GameFramework
 
         public static class UpdateConfig
         {
-            public static bool OpenHotUpdate = true;
+            public static bool OpenHotUpdate = false;
         }
         
         public static class ResourceConfig
         {
             public static bool IsUseAssetBundle = false;
-            public static int AssetDatabaseDelayFrame = 10;
         }
     }
 }

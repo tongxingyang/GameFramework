@@ -1,63 +1,68 @@
-﻿
-using System.Collections.Generic;
-
-namespace GameFramework.Res.Base
+﻿namespace GameFramework.Res.Base
 {
     public class ResourceManager : IResourceManager
     {
-        public Dictionary<string ,string> AssetToMap = new Dictionary<string, string>();
+        public AbstractResourceModule CurrentResourceModule;
+
+        public string PlatformName { get; set; }
         
-        public void LoadAssetFromAssetBundleAsync<T>(string assetName, int priority,enResourceLoadMethod method, LoadCallback loadCallback,
-            object userData)
+        public enResouceLoadType LoadType { get; set; }
+
+        public void InitManager()
         {
-            
+            if (LoadType == enResouceLoadType.AssetBundle)
+            {
+                CurrentResourceModule = new AssetBundleModule();
+            }else if (LoadType == enResouceLoadType.AssetDatabase)
+            {
+                CurrentResourceModule = new AssetDatabaseModule();
+            }
+            CurrentResourceModule.InitModule();
         }
 
-        public void LoadAssetFromAssetBundleSync<T>(string assetName, int priority, enResourceLoadMethod method,
-            LoadCallback loadCallback, object userData)
+        public void LoadAllDependInfo()
         {
-            
+            CurrentResourceModule.PlatformName = PlatformName;
+            CurrentResourceModule.LoadAllDependInfo();
+        }
+
+        public void StartResourceRecycling()
+        {
+            CurrentResourceModule.StartResourceRecycling();
+        }
+
+        public void AddToWhiteList(string name)
+        {
+            CurrentResourceModule.AddToWhiteList(name);
         }
         
-        public void LoadAssetFromResourceAsync<T>(string assetName, LoadCallback loadCallback ,object userData)
+        public void RequestResource(string name, AssetBundleLoader.OnLoadAllBundle callback,
+            enResourceLoadMode loadMode = enResourceLoadMode.Sync,
+            enResourceLoadCache loadCache = enResourceLoadCache.NormalLoad,
+            enResourceLoadMethod loadMethod = enResourceLoadMethod.LoadFromFile,object userdata = null)
         {
-            
+            CurrentResourceModule.RequestResource(name,callback,loadMode,loadCache,loadMethod,userdata);
+        }
+        
+        public void UnloadAllUnusedPreloadResources()
+        {
+            CurrentResourceModule.UnloadAllUnusedPreloadResources();
+        }
+        
+        public void UnloadAllUnusedNormalResources()
+        {
+            CurrentResourceModule.UnloadAllUnusedNormalResources();
         }
 
-        public void LoadAssetFromResourceSync<T>(string assetName, LoadCallback loadCallback, object userData)
+        public void UnloadLoadTypeResourceByName(enResourceLoadCache loadCache, string name)
         {
-            
+            CurrentResourceModule.UnloadSpecificLoadTypeResourceByName(loadCache,name);
         }
-
-        public void LoadAssetFromResource<T>(string assetName, enResourceLoadMode mode,
-            LoadCallback loadCallback, object userData)
+        
+        public void Update()
         {
-            if (mode == enResourceLoadMode.Async)
-            {
-                LoadAssetFromResourceAsync<T>(assetName,loadCallback,userData);
-            }
-            else
-            {
-                LoadAssetFromResourceSync<T>(assetName,loadCallback,userData);
-            }
+            CurrentResourceModule.Update();
         }
-
-        public void LoadAssetFromAssetBundle<T>(string assetName, enResourceLoadMode mode, int priority, enResourceLoadMethod method,
-            LoadCallback loadCallback, object userData)
-        {
-            if (mode == enResourceLoadMode.Async)
-            {
-                LoadAssetFromAssetBundleAsync<T>(assetName, priority, method, loadCallback, userData);
-            }
-            else
-            {
-                LoadAssetFromAssetBundleSync<T>(assetName, priority, method, loadCallback, userData);
-            }
-        }
-
-        public void LoadAsset<T>(ResourceLoadInfo resourceLoadInfo, LoadCallback loadCallback, object userData = null)
-        {
-            throw new System.NotImplementedException();
-        }
+        
     }
 }

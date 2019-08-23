@@ -65,8 +65,8 @@ namespace GameFramework.Video
 
         public void InitVideoComponent()
         {
-            GameObject prefab = Resources.Load<GameObject>("UI/PanelVideo");
-            if (!prefab)
+            GameObject prefab = Resources.Load<GameObject>("UI/Panel_Video");
+            if (prefab)
             {
                 videoObject = Instantiate(prefab);
                 videoObject.transform.SetParent(AppConst.GlobalCahce.PanelRoot);
