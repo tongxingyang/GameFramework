@@ -80,7 +80,7 @@ public class BMFontTool : EditorWindow
         }
     }
 
-    [MenuItem("Editor/Tool/Import BMFont")]
+    [MenuItem("Tools/UITools/BMFont Maker")]
     public static void OpenBMFontMaker()
     {
         var window = EditorWindow.GetWindow<BMFontTool>(false, "BMFont Maker", true);

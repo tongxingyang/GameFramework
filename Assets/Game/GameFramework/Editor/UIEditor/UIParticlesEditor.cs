@@ -9,9 +9,6 @@ namespace Game.GameFramework.Editor.UIEditor
 {
     public class UIParticlesEditor
     {
-        /// <summary>
-        /// Custom editor for UI Particles component
-        /// </summary>
         [CustomEditor(typeof(UIParticles))]
         public class UiParticlesEditor : GraphicEditor
         {
@@ -76,7 +73,6 @@ namespace Game.GameFramework.Editor.UIEditor
 				PlaceUIElementRoot(gameObject, menuCommand);
 			}
 			
-			// ReSharper disable once InconsistentNaming
 			private static void PlaceUIElementRoot(GameObject element, MenuCommand menuCommand)
 			{
 				GameObject parent = menuCommand.context as GameObject;
@@ -89,7 +85,7 @@ namespace Game.GameFramework.Editor.UIEditor
 				Undo.RegisterCreatedObjectUndo(element, "Create " + element.name);
 				Undo.SetTransformParent(element.transform, parent.transform, "Parent " + element.name);
 				GameObjectUtility.SetParentAndAlign(element, parent);
-				if (parent != menuCommand.context) // not a context click, so center in sceneview
+				if (parent != menuCommand.context) 
 					SetPositionVisibleinSceneView(parent.GetComponent<RectTransform>(), element.GetComponent<RectTransform>());
 	
 				Selection.activeGameObject = element;
@@ -100,45 +96,37 @@ namespace Game.GameFramework.Editor.UIEditor
 			{
 				GameObject selectedGo = Selection.activeGameObject;
 	
-				// Try to find a gameobject that is the selected GO or one if its parents.
 				Canvas canvas = (selectedGo != null) ? selectedGo.GetComponentInParent<Canvas>() : null;
 				if (canvas != null && canvas.gameObject.activeInHierarchy)
 					return canvas.gameObject;
 	
-				// No canvas in selection or its parents? Then use just any canvas..
 				canvas = Object.FindObjectOfType(typeof(Canvas)) as Canvas;
 				if (canvas != null && canvas.gameObject.activeInHierarchy)
 					return canvas.gameObject;
 	
-				// No canvas in the scene at all? Then create a new one.
 				return CreateNewUI();
 			}
 			
 			private static void SetPositionVisibleinSceneView(RectTransform canvasRTransform, RectTransform itemTransform)
 			{
-				// Find the best scene view
 				SceneView sceneView = SceneView.lastActiveSceneView;
 				if (sceneView == null && SceneView.sceneViews.Count > 0)
 					sceneView = SceneView.sceneViews[0] as SceneView;
 	
-				// Couldn't find a SceneView. Don't set position.
 				if (sceneView == null || sceneView.camera == null)
 					return;
 	
-				// Create world space Plane from canvas position.
 				Vector2 localPlanePosition;
 				Camera camera = sceneView.camera;
 				Vector3 position = Vector3.zero;
 				if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRTransform, new Vector2(camera.pixelWidth / 2f, camera.pixelHeight / 2f), camera, out localPlanePosition))
 				{
-					// Adjust for canvas pivot
 					localPlanePosition.x = localPlanePosition.x + canvasRTransform.sizeDelta.x * canvasRTransform.pivot.x;
 					localPlanePosition.y = localPlanePosition.y + canvasRTransform.sizeDelta.y * canvasRTransform.pivot.y;
 	
 					localPlanePosition.x = Mathf.Clamp(localPlanePosition.x, 0, canvasRTransform.sizeDelta.x);
 					localPlanePosition.y = Mathf.Clamp(localPlanePosition.y, 0, canvasRTransform.sizeDelta.y);
 	
-					// Adjust for anchoring
 					position.x = localPlanePosition.x - canvasRTransform.sizeDelta.x * itemTransform.anchorMin.x;
 					position.y = localPlanePosition.y - canvasRTransform.sizeDelta.y * itemTransform.anchorMin.y;
 	
@@ -159,10 +147,8 @@ namespace Game.GameFramework.Editor.UIEditor
 				itemTransform.localScale = Vector3.one;
 			}
 			
-			// ReSharper disable once InconsistentNaming
 			private static GameObject CreateNewUI()
 			{
-				// Root for the UI
 				var root = new GameObject("Canvas")
 				{
 					layer = LayerMask.NameToLayer("UI")
@@ -173,7 +159,6 @@ namespace Game.GameFramework.Editor.UIEditor
 				root.AddComponent<GraphicRaycaster>();
 				Undo.RegisterCreatedObjectUndo(root, "Create " + root.name);
 	
-				// if there is no event system add one...
 				CreateEventSystem(false);
 				return root;
 			}

@@ -63,5 +63,17 @@ namespace GameFramework.Tool
             yield return EndOfFrame;
             action?.Invoke();
         }
+        
+        public static IEnumerator DelayCallEvent(UnityEvent action, float time)
+        {
+            yield return GetWaitForSeconds(time);
+            action?.Invoke();
+        }
+
+        public static IEnumerator EndOfFrameCallEvent(UnityEvent action)
+        {
+            yield return EndOfFrame;
+            action?.Invoke();
+        }
     }
 }

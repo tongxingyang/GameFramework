@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using GameFramework.Animation.Base;
+using GameFramework.Animation.UIAnimation;
 using GameFramework.Base;
 using GameFramework.Debug;
 using GameFramework.Tool;
@@ -187,7 +188,7 @@ namespace GameFramework.Animation
                 }
             }
         }
-
+        
         public static void StopAnimation(GameObject obj, string name, bool isCallBack = false)
         {
             AnimationParam param = Instance.GetAnimationParam(obj, name);
@@ -214,7 +215,21 @@ namespace GameFramework.Animation
             }
             Instance.removeList.Add(obj);
         }
+
+        public static void PlayUIAnimation(UIAnimationElementBase uiAnimationElementBase, bool activity) 
+        {
+            uiAnimationElementBase.ChangeVisibility(activity);
+        }
         
+        public static void PlayUIAnimationImmediate(UIAnimationElementBase uiAnimationElementBase, bool activity) 
+        {
+            uiAnimationElementBase.ChangeVisibilityImmediate(activity);
+        }
+        
+        public static void SwitchUIAnimationVisibility(UIAnimationElementBase uiAnimationElementBase) 
+        {
+            uiAnimationElementBase.SwitchVisibility();
+        }
         
         #region Animator
 
