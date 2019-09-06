@@ -16,7 +16,7 @@ namespace GameFramework.UI.UITools
                 if (maskableGraphic.raycastTarget)
                 {
                     RectTransform rectTransform = maskableGraphic.transform as RectTransform;
-                    rectTransform.GetWorldCorners(Corners);
+                    if (rectTransform != null) rectTransform.GetWorldCorners(Corners);
                     Gizmos.color = Color;
                     for (int i = 0; i < 4; i++)
                     {
