@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using GameFramework.UI.UITools;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -196,6 +197,106 @@ namespace GameFramework.Utility.Extension
         public static void StopStaticBatching()
         {
             batchDictionary.Clear();
+        }
+        
+        static void SetAlignment(this RectTransform rect, Vector2 value, bool adjustPivot, Vector2 offset, Vector2 size)
+        {
+            rect.anchorMax = value;
+            rect.anchorMin = value;
+            if (adjustPivot) rect.pivot = value;
+            rect.anchoredPosition = offset;
+            rect.sizeDelta = size;
+        }
+
+        static void SetStretchHorizontalRect(this RectTransform rect, Vector4 anchor, bool adjustPivot,
+            float paddingLeft, float offsetY, float paddingRight, float height)
+        {
+            rect.anchorMin = new Vector2(anchor.x, anchor.y);
+            rect.anchorMax = new Vector2(anchor.z, anchor.w);
+            if (adjustPivot)
+            {
+                rect.pivot = new Vector2(rect.pivot.x, anchor.y);
+            }
+            rect.offsetMin = new Vector2(paddingLeft, rect.offsetMin.y);
+            rect.offsetMax = new Vector2(-paddingRight, rect.offsetMax.y);
+            rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, offsetY);
+            rect.sizeDelta = new Vector2(rect.sizeDelta.x, height);
+        }
+
+        static void SetStretchVerticalRect(this RectTransform rect, Vector4 anchor, bool adjustPivot, float offsetX,
+            float paddingTop, float width, float paddingBottom)
+        {
+            rect.anchorMin = new Vector2(anchor.x, anchor.y);
+            rect.anchorMax = new Vector2(anchor.z, anchor.w);
+            if (adjustPivot)
+            {
+                rect.pivot = new Vector2(anchor.x, rect.pivot.y);
+            }
+            rect.offsetMin = new Vector2(rect.offsetMin.x, paddingBottom);
+            rect.offsetMax = new Vector2(rect.offsetMax.y, -paddingTop);
+            rect.anchoredPosition = new Vector2(offsetX, rect.anchoredPosition.y);
+            rect.sizeDelta = new Vector2(width, rect.sizeDelta.y);
+        }
+
+        static void SetStretchFull(this RectTransform rect, Vector4 anchor, float paddingLeft, float paddingTop,
+            float paddingRight, float paddingBottom)
+        {
+            rect.anchorMin = new Vector2(anchor.x, anchor.y);
+            rect.anchorMax = new Vector2(anchor.z, anchor.w);
+            rect.offsetMin = new Vector2(paddingLeft, paddingBottom);
+            rect.offsetMax = new Vector2(-paddingRight, -paddingTop);
+        }
+
+        public static void Align(this RectTransform rect, UGUITools.enLayoutAlign alignment, bool adjustPivot, Vector2 offset,
+            Vector2 size)
+        {
+            rect.SetAlignment(UGUITools.GetAlignedPivot(alignment), adjustPivot, offset, size);
+        }
+
+        public static void Stretch(this RectTransform rect, UGUITools.enLayoutStretch stretch, float leftOrOffsetX,
+            float topOrOffsetY, float rightOrWidth, float bottomOrHeight, bool adjustPivot)
+        {
+            if (stretch == UGUITools.enLayoutStretch.FullStretch)
+            {
+                rect.SetStretchFull(UGUITools.GetStretchPivot(stretch), leftOrOffsetX, topOrOffsetY, rightOrWidth,
+                    bottomOrHeight);
+            }
+            else if (stretch == UGUITools.enLayoutStretch.HorizontalBottom || stretch == UGUITools.enLayoutStretch.HorizontalCenter ||
+                     stretch == UGUITools.enLayoutStretch.HorizontalTop)
+            {
+                rect.SetStretchHorizontalRect(UGUITools.GetStretchPivot(stretch), adjustPivot, leftOrOffsetX,
+                    topOrOffsetY, rightOrWidth, bottomOrHeight);
+            }
+            else if (stretch == UGUITools.enLayoutStretch.VerticalCenter || stretch == UGUITools.enLayoutStretch.VerticalLeft ||
+                     stretch == UGUITools.enLayoutStretch.VerticalRight)
+            {
+                rect.SetStretchVerticalRect(UGUITools.GetStretchPivot(stretch), adjustPivot, leftOrOffsetX,
+                    topOrOffsetY, rightOrWidth, bottomOrHeight);
+            }
+        }
+
+        public static void SetRectTransformDeltaSizeOld(this RectTransform rect, Vector2 size)
+        {
+            RectTransform parent = rect.parent as RectTransform;
+            if (parent)
+            {
+                Vector2 parentSize = parent.rect.size;
+                Vector2 min = Vector2.Scale(parentSize, rect.anchorMax - rect.anchorMin);
+                rect.sizeDelta = size - min;
+            }
+            else
+            {
+                rect.sizeDelta = size;
+            }
+        }
+
+        public static void SetRectTransformDeltaSize(this RectTransform trans, Vector2 newSize)
+        {
+            Vector2 oldSize = trans.rect.size;
+            Vector2 deltaSize = newSize - oldSize;
+            trans.offsetMin = trans.offsetMin - new Vector2(deltaSize.x * trans.pivot.x, deltaSize.y * trans.pivot.y);
+            trans.offsetMax = trans.offsetMax +
+                              new Vector2(deltaSize.x * (1f - trans.pivot.x), deltaSize.y * (1f - trans.pivot.y));
         }
     }
 }
