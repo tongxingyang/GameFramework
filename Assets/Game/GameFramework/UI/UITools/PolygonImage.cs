@@ -4,17 +4,10 @@ using UnityEngine.UI;
 
 namespace GameFramework.UI.UITools
 {
-    [AddComponentMenu("UI/Effects/PolygonImage", 16)]
     [RequireComponent(typeof(Image))]
     public class PolygonImage : BaseMeshEffect
     {
-        protected PolygonImage()
-        {
-        }
-
-        // GC Friendly
         private static Vector3[] fourCorners = new Vector3[4];
-
         private static UIVertex vertice = new UIVertex();
         private RectTransform rectTransform = null;
         private Image image = null;
