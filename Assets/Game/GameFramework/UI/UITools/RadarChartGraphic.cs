@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 namespace GameFramework.UI.UITools
 {
-    //点击检测只实现外框的范围 中间镂空的没有处理
     public class RadarChartGraphic : MaskableGraphic , ICanvasRaycastFilter
     {
         [SerializeField] private Texture texture;
@@ -14,12 +13,20 @@ namespace GameFramework.UI.UITools
         [Range(3, 360)] public int sides = 3;
         [Range(0, 360)] public float rotation = 3;
         [Range(0, 1)] public float[] VerticesDistances = new float[3];
-        public float size = 0;
+        Vector2 uv0 = Vector2.zero;
+        Vector2 uv1 = Vector2.zero;
+        Vector2 uv2 =  Vector2.zero;
+        Vector2 uv3 =  Vector2.zero;
+        Vector2 pos0 = Vector2.zero;
+        Vector2 pos1 = Vector2.zero;
+        Vector2 pos2 = Vector2.zero;
+        Vector2 pos3 = Vector2.zero;
+        private float size;
         public override Texture mainTexture 
         {
             get
             {
-                return   s_WhiteTexture;
+                return   texture == null ? s_WhiteTexture : texture;
             }
         }
         public Texture Texture
@@ -58,7 +65,14 @@ namespace GameFramework.UI.UITools
 
         void Update()
         {
-            size = rectTransform.rect.width > rectTransform.rect.height ? rectTransform.rect.height : rectTransform.rect.width;
+            if (rectTransform.rect.width > rectTransform.rect.height)
+            {
+                size = rectTransform.rect.height;
+            }
+            else
+            {
+                size = rectTransform.rect.width;
+            }
             thickness = Mathf.Clamp(thickness, 0, size / 2);
         }
 
@@ -76,10 +90,7 @@ namespace GameFramework.UI.UITools
             return VBO;
         }
         
-        Vector2 pos0 = Vector2.zero;
-        Vector2 pos1 = Vector2.zero;
-        Vector2 pos2 = Vector2.zero;
-        Vector2 pos3 = Vector2.zero;
+
         private ICanvasRaycastFilter _canvasRaycastFilterImplementation;
 
         protected override void OnPopulateMesh(VertexHelper vh)
@@ -87,10 +98,6 @@ namespace GameFramework.UI.UITools
             vh.Clear();
             Vector2 prevX = Vector2.zero; 
             Vector2 prevY = Vector2.zero;
-            Vector2 uv0 = new Vector2(1, 0);
-            Vector2 uv1 = new Vector2(0, 0);
-            Vector2 uv2 = new Vector2(0, 1);
-            Vector2 uv3 = new Vector2(1, 1);
             float degrees = 360f / sides;
             int vertices = sides + 1;
             if (VerticesDistances.Length != vertices)
@@ -102,31 +109,48 @@ namespace GameFramework.UI.UITools
                 }
             }
             VerticesDistances[vertices - 1] = VerticesDistances[0];
+            float halfWidth = 0.5f * rectTransform.rect.width;
+            float halfHeight = 0.5f * rectTransform.rect.height;
             for (int i = 0; i < vertices; i++)
             {
-                float outer = 0.5f * size * VerticesDistances[i];
-                float inner = 0.5f * size * VerticesDistances[i] - thickness;
+                float outerX = halfWidth * VerticesDistances[i];
+                float outerY = halfHeight * VerticesDistances[i];
+                float innerX = halfWidth * VerticesDistances[i] - thickness;
+                float innerY = halfHeight * VerticesDistances[i] - thickness;
                 float rad = Mathf.Deg2Rad * (i * degrees + rotation);
                 float c = Mathf.Cos(rad);
                 float s = -Mathf.Sin(rad);
                 pos0 = prevX;
-                pos1 = new Vector2(outer * c, outer * s);
+                pos1 = new Vector2(outerX * c, outerY * s);
                 if (fill)
                 {
                     pos2 = Vector2.zero;
                     pos3 = Vector2.zero;
-                }
+                 }
                 else
                 {
-                    pos2 = new Vector2(inner * c, inner * s);
+                    pos2 = new Vector2(innerX * c, innerY * s);
                     pos3 = prevY;
+                    
                 }
+                uv0 = new Vector2((pos0.x + halfWidth) / rectTransform.rect.width,
+                    (pos0.y + halfHeight) / rectTransform.rect.height);
+                uv1 = new Vector2((pos1.x + halfWidth) / rectTransform.rect.width,
+                    (pos1.y + halfHeight) / rectTransform.rect.height);
+                uv2 = new Vector2((pos2.x + halfWidth) / rectTransform.rect.width,
+                    (pos2.y + halfHeight) / rectTransform.rect.height);
+                uv3 = new Vector2((pos3.x + halfWidth) / rectTransform.rect.width,
+                    (pos3.y + halfHeight) / rectTransform.rect.height);
+                
                 prevX = pos1;
                 prevY = pos2;
-                vh.AddUIVertexQuad(SetVertexBufferObject(new[] { pos0, pos1, pos2, pos3 }, new[] { uv0, uv1, uv2, uv3 }));
+                if (i != 0)
+                {
+                    vh.AddUIVertexQuad(SetVertexBufferObject(new[] { pos0, pos1, pos2, pos3 }, new[] { uv0, uv1, uv2, uv3 }));
+                }
             }
         }
-        private List<Vector2> vectors = new List<Vector2>();
+        private readonly List<Vector2> vectors = new List<Vector2>();
         public bool IsRaycastLocationValid(Vector2 sp, Camera eventCamera)
         {
             if (raycastTarget)
@@ -138,15 +162,19 @@ namespace GameFramework.UI.UITools
                 RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, sp, eventCamera, out local);
                 float degrees = 360f / sides;
                 int vertices = sides + 1;
+                float halfWidth = 0.5f * rectTransform.rect.width;
+                float halfHeight = 0.5f * rectTransform.rect.height;
                 for (int i = 0; i < vertices; i++)
                 {
-                    float outer = 0.5f * size * VerticesDistances[i];
-                    float inner = 0.5f * size * VerticesDistances[i] - thickness;
+                    float outerX = halfWidth * VerticesDistances[i];
+                    float outerY = halfHeight * VerticesDistances[i];
+                    float innerX = halfWidth * VerticesDistances[i] - thickness;
+                    float innerY = halfHeight * VerticesDistances[i] - thickness;
                     float rad = Mathf.Deg2Rad * (i * degrees + rotation);
                     float c = Mathf.Cos(rad);
                     float s = -Mathf.Sin(rad);
                     pos0 = prevX;
-                    pos1 = new Vector2(outer * c, outer * s);
+                    pos1 = new Vector2(outerX * c, outerY * s);
                     if (fill)
                     {
                         pos2 = Vector2.zero;
@@ -154,7 +182,7 @@ namespace GameFramework.UI.UITools
                     }
                     else
                     {
-                        pos2 = new Vector2(inner * c, inner * s);
+                        pos2 = new Vector2(innerX * c, innerY * s);
                         pos3 = prevY;
                     }
                     prevX = pos1;
