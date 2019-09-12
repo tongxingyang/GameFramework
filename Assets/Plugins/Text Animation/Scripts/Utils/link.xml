@@ -1,0 +1,6 @@
+<linker>
+       <assembly fullname="UnityEngine">
+               <type fullname="UnityEngine.AnimationCurve" preserve="all"/>
+               <type fullname="UnityEngine.Keyframe" preserve="all"/>
+       </assembly>
+</linker>

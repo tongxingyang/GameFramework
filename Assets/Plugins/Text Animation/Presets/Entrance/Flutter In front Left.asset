@@ -1,0 +1,182 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ba4c2e644fbce74d9867bb89e00d7b3, type: 3}
+  m_Name: Flutter In front Left
+  m_EditorClassIdentifier: 
+  mSerializedData: "<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<SE_Animation xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+    xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" Name=\"Custom\" _Playback=\"Single\"
+    _Backwards=\"false\" _PlaybackTimes=\"-1\" _ExtraTimeFinal=\"0\" _ExtraTimePerLoop=\"0\">\r\n
+    \ <_Sequences>\r\n    <SE_AnimSequence xsi:type=\"SE_AnimSequence_Alpha\">\r\n
+    \     <_Name />\r\n      <_StartType>OnAnimStart</_StartType>\r\n      <_StartDelay>0</_StartDelay>\r\n
+    \     <_Separation>0.17</_Separation>\r\n      <_RandomStart>0</_RandomStart>\r\n
+    \     <_DurationType>TotalTime</_DurationType>\r\n      <_Duration>1.5</_Duration>\r\n
+    \     <_DurationRandom_Slower>0</_DurationRandom_Slower>\r\n      <_DurationRandom_Faster>0</_DurationRandom_Faster>\r\n
+    \     <_Playback>Single</_Playback>\r\n      <_Backwards>false</_Backwards>\r\n
+    \     <_PlaybackTimes>1</_PlaybackTimes>\r\n      <_EasingCurve>\r\n        <keys>\r\n
+    \         <Keyframe>\r\n            <time>0</time>\r\n            <value>0</value>\r\n
+    \           <inTangent>0</inTangent>\r\n            <outTangent>0</outTangent>\r\n
+    \           <tangentMode>0</tangentMode>\r\n          </Keyframe>\r\n          <Keyframe>\r\n
+    \           <time>1</time>\r\n            <value>1</value>\r\n            <inTangent>0</inTangent>\r\n
+    \           <outTangent>0</outTangent>\r\n            <tangentMode>0</tangentMode>\r\n
+    \         </Keyframe>\r\n        </keys>\r\n        <preWrapMode>ClampForever</preWrapMode>\r\n
+    \       <postWrapMode>ClampForever</postWrapMode>\r\n      </_EasingCurve>\r\n
+    \     <_TargetType>Letters</_TargetType>\r\n      <_TargetRangeType>All</_TargetRangeType>\r\n
+    \     <_TargetRangeStart>0</_TargetRangeStart>\r\n      <_TargetRangeAmount>0</_TargetRangeAmount>\r\n
+    \     <_InitAllElements>true</_InitAllElements>\r\n      <_Enabled>true</_Enabled>\r\n
+    \     <_From>0</_From>\r\n      <_FromRandom>0</_FromRandom>\r\n      <_To>1</_To>\r\n
+    \     <_ToRandom>0</_ToRandom>\r\n      <_AnimBlend_From>Replace</_AnimBlend_From>\r\n
+    \     <_AnimBlend_To>Replace</_AnimBlend_To>\r\n      <_Target>Global</_Target>\r\n
+    \     <_OnFinish_SetAlphaToFinalValue>true</_OnFinish_SetAlphaToFinalValue>\r\n
+    \   </SE_AnimSequence>\r\n    <SE_AnimSequence xsi:type=\"SE_AnimSequence_Position\">\r\n
+    \     <_Name />\r\n      <_StartType>OnAnimStart</_StartType>\r\n      <_StartDelay>0</_StartDelay>\r\n
+    \     <_Separation>0.16</_Separation>\r\n      <_RandomStart>0</_RandomStart>\r\n
+    \     <_DurationType>TotalTime</_DurationType>\r\n      <_Duration>1.5</_Duration>\r\n
+    \     <_DurationRandom_Slower>0</_DurationRandom_Slower>\r\n      <_DurationRandom_Faster>0</_DurationRandom_Faster>\r\n
+    \     <_Playback>Single</_Playback>\r\n      <_Backwards>false</_Backwards>\r\n
+    \     <_PlaybackTimes>1</_PlaybackTimes>\r\n      <_EasingCurve>\r\n        <keys>\r\n
+    \         <Keyframe>\r\n            <time>0</time>\r\n            <value>0</value>\r\n
+    \           <inTangent>0</inTangent>\r\n            <outTangent>0</outTangent>\r\n
+    \           <tangentMode>0</tangentMode>\r\n          </Keyframe>\r\n          <Keyframe>\r\n
+    \           <time>1</time>\r\n            <value>1</value>\r\n            <inTangent>0</inTangent>\r\n
+    \           <outTangent>0</outTangent>\r\n            <tangentMode>0</tangentMode>\r\n
+    \         </Keyframe>\r\n        </keys>\r\n        <preWrapMode>ClampForever</preWrapMode>\r\n
+    \       <postWrapMode>ClampForever</postWrapMode>\r\n      </_EasingCurve>\r\n
+    \     <_TargetType>Letters</_TargetType>\r\n      <_TargetRangeType>All</_TargetRangeType>\r\n
+    \     <_TargetRangeStart>0</_TargetRangeStart>\r\n      <_TargetRangeAmount>0</_TargetRangeAmount>\r\n
+    \     <_InitAllElements>true</_InitAllElements>\r\n      <_Enabled>true</_Enabled>\r\n
+    \     <_From>\r\n        <x>0.3</x>\r\n        <y>1</y>\r\n        <z>0</z>\r\n
+    \     </_From>\r\n      <_To>\r\n        <x>0</x>\r\n        <y>0</y>\r\n        <z>0</z>\r\n
+    \     </_To>\r\n      <_FromRandom>\r\n        <x>0</x>\r\n        <y>0</y>\r\n
+    \       <z>0</z>\r\n      </_FromRandom>\r\n      <_ToRandom>\r\n        <x>0</x>\r\n
+    \       <y>0</y>\r\n        <z>0</z>\r\n      </_ToRandom>\r\n      <_AnimBlend_From>Offset</_AnimBlend_From>\r\n
+    \     <_AnimBlend_To>Offset</_AnimBlend_To>\r\n      <_ApplyX>true</_ApplyX>\r\n
+    \     <_ApplyY>true</_ApplyY>\r\n      <_ApplyZ>true</_ApplyZ>\r\n      <_UseAxisEasingCurves>true</_UseAxisEasingCurves>\r\n
+    \     <_EasingCurveY>\r\n        <keys>\r\n          <Keyframe>\r\n            <time>-0.000138212927</time>\r\n
+    \           <value>-1.50771523</value>\r\n            <inTangent>6.613945</inTangent>\r\n
+    \           <outTangent>6.613945</outTangent>\r\n            <tangentMode>0</tangentMode>\r\n
+    \         </Keyframe>\r\n          <Keyframe>\r\n            <time>0.365836859</time>\r\n
+    \           <value>1.65156424</value>\r\n            <inTangent>-3.889857</inTangent>\r\n
+    \           <outTangent>-3.889857</outTangent>\r\n            <tangentMode>0</tangentMode>\r\n
+    \         </Keyframe>\r\n          <Keyframe>\r\n            <time>0.679651141</time>\r\n
+    \           <value>0.7462876</value>\r\n            <inTangent>-0.415146351</inTangent>\r\n
+    \           <outTangent>-0.415146351</outTangent>\r\n            <tangentMode>0</tangentMode>\r\n
+    \         </Keyframe>\r\n          <Keyframe>\r\n            <time>1</time>\r\n
+    \           <value>1</value>\r\n            <inTangent>0</inTangent>\r\n            <outTangent>0</outTangent>\r\n
+    \           <tangentMode>0</tangentMode>\r\n          </Keyframe>\r\n        </keys>\r\n
+    \       <preWrapMode>ClampForever</preWrapMode>\r\n        <postWrapMode>ClampForever</postWrapMode>\r\n
+    \     </_EasingCurveY>\r\n      <_EasingCurveZ>\r\n        <keys>\r\n          <Keyframe>\r\n
+    \           <time>0</time>\r\n            <value>0</value>\r\n            <inTangent>0</inTangent>\r\n
+    \           <outTangent>0</outTangent>\r\n            <tangentMode>0</tangentMode>\r\n
+    \         </Keyframe>\r\n          <Keyframe>\r\n            <time>1</time>\r\n
+    \           <value>1</value>\r\n            <inTangent>0</inTangent>\r\n            <outTangent>0</outTangent>\r\n
+    \           <tangentMode>0</tangentMode>\r\n          </Keyframe>\r\n        </keys>\r\n
+    \       <preWrapMode>ClampForever</preWrapMode>\r\n        <postWrapMode>ClampForever</postWrapMode>\r\n
+    \     </_EasingCurveZ>\r\n    </SE_AnimSequence>\r\n    <SE_AnimSequence xsi:type=\"SE_AnimSequence_Scale\">\r\n
+    \     <_Name />\r\n      <_StartType>OnAnimStart</_StartType>\r\n      <_StartDelay>0</_StartDelay>\r\n
+    \     <_Separation>0.17</_Separation>\r\n      <_RandomStart>0</_RandomStart>\r\n
+    \     <_DurationType>TotalTime</_DurationType>\r\n      <_Duration>1.5</_Duration>\r\n
+    \     <_DurationRandom_Slower>0</_DurationRandom_Slower>\r\n      <_DurationRandom_Faster>0</_DurationRandom_Faster>\r\n
+    \     <_Playback>Single</_Playback>\r\n      <_Backwards>false</_Backwards>\r\n
+    \     <_PlaybackTimes>1</_PlaybackTimes>\r\n      <_EasingCurve>\r\n        <keys>\r\n
+    \         <Keyframe>\r\n            <time>0</time>\r\n            <value>0.00999319553</value>\r\n
+    \           <inTangent>3.78894114</inTangent>\r\n            <outTangent>3.78894114</outTangent>\r\n
+    \           <tangentMode>0</tangentMode>\r\n          </Keyframe>\r\n          <Keyframe>\r\n
+    \           <time>0.441480339</time>\r\n            <value>1.32345092</value>\r\n
+    \           <inTangent>2.45591617</inTangent>\r\n            <outTangent>2.45591617</outTangent>\r\n
+    \           <tangentMode>0</tangentMode>\r\n          </Keyframe>\r\n          <Keyframe>\r\n
+    \           <time>0.8210643</time>\r\n            <value>1.44218671</value>\r\n
+    \           <inTangent>-1.69950044</inTangent>\r\n            <outTangent>-1.69950044</outTangent>\r\n
+    \           <tangentMode>0</tangentMode>\r\n          </Keyframe>\r\n          <Keyframe>\r\n
+    \           <time>1</time>\r\n            <value>1.0099932</value>\r\n            <inTangent>-1.52154934</inTangent>\r\n
+    \           <outTangent>-1.52154934</outTangent>\r\n            <tangentMode>0</tangentMode>\r\n
+    \         </Keyframe>\r\n        </keys>\r\n        <preWrapMode>ClampForever</preWrapMode>\r\n
+    \       <postWrapMode>ClampForever</postWrapMode>\r\n      </_EasingCurve>\r\n
+    \     <_TargetType>Letters</_TargetType>\r\n      <_TargetRangeType>All</_TargetRangeType>\r\n
+    \     <_TargetRangeStart>0</_TargetRangeStart>\r\n      <_TargetRangeAmount>0</_TargetRangeAmount>\r\n
+    \     <_InitAllElements>false</_InitAllElements>\r\n      <_Enabled>true</_Enabled>\r\n
+    \     <_From>\r\n        <x>0</x>\r\n        <y>0</y>\r\n        <z>0</z>\r\n
+    \     </_From>\r\n      <_To>\r\n        <x>1</x>\r\n        <y>1</y>\r\n        <z>1</z>\r\n
+    \     </_To>\r\n      <_FromRandom>\r\n        <x>0</x>\r\n        <y>0</y>\r\n
+    \       <z>0</z>\r\n      </_FromRandom>\r\n      <_ToRandom>\r\n        <x>0</x>\r\n
+    \       <y>0</y>\r\n        <z>0</z>\r\n      </_ToRandom>\r\n      <_AnimBlend_From>Replace</_AnimBlend_From>\r\n
+    \     <_AnimBlend_To>Replace</_AnimBlend_To>\r\n      <_ApplyX>true</_ApplyX>\r\n
+    \     <_ApplyY>true</_ApplyY>\r\n      <_ApplyZ>true</_ApplyZ>\r\n      <_UseAxisEasingCurves>false</_UseAxisEasingCurves>\r\n
+    \     <_EasingCurveY>\r\n        <keys>\r\n          <Keyframe>\r\n            <time>0</time>\r\n
+    \           <value>0.00999319553</value>\r\n            <inTangent>0</inTangent>\r\n
+    \           <outTangent>0</outTangent>\r\n            <tangentMode>0</tangentMode>\r\n
+    \         </Keyframe>\r\n          <Keyframe>\r\n            <time>0.441480339</time>\r\n
+    \           <value>1.32345092</value>\r\n            <inTangent>3.32729149</inTangent>\r\n
+    \           <outTangent>3.32729149</outTangent>\r\n            <tangentMode>0</tangentMode>\r\n
+    \         </Keyframe>\r\n          <Keyframe>\r\n            <time>0.7912301</time>\r\n
+    \           <value>1.45931411</value>\r\n            <inTangent>-3.27547574</inTangent>\r\n
+    \           <outTangent>-3.27547574</outTangent>\r\n            <tangentMode>0</tangentMode>\r\n
+    \         </Keyframe>\r\n          <Keyframe>\r\n            <time>1</time>\r\n
+    \           <value>1.0099932</value>\r\n            <inTangent>-4.61289263</inTangent>\r\n
+    \           <outTangent>-4.61289263</outTangent>\r\n            <tangentMode>0</tangentMode>\r\n
+    \         </Keyframe>\r\n        </keys>\r\n        <preWrapMode>ClampForever</preWrapMode>\r\n
+    \       <postWrapMode>ClampForever</postWrapMode>\r\n      </_EasingCurveY>\r\n
+    \     <_EasingCurveZ>\r\n        <keys>\r\n          <Keyframe>\r\n            <time>0</time>\r\n
+    \           <value>0.00999319553</value>\r\n            <inTangent>0</inTangent>\r\n
+    \           <outTangent>0</outTangent>\r\n            <tangentMode>0</tangentMode>\r\n
+    \         </Keyframe>\r\n          <Keyframe>\r\n            <time>0.441480339</time>\r\n
+    \           <value>1.32345092</value>\r\n            <inTangent>3.32729149</inTangent>\r\n
+    \           <outTangent>3.32729149</outTangent>\r\n            <tangentMode>0</tangentMode>\r\n
+    \         </Keyframe>\r\n          <Keyframe>\r\n            <time>0.7912301</time>\r\n
+    \           <value>1.45931411</value>\r\n            <inTangent>-3.27547574</inTangent>\r\n
+    \           <outTangent>-3.27547574</outTangent>\r\n            <tangentMode>0</tangentMode>\r\n
+    \         </Keyframe>\r\n          <Keyframe>\r\n            <time>1</time>\r\n
+    \           <value>1.0099932</value>\r\n            <inTangent>-4.61289263</inTangent>\r\n
+    \           <outTangent>-4.61289263</outTangent>\r\n            <tangentMode>0</tangentMode>\r\n
+    \         </Keyframe>\r\n        </keys>\r\n        <preWrapMode>ClampForever</preWrapMode>\r\n
+    \       <postWrapMode>ClampForever</postWrapMode>\r\n      </_EasingCurveZ>\r\n
+    \     <_Pivot>\r\n        <x>0.5</x>\r\n        <y>0.5</y>\r\n        <z>0</z>\r\n
+    \     </_Pivot>\r\n      <_PivotType>Relative_Letter</_PivotType>\r\n    </SE_AnimSequence>\r\n
+    \   <SE_AnimSequence xsi:type=\"SE_AnimSequence_Rotation\">\r\n      <_Name />\r\n
+    \     <_StartType>OnAnimStart</_StartType>\r\n      <_StartDelay>0</_StartDelay>\r\n
+    \     <_Separation>0.18</_Separation>\r\n      <_RandomStart>0</_RandomStart>\r\n
+    \     <_DurationType>TotalTime</_DurationType>\r\n      <_Duration>1.5</_Duration>\r\n
+    \     <_DurationRandom_Slower>0</_DurationRandom_Slower>\r\n      <_DurationRandom_Faster>0</_DurationRandom_Faster>\r\n
+    \     <_Playback>Single</_Playback>\r\n      <_Backwards>false</_Backwards>\r\n
+    \     <_PlaybackTimes>1</_PlaybackTimes>\r\n      <_EasingCurve>\r\n        <keys>\r\n
+    \         <Keyframe>\r\n            <time>0</time>\r\n            <value>0</value>\r\n
+    \           <inTangent>0</inTangent>\r\n            <outTangent>0</outTangent>\r\n
+    \           <tangentMode>0</tangentMode>\r\n          </Keyframe>\r\n          <Keyframe>\r\n
+    \           <time>1</time>\r\n            <value>1</value>\r\n            <inTangent>0</inTangent>\r\n
+    \           <outTangent>0</outTangent>\r\n            <tangentMode>0</tangentMode>\r\n
+    \         </Keyframe>\r\n        </keys>\r\n        <preWrapMode>ClampForever</preWrapMode>\r\n
+    \       <postWrapMode>ClampForever</postWrapMode>\r\n      </_EasingCurve>\r\n
+    \     <_TargetType>Letters</_TargetType>\r\n      <_TargetRangeType>All</_TargetRangeType>\r\n
+    \     <_TargetRangeStart>0</_TargetRangeStart>\r\n      <_TargetRangeAmount>0</_TargetRangeAmount>\r\n
+    \     <_InitAllElements>false</_InitAllElements>\r\n      <_Enabled>true</_Enabled>\r\n
+    \     <_From>\r\n        <x>0</x>\r\n        <y>9.6</y>\r\n        <z>360</z>\r\n
+    \     </_From>\r\n      <_To>\r\n        <x>0</x>\r\n        <y>0</y>\r\n        <z>0</z>\r\n
+    \     </_To>\r\n      <_FromRandom>\r\n        <x>0</x>\r\n        <y>0</y>\r\n
+    \       <z>0</z>\r\n      </_FromRandom>\r\n      <_ToRandom>\r\n        <x>0</x>\r\n
+    \       <y>0</y>\r\n        <z>0</z>\r\n      </_ToRandom>\r\n      <_AnimBlend_From>Replace</_AnimBlend_From>\r\n
+    \     <_AnimBlend_To>Replace</_AnimBlend_To>\r\n      <_ApplyX>true</_ApplyX>\r\n
+    \     <_ApplyY>true</_ApplyY>\r\n      <_ApplyZ>true</_ApplyZ>\r\n      <_UseAxisEasingCurves>false</_UseAxisEasingCurves>\r\n
+    \     <_EasingCurveY>\r\n        <keys>\r\n          <Keyframe>\r\n            <time>0</time>\r\n
+    \           <value>0</value>\r\n            <inTangent>0</inTangent>\r\n            <outTangent>0</outTangent>\r\n
+    \           <tangentMode>0</tangentMode>\r\n          </Keyframe>\r\n          <Keyframe>\r\n
+    \           <time>1</time>\r\n            <value>1</value>\r\n            <inTangent>0</inTangent>\r\n
+    \           <outTangent>0</outTangent>\r\n            <tangentMode>0</tangentMode>\r\n
+    \         </Keyframe>\r\n        </keys>\r\n        <preWrapMode>ClampForever</preWrapMode>\r\n
+    \       <postWrapMode>ClampForever</postWrapMode>\r\n      </_EasingCurveY>\r\n
+    \     <_EasingCurveZ>\r\n        <keys>\r\n          <Keyframe>\r\n            <time>0</time>\r\n
+    \           <value>0</value>\r\n            <inTangent>0</inTangent>\r\n            <outTangent>0</outTangent>\r\n
+    \           <tangentMode>0</tangentMode>\r\n          </Keyframe>\r\n          <Keyframe>\r\n
+    \           <time>1</time>\r\n            <value>1</value>\r\n            <inTangent>0</inTangent>\r\n
+    \           <outTangent>0</outTangent>\r\n            <tangentMode>0</tangentMode>\r\n
+    \         </Keyframe>\r\n        </keys>\r\n        <preWrapMode>ClampForever</preWrapMode>\r\n
+    \       <postWrapMode>ClampForever</postWrapMode>\r\n      </_EasingCurveZ>\r\n
+    \     <_Pivot>\r\n        <x>0.5</x>\r\n        <y>0.5</y>\r\n        <z>0</z>\r\n
+    \     </_Pivot>\r\n      <_PivotType>Relative_Letter</_PivotType>\r\n    </SE_AnimSequence>\r\n
+    \ </_Sequences>\r\n</SE_Animation>"
