@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Security.Cryptography;
+using GameFramework;
 using GameFramework.Base;
 using GameFramework.DataNode;
 using GameFramework.DataNode.Base;
@@ -22,16 +23,37 @@ public class Launch:MonoBehaviour
     public CooldownImage CooldownImage;
     public Text LabText;
     public AnimationCurve FadeAnimationCurve = new AnimationCurve(new Keyframe(0, 1), new Keyframe(0.3f, 1.05f), new Keyframe(1, 1));
+
+    public RectTransform YY1;
+    public RectTransform YY2;
+    public RectTransform YY3;
+    public GuideImage GuideImage;
     
+    private void InitGlobalCahce()
+    {
+        GameObject go = GameObject.Find("UICamera");
+        if (go != null)
+        {
+            AppConst.GlobalCahce.UICamera = go.GetComponent<Camera>();
+        }
+        go = GameObject.Find("UIRootCanvas");
+        if (go != null)
+        {
+            AppConst.GlobalCahce.UIRootCanvas = go.transform;
+            AppConst.GlobalCahce.PanelRoot = go.transform.Find("PanelRoot");
+        }
+    }
     void Start()
     {
+        InitGlobalCahce();
+
 //        Debuger.Init(AppConst.Path.DebugerLogFilePath);
 //        Debuger.EnableLog = AppConst.GameConfig.DebugerEnableLog;
 //        Debuger.EnableSave = AppConst.GameConfig.DebugerEnableSave;
 //        Debuger.EnableColor = AppConst.GameConfig.DebugerEnableColor;
 //        downloadAgent = gameObject.AddComponent<DownloadAgent>();
 //        downloadAgent.Initialize();
-        
+
 //        Dictionary<int,int> value = new Dictionary<int, int>();
 ////        Console.WriteLine("--------------------");
 //        using (FileStream fileStream = new FileStream("/Users/ww/Desktop/serverdir/tengxun/text.txt",FileMode.CreateNew,FileAccess.Write))  
@@ -62,6 +84,20 @@ public class Launch:MonoBehaviour
 
     void Update()
     {
+
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            GuideImage.ShowCricleMask(new Color(0,0,0,0.8f), YY1);
+        }
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            GuideImage.ShowCricleMask(new Color(0,0,0,0.8f), YY2);
+        }
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            GuideImage.ShowCricleMask(new Color(0,0,0,0.8f), YY3);
+        }
+        return;
         if (Input.GetKeyDown(KeyCode.A))
         {
             CooldownImage.SetParam(10,10,LabText, () =>

@@ -23,9 +23,13 @@ namespace GameFramework.Res
         public override void OnAwake()
         {
             base.OnAwake();
-            resourceManager = new ResourceManager();
-            resourceManager.LoadType = AppConst.ResourceConfig.IsUseAssetBundle ? enResouceLoadType.AssetBundle : enResouceLoadType.AssetDatabase;
-            
+            resourceManager = new ResourceManager
+            {
+                LoadType = AppConst.ResourceConfig.IsUseAssetBundle
+                    ? enResouceLoadType.AssetBundle
+                    : enResouceLoadType.AssetDatabase
+            };
+
         }
 
         public void InitResourceManager()

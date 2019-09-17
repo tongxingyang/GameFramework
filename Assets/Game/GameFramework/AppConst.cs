@@ -10,6 +10,7 @@ namespace GameFramework
         {
             public static Camera Main3DCamera;
             public static Camera UICamera;
+            public static Canvas UICanvas;
             public static Transform UIRootCanvas;
             public static Transform PanelRoot;
         }
