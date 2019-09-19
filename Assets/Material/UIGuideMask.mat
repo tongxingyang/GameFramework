@@ -25,10 +25,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _ColorMask: 15
-    - _Ellipse: 4
-    - _Height: 1
+    - _Ellipse: 7
+    - _Height: 100
     - _IsRect: 0
-    - _Radius: 1000
+    - _Radius: 50
     - _Stencil: 0
     - _StencilComp: 8
     - _StencilOp: 0
@@ -36,7 +36,7 @@ Material:
     - _StencilWriteMask: 255
     - _TransitionRange: 10
     - _UseUIAlphaClip: 0
-    - _Width: 1
+    - _Width: 100
     m_Colors:
-    - _Center: {r: 0, g: 0, b: 0, a: 0}
+    - _Center: {r: -298, g: 142.99995, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}

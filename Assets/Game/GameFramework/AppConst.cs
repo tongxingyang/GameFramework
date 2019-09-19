@@ -13,6 +13,7 @@ namespace GameFramework
             public static Canvas UICanvas;
             public static Transform UIRootCanvas;
             public static Transform PanelRoot;
+            public static Transform PanelHUD;
         }
         
         public class LaunchConfig

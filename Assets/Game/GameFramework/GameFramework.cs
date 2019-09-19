@@ -219,6 +219,7 @@ namespace GameFramework
             {
                 AppConst.GlobalCahce.UIRootCanvas = go.transform;
                 AppConst.GlobalCahce.PanelRoot = go.transform.Find("PanelRoot");
+                AppConst.GlobalCahce.PanelHUD = go.transform.Find("PanelHUD");
             }
         }
 
