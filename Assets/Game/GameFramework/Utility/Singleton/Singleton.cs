@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace GameFramework.Utility.Singleton
 {
-        public abstract class Singleton<T> : IHandleMessage where T : class, new() 
+    public abstract class Singleton<T> : IHandleMessage where T : class, new() 
     {
         private static T m_instance;
 
