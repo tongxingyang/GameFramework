@@ -7,6 +7,7 @@ using GameFramework;
 using GameFramework.Base;
 using GameFramework.DataNode;
 using GameFramework.DataNode.Base;
+using GameFramework.Debug;
 using GameFramework.Download.Base;
 using GameFramework.UI.UITools;
 using GameFramework.Utility;
@@ -46,40 +47,11 @@ public class Launch:MonoBehaviour
     void Start()
     {
         InitGlobalCahce();
-
 //        Debuger.Init(AppConst.Path.DebugerLogFilePath);
 //        Debuger.EnableLog = AppConst.GameConfig.DebugerEnableLog;
 //        Debuger.EnableSave = AppConst.GameConfig.DebugerEnableSave;
 //        Debuger.EnableColor = AppConst.GameConfig.DebugerEnableColor;
-//        downloadAgent = gameObject.AddComponent<DownloadAgent>();
-//        downloadAgent.Initialize();
 
-//        Dictionary<int,int> value = new Dictionary<int, int>();
-////        Console.WriteLine("--------------------");
-//        using (FileStream fileStream = new FileStream("/Users/ww/Desktop/serverdir/tengxun/text.txt",FileMode.CreateNew,FileAccess.Write))  
-//        {
-//            using (StreamWriter streamWriter = new StreamWriter(fileStream))
-//            {
-//                for (int i = 0; i < 100000; i++)
-//                {
-//                    UnityEngine.Object obj = new UnityEngine.Object();
-//                    int hashcode = obj.GetHashCode();
-//                    streamWriter.WriteLine(i+"    "+hashcode);
-//                    int index = 0;
-//                    if (value.TryGetValue(hashcode, out index))
-//                    {
-//                        Debug.LogError("chongfu  " + i + "  " + hashcode);
-//                    }
-//                    else
-//                    {
-//                        value.Add(hashcode, i);
-//                    }
-//                }
-//
-//            }
-//        }
-//        Console.WriteLine("done");
-//        Console.ReadKey();
     }
 
     void Update()
