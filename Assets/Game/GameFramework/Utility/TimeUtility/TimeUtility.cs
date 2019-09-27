@@ -4,8 +4,16 @@ namespace GameFramework.Utility.TimeUtility
 {
 	public class TimeUtility
 	{
-		readonly static DateTime DateTime_1970_01_01_08_00_00 = new DateTime(1970, 1, 1, 8, 0, 0);
+		static DateTime DateTime_1970_01_01_08_00_00 = new DateTime(1970, 1, 1, 8, 0, 0);
 
+		public static DateTime DateTimeAppStart = new DateTime(1970, 1, 1, 8, 0, 0);
+
+		public static float GetTimeSinceStartup()
+		{
+			DateTime nowtime = DateTime.Now.ToLocalTime();
+			return (float)(nowtime.Subtract(DateTimeAppStart).TotalSeconds);
+		}
+		
 		public static double GetTotalMillisecondsSince1970()
 		{
 			DateTime nowtime = DateTime.Now.ToLocalTime();

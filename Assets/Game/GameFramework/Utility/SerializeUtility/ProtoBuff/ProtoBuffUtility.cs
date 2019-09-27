@@ -8,7 +8,7 @@ namespace GameFramework.Utility.ProtoBuff
 {
     public class ProtoBuffUtility
     {
-        public byte[] Serialize(object obj)
+        public static byte[] Serialize(object obj)
         {
             using (MemoryStream ms = new MemoryStream())
             {
@@ -17,7 +17,7 @@ namespace GameFramework.Utility.ProtoBuff
             }
         }
 
-        public byte[] Serialize<T>(T obj)
+        public static byte[] Serialize<T>(T obj)
         {
             using (MemoryStream ms = new MemoryStream())
             {
@@ -26,12 +26,12 @@ namespace GameFramework.Utility.ProtoBuff
             }
         }
         
-        public void Serialize(object obj, Stream stream)
+        public static void Serialize(object obj, Stream stream)
         {
             ProtoBuf.Serializer.NonGeneric.Serialize(stream, obj);
         }
         
-        public T Deserialize<T>(byte[] data)
+        public static T Deserialize<T>(byte[] data)
         {
             using (var byteStream = new MemoryStream(data))
             {
@@ -39,7 +39,7 @@ namespace GameFramework.Utility.ProtoBuff
             }
         }
 
-        public object Deserialize(Type type, byte[] data)
+        public static object Deserialize(Type type, byte[] data)
         {
             using (var byteStream = new MemoryStream(data))
             {
@@ -47,7 +47,7 @@ namespace GameFramework.Utility.ProtoBuff
             }
         }
 
-        public T Deserialize<T>(byte[] buffer, int index, int count)
+        public static T Deserialize<T>(byte[] buffer, int index, int count)
         {
             using (var byteStream = new MemoryStream(buffer, index, count))
             {
@@ -55,7 +55,7 @@ namespace GameFramework.Utility.ProtoBuff
             }
         }
 
-        public object Deserialize(Type type, byte[] buffer, int index, int count)
+        public static object Deserialize(Type type, byte[] buffer, int index, int count)
         {
             using (var byteStream = new MemoryStream(buffer, index, count))
             {
@@ -64,12 +64,12 @@ namespace GameFramework.Utility.ProtoBuff
 
         }
 
-        public T Deserialize<T>(Stream stream)
+        public static T Deserialize<T>(Stream stream)
         {
             return ProtoBuf.Serializer.Deserialize<T>(stream);
         }
 
-        public object Deserialize(Type type, Stream stream)
+        public static object Deserialize(Type type, Stream stream)
         {
             return ProtoBuf.Serializer.NonGeneric.Deserialize(type, stream);
         }
