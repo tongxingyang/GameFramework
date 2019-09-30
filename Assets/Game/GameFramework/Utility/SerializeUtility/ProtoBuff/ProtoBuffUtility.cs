@@ -16,6 +16,22 @@ namespace GameFramework.Utility.ProtoBuff
                 return ms.ToArray();
             }
         }
+        
+        public static int Serialize(object obj, byte[] buffer)
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                if (obj != null)
+                {
+                    ProtoBuf.Serializer.NonGeneric.Serialize(ms, obj);
+                }
+                ms.Position = 0;
+                int length = (int)ms.Length;
+                ms.Read(buffer, 0, length);
+                return length;
+            }
+            return 0;
+        }
 
         public static byte[] Serialize<T>(T obj)
         {
